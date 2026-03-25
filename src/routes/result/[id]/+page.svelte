@@ -35,6 +35,29 @@
 		const url = `https://roast.punkgo.ai/s/${resultId}`;
 		window.open(`https://service.weibo.com/share/share.php?title=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
 	}
+
+	function shareToWhatsApp() {
+		if (!dog) return;
+		const text = `I'm ${dog.name} — "${dog.catchphrase}" 🐕 What's YOUR AI vibe? https://roast.punkgo.ai/s/${resultId}`;
+		window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+	}
+
+	let copied = $state(false);
+	function copyLink() {
+		const url = `https://roast.punkgo.ai/s/${resultId}`;
+		navigator.clipboard.writeText(url).then(() => {
+			copied = true;
+			setTimeout(() => { copied = false; }, 2000);
+		});
+	}
+
+	function saveCard() {
+		// TODO: generate PNG card via canvas or server endpoint
+		// For now, open the card SVG URL
+		const url = `https://roast.punkgo.ai/s/${resultId}`;
+		navigator.clipboard.writeText(url);
+		alert(isZh ? '卡片功能开发中，链接已复制！' : 'Card download coming soon. Link copied!');
+	}
 </script>
 
 <svelte:head>
@@ -55,9 +78,9 @@
 				<div class="actions">
 					<button class="btn-x" onclick={shareToX}>𝕏 Share</button>
 					<button class="btn-weibo" onclick={shareToWeibo}>微博</button>
-					<button class="btn-wa">WhatsApp</button>
-					<button class="btn-save">Save Card</button>
-					<button class="btn-copy">Copy Link</button>
+					<button class="btn-wa" onclick={shareToWhatsApp}>WhatsApp</button>
+					<button class="btn-save" onclick={saveCard}>Save Card</button>
+					<button class="btn-copy" onclick={copyLink}>{copied ? (isZh ? '已复制!' : 'Copied!') : 'Copy Link'}</button>
 				</div>
 			</div>
 			<div class="card-side">
