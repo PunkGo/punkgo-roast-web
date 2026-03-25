@@ -41,27 +41,6 @@
 		</div>
 	</section>
 
-	<section class="ext-promo">
-		<div class="ext-left">
-			<span class="section-tag">— F O R &nbsp; T H E &nbsp; S E R I O U S —</span>
-			<h2>{isZh ? 'Quiz 只是开胃菜。\n真实数据才是正菜。' : "The quiz is fun.\nYour real data is scary accurate."}</h2>
-			<p>
-				{isZh
-					? '安装 Chrome 扩展，分析你真实的 AI 聊天记录。\n100% 本地处理。支持 ChatGPT · DeepSeek · Kimi · 豆包。'
-					: 'Install the Chrome extension to analyze your actual AI chat history.\n100% local. Works with ChatGPT · DeepSeek · Kimi · Doubao.'}
-			</p>
-			<a href="https://github.com/PunkGo/punkgo-roast-extension" target="_blank" class="ext-cta">
-				🧩 {isZh ? '安装扩展' : 'Install Extension'}
-			</a>
-		</div>
-		<div class="ext-right">
-			<div class="store-card">
-				<strong>Chrome Web Store</strong>
-				<span>★★★★★ · Free · 100% Local</span>
-			</div>
-			<span class="ext-also">{isZh ? '同时支持 Edge 浏览器' : 'Also available on Edge Add-ons'}</span>
-		</div>
-	</section>
 </div>
 
 <style>
@@ -135,34 +114,6 @@
 		color: var(--color-cta); font-weight: 600;
 		text-decoration: underline; text-underline-offset: 2px;
 	}
-	.ext-promo { display: flex; border-top: 1px solid var(--color-border); }
-	.ext-left {
-		flex: 1; display: flex; flex-direction: column; justify-content: center;
-		gap: 12px; padding: 48px; background: var(--color-bg-muted);
-	}
-	.ext-left h2 { font-size: 24px; font-weight: 700; line-height: 1.2; white-space: pre-line; }
-	.ext-left p { font-size: 14px; color: var(--color-text-secondary); line-height: 1.5; white-space: pre-line; }
-	.ext-cta {
-		display: inline-flex; align-items: center; justify-content: center;
-		width: 200px; height: 44px;
-		border-radius: var(--radius-md);
-		background: var(--color-bg-dark); color: var(--color-text-on-dark);
-		font-size: 13px; font-weight: 700; gap: 6px;
-	}
-	.ext-right {
-		width: 480px; display: flex; flex-direction: column;
-		align-items: center; justify-content: center;
-		gap: 8px; padding: 48px; background: #E8E0D4;
-	}
-	.store-card {
-		display: flex; flex-direction: column; align-items: center;
-		gap: 8px; padding: 24px 48px;
-		background: var(--color-bg-card); border-radius: var(--radius-lg);
-		border: 1px solid var(--color-border-accent);
-	}
-	.store-card strong { font-size: 14px; }
-	.store-card span { font-size: 12px; color: var(--color-text-secondary); }
-	.ext-also { font-size: 11px; color: var(--color-text-tertiary); }
 
 	@media (max-width: 639px) {
 		h1 { font-size: 36px; }
