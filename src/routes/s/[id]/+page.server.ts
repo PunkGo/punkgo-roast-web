@@ -1,17 +1,26 @@
 import type { PageServerLoad } from './$types';
+import { decodeResultId, getDogByMBTI } from '$lib/data/dogs';
 
-// TODO: decode base62+salt result ID to answers, compute personality
-// For now, fetch from API
-export const load: PageServerLoad = async ({ params, fetch }) => {
-	const API_BASE = 'https://n78.xyz';
+export const load: PageServerLoad = async ({ params }) => {
 	try {
-		const res = await fetch(`${API_BASE}/api/v1/roast/share/${params.id}`);
-		if (res.ok) {
-			const share = await res.json();
-			return { share, error: null };
-		}
-		return { share: null, error: 'not_found' };
+		const mbti = decodeResultId(params.id);
+		const dog = getDogByMBTI(mbti);
+		return {
+			share: {
+				id: params.id,
+				personality_id: dog.id,
+				personality_name: dog.name,
+				personality_name_zh: dog.nameZh,
+				mbti: dog.mbti,
+				quip: dog.quip,
+				quipZh: dog.quipZh,
+				catchphrase: dog.catchphrase,
+				catchphraseZh: dog.catchphraseZh,
+				dog_image: dog.dogImage,
+			},
+			error: null,
+		};
 	} catch {
-		return { share: null, error: 'fetch_failed' };
+		return { share: null, error: 'not_found' };
 	}
 };

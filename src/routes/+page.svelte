@@ -118,6 +118,9 @@
 	@media (max-width: 639px) {
 		h1 { font-size: 36px; }
 		.hero { padding: 0 20px; }
+		.section-tag { font-size: 8px; }
+		.trust { text-align: center; padding: 0 16px; }
+		.dog-preview { flex-wrap: wrap; justify-content: center; }
 		.dog-dot { width: 48px; height: 48px; }
 		.ext-promo { flex-direction: column; }
 		.ext-right { width: 100%; }

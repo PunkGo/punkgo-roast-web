@@ -81,6 +81,12 @@ export function encodeResultId(answers: {question: number; choice: string}[]): s
 }
 
 export function decodeResultId(id: string): string {
+	// validate all characters are in BASE62
+	for (const c of id) {
+		if (BASE62.indexOf(c) === -1) {
+			throw new Error(`Invalid character in result ID: ${c}`);
+		}
+	}
 	// base62 decode
 	let n = 0;
 	for (const c of id) {
