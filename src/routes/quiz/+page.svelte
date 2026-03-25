@@ -196,7 +196,7 @@
 {:else if phase === 'result' && result}
 	<div class="fallback-result">
 		<span class="section-tag">— Y O U R &nbsp; R E S U L T —</span>
-		<div class="result-avatar" style="background:{result.personality.card_color || '#EDE5D8'}"></div>
+		<img class="result-avatar" src="/dogs/dog-{result.personality.id}.png" alt={result.personality.name} />
 		<h1>{result.personality.name}</h1>
 		<div class="result-mbti">{result.personality.mbti}</div>
 		<p class="quip">"{result.quip}"</p>

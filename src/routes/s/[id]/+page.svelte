@@ -25,7 +25,7 @@
 		<div class="share-body">
 			<div class="their-result">
 				<span class="shared-tag">{isZh ? '有人分享了他们的结果' : 'Someone shared their result with you'}</span>
-				<div class="their-avatar" style="background:{share.card_color || '#EDE5D8'}"></div>
+				<img class="their-avatar" src="/dogs/{share.dog_image || `dog-${share.personality_id}.png`}" alt={share.personality_name} />
 				<h1>{share.personality_name_zh && isZh ? share.personality_name_zh : share.personality_name}</h1>
 				<div class="mbti-tag">{share.mbti}</div>
 				<p class="their-quip">"{share.quip || share.catchphrase}"</p>
@@ -68,7 +68,7 @@
 	}
 	.their-avatar {
 		width: 120px; height: 120px; border-radius: var(--radius-full);
-		border: 2px solid var(--color-border-accent);
+		border: 2px solid var(--color-border-accent); object-fit: cover;
 	}
 	.their-result h1 { font-size: 28px; font-weight: 700; }
 	.mbti-tag {

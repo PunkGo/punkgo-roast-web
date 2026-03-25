@@ -1,11 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import confetti from 'canvas-confetti';
 	import { decodeResultId, getDogByMBTI, type Dog } from '$lib/data/dogs';
 
 	let isZh = $state(false);
 	let dog: Dog | null = $state(null);
 	let resultId = $state('');
+
+	// Reveal ceremony states
+	let phase: 'card-back' | 'flipping' | 'revealed' = $state('card-back');
+	let typedQuip = $state('');
+	let showActions = $state(false);
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
@@ -16,11 +22,41 @@
 		} catch {
 			dog = null;
 		}
+
+		// Ceremony timeline
+		if (dog) {
+			// 1.5s card back anticipation → flip → confetti → typewriter quip
+			setTimeout(() => { phase = 'flipping'; }, 1500);
+			setTimeout(() => {
+				phase = 'revealed';
+				fireConfetti();
+				typewriterQuip();
+			}, 2100);
+			setTimeout(() => { showActions = true; }, 3500);
+		}
 	});
 
-	$effect(() => {
-		resultId = $page.params.id;
-	});
+	$effect(() => { resultId = $page.params.id; });
+
+	function fireConfetti() {
+		const colors = ['#5A8C6A', '#C4956A', '#D4B896', '#8060A0', '#C75050'];
+		confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 }, colors, startVelocity: 30, gravity: 1.2, ticks: 120 });
+		setTimeout(() => {
+			confetti({ particleCount: 40, spread: 100, origin: { y: 0.4, x: 0.3 }, colors, startVelocity: 25, gravity: 1.0 });
+			confetti({ particleCount: 40, spread: 100, origin: { y: 0.4, x: 0.7 }, colors, startVelocity: 25, gravity: 1.0 });
+		}, 200);
+	}
+
+	function typewriterQuip() {
+		if (!dog) return;
+		const full = isZh ? dog.quipZh : dog.quip;
+		let i = 0;
+		const interval = setInterval(() => {
+			typedQuip = full.slice(0, i + 1);
+			i++;
+			if (i >= full.length) clearInterval(interval);
+		}, 35);
+	}
 
 	function shareToX() {
 		if (!dog) return;
@@ -44,18 +80,14 @@
 
 	let copied = $state(false);
 	function copyLink() {
-		const url = `https://roast.punkgo.ai/s/${resultId}`;
-		navigator.clipboard.writeText(url).then(() => {
+		navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`).then(() => {
 			copied = true;
 			setTimeout(() => { copied = false; }, 2000);
 		});
 	}
 
 	function saveCard() {
-		// TODO: generate PNG card via canvas or server endpoint
-		// For now, open the card SVG URL
-		const url = `https://roast.punkgo.ai/s/${resultId}`;
-		navigator.clipboard.writeText(url);
+		navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`);
 		alert(isZh ? '卡片功能开发中，链接已复制！' : 'Card download coming soon. Link copied!');
 	}
 </script>
@@ -67,77 +99,156 @@
 
 <div class="reveal-page">
 	{#if dog}
-		<div class="reveal-body">
-			<div class="quip-side">
-				<span class="section-tag">— Y O U R &nbsp; R E S U L T —</span>
-				<div class="avatar" style="background:{dog.cardColor || '#EDE5D8'}"></div>
-				<h1>{dog.name}</h1>
-				<div class="mbti-badge">{dog.mbti}</div>
-				<p class="quip">"{isZh ? dog.quipZh : dog.quip}"</p>
-				<p class="catch">— {isZh ? dog.catchphraseZh : dog.catchphrase}</p>
-				<div class="actions">
-					<button class="btn-x" onclick={shareToX}>𝕏 Share</button>
-					<button class="btn-weibo" onclick={shareToWeibo}>微博</button>
-					<button class="btn-wa" onclick={shareToWhatsApp}>WhatsApp</button>
-					<button class="btn-save" onclick={saveCard}>Save Card</button>
-					<button class="btn-copy" onclick={copyLink}>{copied ? (isZh ? '已复制!' : 'Copied!') : 'Copy Link'}</button>
-				</div>
-			</div>
-			<div class="card-side">
-				<div class="card-preview" style="background:{dog.cardColor || '#E0EFDA'}">
-					<span class="card-name">{dog.name}</span>
-					<span class="card-mbti">{dog.mbti}</span>
-					<p class="card-quip">"{isZh ? dog.quipZh : dog.quip}"</p>
-					<div class="card-footer">
-						<span>punkgo.ai</span>
-						<span>What's your AI vibe?</span>
+		{#if phase === 'card-back'}
+			<!-- Card back: anticipation -->
+			<div class="ceremony">
+				<div class="flip-card">
+					<div class="card-back" style="background:{dog.cardColor}">
+						<span class="card-back-paw">🐾</span>
+						<span class="card-back-text">{isZh ? '你的 AI 人格是...' : 'Your AI personality is...'}</span>
 					</div>
 				</div>
-				<a href="/quiz" class="retake">{isZh ? '不是你？重新测试 →' : 'Not you? Retake →'}</a>
+				<p class="tap-hint">{isZh ? '即将揭晓...' : 'Revealing...'}</p>
 			</div>
-		</div>
 
-		<div class="ext-upsell">
-			<div class="ext-left">
-				<span class="section-tag">— W A N T &nbsp; S C A R Y &nbsp; A C C U R A C Y ? —</span>
-				<h3>{isZh ? '这只是基于 5 道题。\n想象你的真实 AI 数据能揭示什么。' : "This was based on 5 questions.\nImagine what your real AI data reveals."}</h3>
-				<p>{isZh ? '扩展分析你真实的聊天记录 — 100% 本地，零数据外传。' : 'The extension analyzes your actual chat history — 100% local, zero data leaves your device.'}</p>
+		{:else if phase === 'flipping'}
+			<!-- Flip animation -->
+			<div class="ceremony">
+				<div class="flip-card flipping">
+					<div class="card-back" style="background:{dog.cardColor}">
+						<span class="card-back-paw">🐾</span>
+					</div>
+				</div>
 			</div>
-			<a href="https://github.com/PunkGo/punkgo-roast-extension" target="_blank" class="ext-btn">🧩 {isZh ? '安装扩展' : 'Get Extension'}</a>
-		</div>
+
+		{:else}
+			<!-- Revealed -->
+			<div class="reveal-body">
+				<div class="quip-side">
+					<span class="section-tag fade-in">— Y O U R &nbsp; R E S U L T —</span>
+					<img class="avatar fade-in d1" src="/dogs/dog-{dog.id}.png" alt={dog.name} />
+					<h1 class="fade-in d2">{dog.name}</h1>
+					<div class="mbti-row fade-in d2">
+						<span class="mbti-badge">{dog.mbti}</span>
+						<span class="breed">{dog.breed}</span>
+					</div>
+					<p class="quip fade-in d3">"{typedQuip}<span class="cursor">|</span>"</p>
+					<p class="catch fade-in d4">— {isZh ? dog.catchphraseZh : dog.catchphrase}</p>
+					{#if showActions}
+						<div class="actions fade-in">
+							<button class="btn-x" onclick={shareToX}>𝕏 Share</button>
+							<button class="btn-weibo" onclick={shareToWeibo}>微博</button>
+							<button class="btn-wa" onclick={shareToWhatsApp}>WhatsApp</button>
+							<button class="btn-save" onclick={saveCard}>Save Card</button>
+							<button class="btn-copy" onclick={copyLink}>{copied ? (isZh ? '已复制!' : 'Copied!') : 'Copy Link'}</button>
+						</div>
+					{/if}
+				</div>
+				<div class="card-side">
+					<div class="card-preview" style="background:{dog.cardColor}">
+						<img class="card-dog-img" src="/dogs/dog-{dog.id}.png" alt={dog.name} />
+						<span class="card-name">{dog.name}</span>
+						<span class="card-mbti">{dog.mbti}</span>
+						<p class="card-quip">"{isZh ? dog.quipZh : dog.quip}"</p>
+						<div class="card-footer">
+							<span>punkgo.ai</span>
+							<span>What's your AI vibe?</span>
+						</div>
+					</div>
+					<a href="/quiz" class="retake">{isZh ? '不是你？重新测试 →' : 'Not you? Retake →'}</a>
+				</div>
+			</div>
+
+			<div class="ext-upsell fade-in d5">
+				<div class="ext-left">
+					<span class="section-tag">— W A N T &nbsp; S C A R Y &nbsp; A C C U R A C Y ? —</span>
+					<h3>{isZh ? '这只是基于 5 道题。\n想象你的真实 AI 数据能揭示什么。' : "This was based on 5 questions.\nImagine what your real AI data reveals."}</h3>
+					<p>{isZh ? '扩展分析你真实的聊天记录 — 100% 本地，零数据外传。' : 'The extension analyzes your actual chat history — 100% local, zero data leaves your device.'}</p>
+				</div>
+				<a href="https://github.com/PunkGo/punkgo-roast-extension" target="_blank" class="ext-btn">🧩 {isZh ? '安装扩展' : 'Get Extension'}</a>
+			</div>
+		{/if}
 	{:else}
 		<div class="placeholder">
-			<span class="section-tag">— L O A D I N G —</span>
-			<p>{isZh ? '加载结果中...' : 'Loading result...'}</p>
-			<a href="/quiz" class="cta-btn">{isZh ? '或重新开始' : 'Or start fresh'}</a>
+			<span class="section-tag">— N O T &nbsp; F O U N D —</span>
+			<h2>{isZh ? '这个结果不存在' : "This result doesn't exist"}</h2>
+			<a href="/quiz" class="cta-btn">{isZh ? '开始测试' : 'Begin Examination'}</a>
 		</div>
 	{/if}
 </div>
 
 <style>
 	.reveal-page { min-height: calc(100vh - 56px); display: flex; flex-direction: column; }
+
+	/* Ceremony — card back + flip */
+	.ceremony {
+		flex: 1; display: flex; flex-direction: column;
+		align-items: center; justify-content: center; gap: 24px;
+	}
+	.flip-card {
+		width: 300px; height: 400px;
+		perspective: 1200px;
+	}
+	.card-back {
+		width: 100%; height: 100%;
+		border-radius: var(--radius-xl);
+		display: flex; flex-direction: column;
+		align-items: center; justify-content: center; gap: 16px;
+		border: 2px solid var(--color-border-accent);
+		transition: transform 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		animation: gentle-pulse 2s ease-in-out infinite;
+	}
+	.flipping .card-back {
+		animation: flip-away 600ms ease-in forwards;
+	}
+	.card-back-paw { font-size: 48px; opacity: 0.6; }
+	.card-back-text {
+		font-size: 16px; font-weight: 600; color: var(--color-text-secondary);
+		letter-spacing: 0.05em;
+	}
+	.tap-hint {
+		font-size: 14px; color: var(--color-text-tertiary);
+		animation: pulse-opacity 1.5s ease-in-out infinite;
+	}
+
+	@keyframes gentle-pulse {
+		0%, 100% { box-shadow: 0 0 0 0 rgba(90, 140, 106, 0.15); }
+		50% { box-shadow: 0 0 0 12px rgba(90, 140, 106, 0); }
+	}
+	@keyframes flip-away {
+		0% { transform: rotateY(0); }
+		100% { transform: rotateY(90deg); opacity: 0; }
+	}
+	@keyframes pulse-opacity {
+		0%, 100% { opacity: 0.4; }
+		50% { opacity: 1; }
+	}
+
+	/* Revealed content */
 	.reveal-body { display: flex; flex: 1; }
 	.quip-side {
 		flex: 1; display: flex; flex-direction: column;
 		align-items: center; justify-content: center;
 		gap: 16px; padding: 48px 64px; text-align: center;
 	}
-	.avatar { width: 160px; height: 160px; border-radius: var(--radius-full); border: 2px solid var(--color-border-accent); }
+	.avatar { width: 160px; height: 160px; border-radius: var(--radius-full); border: 2px solid var(--color-border-accent); object-fit: cover; }
 	.quip-side h1 { font-size: 32px; font-weight: 700; letter-spacing: 0.05em; }
+	.mbti-row { display: flex; align-items: center; gap: 10px; }
 	.mbti-badge {
 		font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
 		padding: 4px 14px; border-radius: var(--radius-sm);
 		background: var(--color-bg-muted); border: 1px solid var(--color-border-accent);
 		color: var(--color-text-secondary);
 	}
-	.quip { font-size: 20px; font-weight: 600; font-style: italic; line-height: 1.5; max-width: 460px; }
+	.breed { font-size: 13px; color: var(--color-text-tertiary); }
+	.quip { font-size: 22px; font-weight: 600; font-style: italic; line-height: 1.5; max-width: 460px; min-height: 66px; }
+	.cursor { animation: blink 0.8s step-end infinite; font-style: normal; color: var(--color-cta); }
+	@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 	.catch { font-size: 14px; color: var(--color-text-secondary); font-style: italic; }
 
 	.actions { display: flex; gap: 10px; padding-top: 12px; flex-wrap: wrap; justify-content: center; }
-	.actions button {
-		padding: 10px 18px; border-radius: var(--radius-md);
-		font-size: 12px; font-weight: 600;
-	}
+	.actions button { padding: 10px 18px; border-radius: var(--radius-md); font-size: 12px; font-weight: 600; transition: transform 150ms ease, opacity 150ms ease; }
+	.actions button:hover { transform: translateY(-1px); }
 	.btn-x { background: #1A1A1A; color: white; }
 	.btn-weibo { background: #E6162D; color: white; }
 	.btn-wa { background: #25D366; color: white; }
@@ -155,6 +266,7 @@
 		align-items: center; justify-content: center; gap: 12px;
 		padding: 24px; border: 1px solid var(--color-border-accent);
 	}
+	.card-dog-img { width: 64px; height: 64px; border-radius: var(--radius-full); object-fit: cover; }
 	.card-name { font-size: 14px; font-weight: 700; color: #3A2518; letter-spacing: 0.05em; }
 	.card-mbti { font-size: 10px; font-weight: 700; color: #5A8C6A; letter-spacing: 0.15em; }
 	.card-quip { font-size: 12px; font-weight: 600; font-style: italic; text-align: center; color: #3A2518; line-height: 1.4; max-width: 240px; }
@@ -185,9 +297,31 @@
 		background: var(--color-cta); color: white; font-size: 15px; font-weight: 700;
 	}
 
+	/* Fade-in animations */
+	.fade-in { animation: fadeInUp 0.5s ease-out both; }
+	.d1 { animation-delay: 0.1s; }
+	.d2 { animation-delay: 0.2s; }
+	.d3 { animation-delay: 0.4s; }
+	.d4 { animation-delay: 0.8s; }
+	.d5 { animation-delay: 1.2s; }
+
+	@keyframes fadeInUp {
+		from { opacity: 0; transform: translateY(16px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
 	@media (max-width: 768px) {
 		.reveal-body { flex-direction: column; }
 		.card-side { width: 100%; }
 		.ext-upsell { flex-direction: column; text-align: center; }
+		.quip { font-size: 18px; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.card-back { animation: none; }
+		.flipping .card-back { animation: none; }
+		.tap-hint { animation: none; opacity: 1; }
+		.fade-in { animation: none; opacity: 1; }
+		.cursor { animation: none; }
 	}
 </style>

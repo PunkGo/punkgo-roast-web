@@ -36,7 +36,7 @@
 	<div class="grid">
 		{#each dogs as dog}
 			<div class="dog-card" style="background:{dog.color}">
-				<div class="dog-avatar" style="background:{dog.accent}"></div>
+				<img class="dog-avatar" src="/dogs/dog-{dog.id}.png" alt={dog.name} />
 				<div class="dog-info">
 					<span class="dog-name">{isZh ? dog.nameZh : dog.name}</span>
 					<span class="dog-mbti" style="color:{dog.accent}">{dog.mbti}</span>
@@ -68,7 +68,7 @@
 		gap: 14px;
 		min-height: 100px;
 	}
-	.dog-avatar { width: 44px; height: 44px; border-radius: var(--radius-full); flex-shrink: 0; }
+	.dog-avatar { width: 44px; height: 44px; border-radius: var(--radius-full); flex-shrink: 0; object-fit: cover; }
 	.dog-info { display: flex; flex-direction: column; gap: 2px; }
 	.dog-name { font-size: 14px; font-weight: 700; color: #3A2518; }
 	.dog-mbti { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; }

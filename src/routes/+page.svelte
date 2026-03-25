@@ -24,8 +24,8 @@
 				: 'Five questions. Sixteen breeds. Sixty seconds.\nA whimsical examination of your artificial intelligence personality.'}
 		</p>
 		<div class="dog-preview">
-			{#each ['#E0EFDA','#FFE0EC','#D0D4DC','#FFF0C8','#D0E0F4'] as color}
-				<div class="dog-dot" style="background:{color}"></div>
+			{#each ['philosopher','intern','vampire','speedrunner','googler'] as id}
+				<img class="dog-dot" src="/dogs/dog-{id}.png" alt={id} />
 			{/each}
 			<div class="dog-dot more">+11</div>
 		</div>
@@ -101,7 +101,7 @@
 		max-width: 560px;
 	}
 	.dog-preview { display: flex; gap: 14px; padding: 8px 0; }
-	.dog-dot { width: 72px; height: 72px; border-radius: var(--radius-xl); }
+	.dog-dot { width: 72px; height: 72px; border-radius: var(--radius-xl); object-fit: cover; }
 	.dog-dot.more {
 		background: var(--color-bg-muted);
 		display: flex; align-items: center; justify-content: center;
