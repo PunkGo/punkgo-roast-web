@@ -8,14 +8,24 @@
 	let dog: Dog | null = $state(null);
 	let resultId = $state('');
 
+	const funFacts = [
+		{ en: 'The average person says "thank you" to AI 3.7 times per session', zh: '平均每个人每次对话会对 AI 说 3.7 次"谢谢"' },
+		{ en: '47% of AI users have chatted with AI past midnight', zh: '47% 的 AI 用户在午夜后还在跟 AI 聊天' },
+		{ en: 'ENTJ users write the longest prompts on average', zh: 'ENTJ 用户平均写最长的 prompt' },
+		{ en: 'INFP users are most likely to apologize to AI', zh: 'INFP 用户最可能跟 AI 道歉' },
+		{ en: 'The most common AI vibe is The Googler (ENTP)', zh: '最常见的 AI 人格是搜索怪 (ENTP)' },
+	];
+
 	// Reveal ceremony states
-	let phase: 'card-back' | 'flipping' | 'revealed' = $state('card-back');
+	let phase: 'loading' | 'card-back' | 'flipping' | 'revealed' = $state('loading');
 	let typedQuip = $state('');
 	let showActions = $state(false);
+	let loadingFact = $state(funFacts[0]);
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
 		resultId = $page.params.id;
+		loadingFact = funFacts[Math.floor(Math.random() * funFacts.length)];
 		try {
 			const mbti = decodeResultId(resultId);
 			dog = getDogByMBTI(mbti);
@@ -23,16 +33,16 @@
 			dog = null;
 		}
 
-		// Ceremony timeline
+		// Full ceremony: loading (2.5s) → card-back (1.5s) → flip → reveal
 		if (dog) {
-			// 1.5s card back anticipation → flip → confetti → typewriter quip
-			setTimeout(() => { phase = 'flipping'; }, 1500);
+			setTimeout(() => { phase = 'card-back'; }, 2500);
+			setTimeout(() => { phase = 'flipping'; }, 4000);
 			setTimeout(() => {
 				phase = 'revealed';
 				fireConfetti();
 				typewriterQuip();
-			}, 2100);
-			setTimeout(() => { showActions = true; }, 3500);
+			}, 4600);
+			setTimeout(() => { showActions = true; }, 6000);
 		}
 	});
 
@@ -99,7 +109,21 @@
 
 <div class="reveal-page">
 	{#if dog}
-		{#if phase === 'card-back'}
+		{#if phase === 'loading'}
+			<!-- Loading ceremony -->
+			<div class="ceremony">
+				<span class="section-tag">— A N A L Y Z I N G —</span>
+				<div class="paw-ring">🐾</div>
+				<h2 class="loading-title">{isZh ? '正在检测你的 AI 人格...' : 'Examining your AI personality...'}</h2>
+				<p class="loading-sub">{isZh ? '匹配十六个犬种之一' : 'Matching you with one of sixteen breeds'}</p>
+				<div class="loading-bar"><div class="loading-fill"></div></div>
+				<div class="fun-fact">
+					<span class="section-tag">— D I D &nbsp; Y O U &nbsp; K N O W ? —</span>
+					<p>{isZh ? loadingFact.zh : loadingFact.en}</p>
+				</div>
+			</div>
+
+		{:else if phase === 'card-back'}
 			<!-- Card back: anticipation -->
 			<div class="ceremony">
 				<div class="flip-card">
@@ -179,6 +203,24 @@
 
 <style>
 	.reveal-page { min-height: calc(100vh - 56px); display: flex; flex-direction: column; }
+
+	/* Loading */
+	.paw-ring {
+		width: 120px; height: 120px;
+		border-radius: var(--radius-full);
+		background: var(--color-bg-muted);
+		border: 2px solid var(--color-border-accent);
+		display: flex; align-items: center; justify-content: center;
+		font-size: 48px;
+		animation: gentle-pulse 2s ease-in-out infinite;
+	}
+	.loading-title { font-size: 22px; font-weight: 700; }
+	.loading-sub { font-size: 14px; color: var(--color-text-secondary); }
+	.loading-bar { width: 200px; height: 4px; border-radius: var(--radius-full); background: var(--color-border); overflow: hidden; }
+	.loading-fill { height: 100%; border-radius: var(--radius-full); background: var(--color-cta); animation: loadProgress 2.5s ease-in-out forwards; }
+	@keyframes loadProgress { 0% { width: 0; } 80% { width: 70%; } 100% { width: 95%; } }
+	.fun-fact { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 16px; }
+	.fun-fact p { font-size: 13px; color: var(--color-text-tertiary); max-width: 380px; text-align: center; }
 
 	/* Ceremony — card back + flip */
 	.ceremony {

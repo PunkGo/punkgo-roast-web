@@ -90,7 +90,7 @@
 		{ en: 'The most common AI vibe is The Googler (ENTP)', zh: '最常见的 AI 人格是搜索怪 (ENTP)' },
 	];
 
-	let phase: 'quiz' | 'loading' | 'result' = $state('quiz');
+	let phase: 'quiz' | 'result' = $state('quiz');
 	let currentQ = $state(0);
 	let answers: { question: number; choice: string }[] = $state([]);
 	let result: any = $state(null);
@@ -112,8 +112,6 @@
 	}
 
 	async function submitQuiz() {
-		phase = 'loading';
-		loadingFact = funFacts[Math.floor(Math.random() * funFacts.length)];
 		try {
 			const res = await fetch('/api/quiz-analyze', {
 				method: 'POST',
@@ -121,16 +119,15 @@
 				body: JSON.stringify({ answers, locale: isZh ? 'zh' : 'en' }),
 			});
 			if (!res.ok) throw new Error('API error');
-			result = await res.json();
-			// Short ceremony delay then show result
-			await new Promise(r => setTimeout(r, 2000));
-			if (result.resultId) {
-				goto(`/result/${result.resultId}`);
-			} else {
-				phase = 'result';
+			const data = await res.json();
+			if (data.resultId) {
+				goto(`/result/${data.resultId}`);
 			}
 		} catch {
-			phase = 'result';
+			// fallback: compute client-side and redirect
+			const { computeMBTI, encodeResultId } = await import('$lib/data/dogs');
+			const id = encodeResultId(answers);
+			goto(`/result/${id}`);
 		}
 	}
 </script>
