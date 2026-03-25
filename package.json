@@ -23,6 +23,7 @@
 	"dependencies": {
 		"@supabase/supabase-js": "^2.100.0",
 		"@sveltejs/adapter-vercel": "^6.3.3",
-		"canvas-confetti": "^1.9.4"
+		"canvas-confetti": "^1.9.4",
+		"html-to-image": "^1.11.13"
 	}
 }

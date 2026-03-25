@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import confetti from 'canvas-confetti';
 	import { decodeResultId, getDogByMBTI, type Dog } from '$lib/data/dogs';
+	import { toPng } from 'html-to-image';
 
 	let isZh = $state(false);
 	let dog: Dog | null = $state(null);
@@ -21,6 +22,7 @@
 	let typedQuip = $state('');
 	let showActions = $state(false);
 	let loadingFact = $state(funFacts[0]);
+	let cardRef: HTMLElement | null = $state(null);
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
@@ -96,9 +98,19 @@
 		});
 	}
 
-	function saveCard() {
-		navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`);
-		alert(isZh ? '卡片功能开发中，链接已复制！' : 'Card download coming soon. Link copied!');
+	async function saveCard() {
+		if (!cardRef) return;
+		try {
+			const dataUrl = await toPng(cardRef, { pixelRatio: 2 });
+			const link = document.createElement('a');
+			link.download = `punkgo-roast-${dog?.id || 'card'}.png`;
+			link.href = dataUrl;
+			link.click();
+		} catch {
+			// Fallback: copy link
+			navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`);
+			alert(isZh ? '下载失败，链接已复制' : 'Download failed. Link copied.');
+		}
 	}
 </script>
 
@@ -169,7 +181,9 @@
 					{/if}
 				</div>
 				<div class="card-side">
-					<div class="card-preview" style="background:{dog.cardColor}">
+					<span class="section-tag">— Y O U R &nbsp; S H A R E &nbsp; C A R D —</span>
+					<p class="card-hint">{isZh ? '保存这张卡，分享给朋友看看你是哪只狗' : 'Save this card and share it with friends'}</p>
+					<div class="card-preview" style="background:{dog.cardColor}" bind:this={cardRef}>
 						<img class="card-dog-img" src="/dogs/dog-{dog.id}.png" alt={dog.name} />
 						<span class="card-name">{dog.name}</span>
 						<span class="card-mbti">{dog.mbti}</span>
@@ -179,6 +193,7 @@
 							<span>What's your AI vibe?</span>
 						</div>
 					</div>
+					<button class="card-save-btn" onclick={saveCard}>💾 {isZh ? '保存卡片' : 'Save Card'}</button>
 					<a href="/quiz" class="retake">{isZh ? '不是你？重新测试 →' : 'Not you? Retake →'}</a>
 				</div>
 			</div>
@@ -300,8 +315,16 @@
 	.card-side {
 		width: 480px; background: var(--color-bg-muted);
 		display: flex; flex-direction: column;
-		align-items: center; justify-content: center; gap: 20px; padding: 40px;
+		align-items: center; justify-content: center; gap: 16px; padding: 40px;
 	}
+	.card-hint { font-size: 13px; color: var(--color-text-secondary); }
+	.card-save-btn {
+		padding: 10px 24px; border-radius: var(--radius-md);
+		background: var(--color-cta); color: white;
+		font-size: 13px; font-weight: 700;
+		transition: transform 150ms ease;
+	}
+	.card-save-btn:hover { transform: translateY(-1px); }
 	.card-preview {
 		width: 300px; height: 400px; border-radius: var(--radius-lg);
 		display: flex; flex-direction: column;

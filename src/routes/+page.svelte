@@ -33,6 +33,12 @@
 			{isZh ? '开始测试' : 'Begin Examination'}
 		</a>
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
+		<div class="ext-inline">
+			<span>{isZh ? '想要更精准？' : 'Want scary accuracy?'}</span>
+			<a href="https://github.com/PunkGo/punkgo-roast-extension" target="_blank">
+				{isZh ? '安装 Chrome 扩展 →' : 'Install Chrome Extension →'}
+			</a>
+		</div>
 	</section>
 
 	<section class="ext-promo">
@@ -119,6 +125,15 @@
 	.trust {
 		font-size: 14px; font-weight: 500;
 		color: var(--color-text-secondary); letter-spacing: 0.05em;
+	}
+	.ext-inline {
+		display: flex; align-items: center; gap: 6px;
+		font-size: 13px; color: var(--color-text-tertiary);
+		padding-top: 8px;
+	}
+	.ext-inline a {
+		color: var(--color-cta); font-weight: 600;
+		text-decoration: underline; text-underline-offset: 2px;
 	}
 	.ext-promo { display: flex; border-top: 1px solid var(--color-border); }
 	.ext-left {
