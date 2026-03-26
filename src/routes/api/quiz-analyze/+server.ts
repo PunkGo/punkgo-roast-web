@@ -3,13 +3,14 @@ import type { RequestHandler } from './$types';
 import { computeMBTI, getDogByMBTI, encodeResultId } from '$lib/data/dogs';
 
 export const POST: RequestHandler = async ({ request }) => {
-	let body: { answers?: { question: number; choice: string }[]; locale?: string };
+	let body: { answers?: { question: number; choice: string }[]; locale?: string; aiName?: string };
 	try {
 		body = await request.json();
 	} catch {
 		return json({ error: 'Invalid JSON body' }, { status: 400 });
 	}
 	const { answers, locale } = body;
+	const aiName = body.aiName || 'AI';
 
 	if (!answers || !Array.isArray(answers) || answers.length !== 5) {
 		return json({ error: 'Must provide exactly 5 answers' }, { status: 422 });
@@ -37,5 +38,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		catchphrase: isZh ? dog.catchphraseZh : dog.catchphrase,
 		resultId,
 		mbti,
+		aiName,
 	});
 };
