@@ -21,6 +21,7 @@
 	},
 	"dependencies": {
 		"@sveltejs/adapter-vercel": "^6.3.3",
+		"@vercel/analytics": "^2.0.1",
 		"canvas-confetti": "^1.9.4",
 		"html-to-image": "^1.11.13"
 	}

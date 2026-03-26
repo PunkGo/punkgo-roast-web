@@ -1,6 +1,10 @@
 <script lang="ts">
 	import '$lib/styles/global.css';
+	import { dev } from '$app/environment';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	import { onMount } from 'svelte';
+
+	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	let { children } = $props();
 	let isZh = $state(false);
