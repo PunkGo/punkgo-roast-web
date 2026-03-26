@@ -87,8 +87,8 @@
 </script>
 
 <svelte:head>
-	<title>AI 体检室 — PunkGo Roast</title>
-	<meta property="og:title" content="给你的 AI 做个体检 | PunkGo Roast" />
+	<title>你的 AI 是什么 Vibe？ — PunkGo Roast</title>
+	<meta property="og:title" content="你的 AI 是什么 Vibe？ | PunkGo Roast" />
 	<meta property="og:description" content="测测你的 ChatGPT / Claude / DeepSeek 是 16 种犬种中的哪一个 🐾" />
 </svelte:head>
 
@@ -103,9 +103,9 @@
 
 	{#if step === 1}
 		<div class="step-content" transition:fade={{ duration: 200 }}>
-			<span class="section-tag">AI 体检室</span>
-			<h1>你用的 AI 是？</h1>
-			<p class="subtitle">选择你最常用的 AI 助手，我们来测测它的性格</p>
+			<span class="section-tag">— A I &nbsp; V I B E &nbsp; C H E C K —</span>
+			<h1>你的 AI 是什么 Vibe？</h1>
+			<p class="subtitle">选择你最常用的 AI 助手，测测它的性格</p>
 
 			<div class="ai-grid">
 				{#each aiOptions as ai}
