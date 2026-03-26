@@ -301,38 +301,6 @@
 		border-radius: var(--radius-full);
 	}
 
-	/* Locked radar preview */
-	.radar-locked {
-		width: 340px; height: 453px;
-		border-radius: 20px;
-		background: #F5F0E8;
-		box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-		position: relative; overflow: hidden;
-		display: flex; align-items: center; justify-content: center;
-	}
-	.radar-blur {
-		position: absolute; inset: 0;
-		display: flex; align-items: center; justify-content: center;
-		filter: blur(3px); opacity: 0.5;
-	}
-	.radar-overlay {
-		position: relative; z-index: 1;
-		display: flex; flex-direction: column; align-items: center;
-		gap: 8px; text-align: center; padding: 20px;
-	}
-	.lock-icon { font-size: 32px; }
-	.lock-title { font-size: 16px; font-weight: 700; color: var(--color-text); }
-	.lock-sub { font-size: 12px; color: var(--color-text-secondary); max-width: 220px; line-height: 1.5; }
-	.unlock-btn {
-		margin-top: 4px; padding: 12px 24px;
-		background: var(--color-cta); color: white;
-		border-radius: 100px; font-size: 14px; font-weight: 700;
-		min-height: 44px; display: flex; align-items: center;
-		box-shadow: 0 2px 12px rgba(90,140,106,0.3);
-		transition: transform 150ms ease;
-	}
-	.unlock-btn:hover { transform: translateY(-1px); }
-
 	.btn-primary {
 		padding: 12px 28px; border-radius: var(--radius-md);
 		background: var(--color-cta); color: white;
@@ -341,9 +309,6 @@
 		transition: transform 150ms ease;
 	}
 	.btn-primary:hover { transform: translateY(-1px); }
-
-	/* Extension inline */
-	/* removed: ext-inline replaced by radar-locked card */
 
 	.retake { font-size: 12px; color: var(--color-text-tertiary); padding: 12px 0; min-height: 44px; display: flex; align-items: center; }
 

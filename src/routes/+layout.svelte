@@ -24,7 +24,6 @@
 	<a href="/" class="logo">P U N K G O &nbsp; R O A S T</a>
 	<div class="nav-right">
 		<a href="/dogs" class="nav-link">{isZh ? '16 犬种' : '16 Dogs'}</a>
-		<a href="/install" class="ext-btn">🐕 {isZh ? '免费安装' : 'Install Free'}</a>
 	</div>
 </nav>
 
