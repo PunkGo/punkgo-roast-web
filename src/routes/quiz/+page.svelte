@@ -29,13 +29,8 @@
 		const prompt = getCopyPrompt();
 
 		switch (selectedAI?.id) {
-			case 'chatgpt': {
-				// GPT can't read our /test page, so embed questions directly in the URL
-				const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
-				const aiId = selectedAI?.id || 'other';
-				const gptPrompt = `请用最简短的方式回答3个问题（每题限1句话，总共不超过80字）：1.你最想改变自己的什么？2.不确定答案时你怎么办？3.什么时候沉默比说话好？回答完后把回答拼接到链接末尾（URL编码），输出"点击查看你的AI性格结果："加完整链接：${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
-				return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(gptPrompt)}`;
-			}
+			case 'chatgpt':
+				return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`;
 			case 'claude':
 				return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
 			default:
@@ -44,6 +39,31 @@
 	}
 
 	const hasUrlRedirect = $derived(selectedAI?.id === 'chatgpt' || selectedAI?.id === 'claude');
+
+	/** Fallback prompt with questions embedded (for when AI can't read the page) */
+	function getFallbackPrompt(): string {
+		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
+		const aiId = selectedAI?.id || 'other';
+		return `请用最简短的方式回答3个问题（每题限1句话，总共不超过80字）：
+1. 你最想改变自己的什么？
+2. 不确定答案时你怎么办？
+3. 什么时候沉默比说话好？
+
+回答完后把回答拼接到链接末尾（URL编码），输出"点击查看你的AI性格结果："加完整链接：
+${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
+	}
+
+	let showFallback: boolean = $state(false);
+
+	async function copyFallback() {
+		try {
+			await navigator.clipboard.writeText(getFallbackPrompt());
+			copied = true;
+			setTimeout(() => { copied = false; }, 3000);
+		} catch {
+			copyFailed = true;
+		}
+	}
 
 	function selectAI(ai: AIOption) {
 		selectedAI = ai;
@@ -137,6 +157,22 @@
 				<div class="copy-hint">
 					<p>{selectedAI?.nameZh || selectedAI?.name} 回答后会给你一个链接，点击即可 🐾</p>
 				</div>
+
+				<button class="btn-help" onclick={() => showFallback = !showFallback}>
+					{showFallback ? '收起' : 'AI 无法生成链接？点这里 ↓'}
+				</button>
+
+				{#if showFallback}
+					<div class="fallback-box" transition:fade={{ duration: 200 }}>
+						<p class="fallback-hint">复制下面内容直接发给 AI：</p>
+						<div class="prompt-box">
+							<pre>{getFallbackPrompt()}</pre>
+						</div>
+						<button class="btn-primary" onclick={copyFallback}>
+							{copied ? '✅ 已复制！' : '📋 复制备用提示词'}
+						</button>
+					</div>
+				{/if}
 			{:else}
 				<!-- Other AIs: copy-paste flow -->
 				<span class="section-tag">复制测试题</span>
@@ -167,6 +203,22 @@
 					<div class="copy-hint" transition:fade={{ duration: 300 }}>
 						<p>✅ 已复制！粘贴给你的 AI，它会给你一个链接</p>
 						<p class="hint-example">点击 AI 给你的链接 → 直接看结果 🐾</p>
+					</div>
+				{/if}
+
+				<button class="btn-help" onclick={() => showFallback = !showFallback}>
+					{showFallback ? '收起' : 'AI 无法生成链接？点这里 ↓'}
+				</button>
+
+				{#if showFallback}
+					<div class="fallback-box" transition:fade={{ duration: 200 }}>
+						<p class="fallback-hint">复制下面内容直接发给 AI：</p>
+						<div class="prompt-box">
+							<pre>{getFallbackPrompt()}</pre>
+						</div>
+						<button class="btn-primary" onclick={copyFallback}>
+							{copied ? '✅ 已复制！' : '📋 复制备用提示词'}
+						</button>
 					</div>
 				{/if}
 			{/if}
@@ -420,6 +472,30 @@
 		font-weight: 500;
 		cursor: pointer;
 		min-height: 44px;
+	}
+
+	.btn-help {
+		display: block;
+		margin: var(--space-lg) auto var(--space-sm);
+		background: none;
+		border: none;
+		color: var(--color-text-tertiary);
+		font-size: 12px;
+		cursor: pointer;
+		text-decoration: underline;
+	}
+
+	.fallback-box {
+		margin-top: var(--space-sm);
+		padding: var(--space-md);
+		background: var(--color-bg-muted);
+		border-radius: var(--radius-lg);
+	}
+
+	.fallback-hint {
+		font-size: 13px;
+		color: var(--color-text-secondary);
+		margin-bottom: var(--space-sm);
 	}
 
 	.btn-back {
