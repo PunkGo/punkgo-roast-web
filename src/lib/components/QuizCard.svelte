@@ -4,9 +4,10 @@
 	interface Props {
 		dog: Dog;
 		locale?: string;
+		aiName?: string;
 	}
 
-	let { dog, locale = 'en' }: Props = $props();
+	let { dog, locale = 'en', aiName = 'AI' }: Props = $props();
 	let cardRef: HTMLElement | null = $state(null);
 
 	$effect(() => { void dog; void locale; });
@@ -48,6 +49,7 @@
 		<img src="/dogs/felt-{dog.id}-nobg.png" alt={isZh ? dog.nameZh : dog.name} class="qc-img" />
 	</div>
 	<div class="card-body">
+		<p class="card-ai-label">你的 {aiName} 是</p>
 		<span class="card-name">{isZh ? dog.nameZh : dog.name}</span>
 		<span class="card-meta">{dog.mbti} · {dog.breed}</span>
 		<p class="card-quip">"{isZh ? dog.quipZh : dog.quip}"</p>
@@ -83,6 +85,13 @@
 	.card-body {
 		display: flex; flex-direction: column; align-items: center;
 		gap: 3px; padding: 12px 16px 10px;
+	}
+	.card-ai-label {
+		font-size: 11px;
+		font-weight: 500;
+		color: #6B5545;
+		letter-spacing: 0.05em;
+		margin: 0 0 2px 0;
 	}
 	.card-name { font-size: 22px; font-weight: 700; color: #3A2518; }
 	.card-meta { font-size: 11px; color: #6B5545; letter-spacing: 0.5px; }
