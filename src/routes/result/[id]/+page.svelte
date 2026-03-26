@@ -3,11 +3,16 @@
 	import { page } from '$app/stores';
 	import confetti from 'canvas-confetti';
 	import { decodeResultId, getDogByMBTI, type Dog } from '$lib/data/dogs';
+	import { getAIName } from '$lib/data/ai-quiz-prompt';
 	import QuizCard from '$lib/components/QuizCard.svelte';
 
 	let isZh = $state(false);
 	let dog: Dog | null = $state(null);
 	let resultId = $state('');
+
+	// Get AI name from URL query param
+	const aiParam = $page.url.searchParams.get('ai') || 'AI';
+	const aiName = typeof aiParam === 'string' && aiParam !== 'AI' ? getAIName(aiParam) : 'AI';
 
 	const funFacts = [
 		{ en: 'The average person says "thank you" to AI 3.7 times per session', zh: '平均每个人每次对话会对 AI 说 3.7 次"谢谢"' },
@@ -72,16 +77,19 @@
 	function shareToX() {
 		if (!dog) return;
 		const url = `https://roast.punkgo.ai/s/${resultId}`;
-		window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I'm ${dog.name} — "${dog.catchphrase}" 🐕 What's YOUR AI vibe?`)}&url=${encodeURIComponent(url)}`, '_blank');
+		const text = `我的${aiName}居然是${isZh ? dog.nameZh : dog.name}！来测测你的AI是什么性格 🐾`;
+		window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
 	}
 	function shareToWeibo() {
 		if (!dog) return;
 		const url = `https://roast.punkgo.ai/s/${resultId}`;
-		window.open(`https://service.weibo.com/share/share.php?title=${encodeURIComponent(`AI 说我是${dog.nameZh}——"${dog.quipZh}" 🐕 你是哪只狗？`)}&url=${encodeURIComponent(url)}`, '_blank');
+		const text = `我的${aiName}居然是${isZh ? dog.nameZh : dog.name}！来测测你的AI是什么性格 🐾`;
+		window.open(`https://service.weibo.com/share/share.php?title=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
 	}
 	function shareToWhatsApp() {
 		if (!dog) return;
-		window.open(`https://wa.me/?text=${encodeURIComponent(`I'm ${dog.name} — "${dog.catchphrase}" 🐕 https://roast.punkgo.ai/s/${resultId}`)}`, '_blank');
+		const text = `我的${aiName}居然是${isZh ? dog.nameZh : dog.name}！来测测你的AI是什么性格 🐾 https://roast.punkgo.ai/s/${resultId}`;
+		window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 	}
 	function copyLink() {
 		navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`).then(() => {
@@ -118,8 +126,8 @@
 			<div class="phase-block">
 				<span class="section-tag">— A N A L Y Z I N G —</span>
 				<div class="paw-ring" style="background:{dog.cardColor}">🐾</div>
-				<h2>{isZh ? '正在检测你的 AI 人格...' : 'Examining your AI personality...'}</h2>
-				<p class="sub">{isZh ? '匹配十六个犬种之一' : 'Matching you with one of sixteen breeds'}</p>
+				<h2>{isZh ? `正在检测你的 ${aiName} 的性格...` : `Examining your ${aiName}'s personality...`}</h2>
+				<p class="sub">{isZh ? '匹配十六个犬种之一' : 'Matching with one of sixteen breeds'}</p>
 				<div class="progress-bar"><div class="progress-fill"></div></div>
 				<div class="fun-fact">
 					<span class="section-tag">— D I D &nbsp; Y O U &nbsp; K N O W ? —</span>
@@ -188,7 +196,7 @@
 					</div><!-- /card-col -->
 				</div><!-- /cards-row -->
 
-				<a href="/quiz" class="retake fade-in d5">{isZh ? '不是你？重新测试 →' : 'Not you? Retake →'}</a>
+				<a href="/quiz" class="retake fade-in d5">{isZh ? '换个 AI 再测 →' : 'Test another AI →'}</a>
 				{/if}
 			</div><!-- /phase-block -->
 		{/if}
