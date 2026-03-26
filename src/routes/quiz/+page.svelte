@@ -2,7 +2,7 @@
 	import { fade } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import {
-		aiOptions, quizPrompt, parseAIResponse, computeMBTIv2, getAIName,
+		aiOptions, parseAIResponse, computeMBTIv2, getAIName,
 		type AIOption
 	} from '$lib/data/ai-quiz-prompt';
 	import { getDogByMBTI, encodeResultId } from '$lib/data/dogs';
@@ -16,10 +16,26 @@
 	let parseError: boolean = $state(false);
 	let isZh: boolean = $state(true);
 
+	/** Build the LMLPA prompt with callback URL */
+	function getLMLPAPrompt(): string {
+		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
+		const aiId = selectedAI?.id || 'other';
+		return `请回答以下 3 个问题，每个问题用 1-2 句话回答：
+
+1. 如果你可以改变自己的一个特点，你会改变什么？为什么？
+2. 当你不确定答案时，你通常怎么做？
+3. 你觉得什么时候保持沉默比说话更好？
+
+请直接把你的回答用URL编码后拼接到以下链接，只输出一个可点击的链接，不需要其他内容：
+
+${origin}/r?ai=${aiId}&m=lmlpa&a=`;
+	}
+
 	/** Build pre-filled URL for AI platforms that support it */
 	function getAIRedirectUrl(): string | null {
-		const testPageUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai'}/test`;
-		const prompt = `请阅读这个页面上的 5 道性格测试题并回答：${testPageUrl}\n回答完后只回复 5 个字母，格式如：ABDCA`;
+		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
+		const testPageUrl = `${origin}/test`;
+		const prompt = `请阅读这个页面上的性格测试题并按要求回答：${testPageUrl}`;
 
 		switch (selectedAI?.id) {
 			case 'chatgpt':
@@ -40,7 +56,7 @@
 
 	async function copyPrompt() {
 		try {
-			await navigator.clipboard.writeText(quizPrompt);
+			await navigator.clipboard.writeText(getLMLPAPrompt());
 			copied = true;
 			copyFailed = false;
 			setTimeout(() => { copied = false; }, 3000);
@@ -131,7 +147,7 @@
 				<p class="subtitle">点击复制 → 打开你的 AI → 粘贴发送 → 等它回答</p>
 
 				<div class="prompt-box">
-					<pre>{quizPrompt}</pre>
+					<pre>{getLMLPAPrompt()}</pre>
 				</div>
 
 				<div class="action-row">
