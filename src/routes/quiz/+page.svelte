@@ -16,9 +16,23 @@
 	let parseError: boolean = $state(false);
 	let isZh: boolean = $state(true);
 
+	/** ChatGPT supports URL pre-fill via ?hints=search&q=... */
+	function getChatGPTUrl(): string {
+		const testPageUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai'}/test`;
+		const prompt = `请阅读这个页面上的 5 道性格测试题并回答：${testPageUrl}\n回答完后只回复 5 个字母，格式如：ABDCA`;
+		return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`;
+	}
+
+	const isChatGPT = $derived(selectedAI?.id === 'chatgpt');
+
 	function selectAI(ai: AIOption) {
 		selectedAI = ai;
-		step = 2;
+		if (ai.id === 'chatgpt') {
+			// ChatGPT: skip to step 2 with URL redirect option
+			step = 2;
+		} else {
+			step = 2;
+		}
 	}
 
 	async function copyPrompt() {
@@ -33,7 +47,9 @@
 	}
 
 	function openAI() {
-		if (selectedAI?.url) {
+		if (isChatGPT) {
+			window.open(getChatGPTUrl(), '_blank');
+		} else if (selectedAI?.url) {
 			window.open(selectedAI.url, '_blank');
 		}
 	}
@@ -91,35 +107,51 @@
 
 	{:else if step === 2}
 		<div class="step-content" transition:fade={{ duration: 200 }}>
-			<span class="section-tag">复制测试题</span>
-			<h1>把这段话发给你的 {selectedAI?.nameZh || selectedAI?.name}</h1>
-			<p class="subtitle">点击复制 → 打开你的 AI → 粘贴发送 → 等它回答</p>
+			{#if isChatGPT}
+				<!-- ChatGPT: one-click URL redirect -->
+				<span class="section-tag">一键测试</span>
+				<h1>点击按钮，让 ChatGPT 自己答题</h1>
+				<p class="subtitle">ChatGPT 会自动读取测试题并回答，你只需要复制它的答案回来</p>
 
-			<div class="prompt-box">
-				<pre>{quizPrompt}</pre>
-			</div>
-
-			<div class="action-row">
-				<button class="btn-primary" onclick={copyPrompt}>
-					{copied ? '✅ 已复制！' : '📋 一键复制'}
+				<button class="btn-primary btn-chatgpt" onclick={openAI}>
+					🟢 打开 ChatGPT 开始测试 ↗
 				</button>
 
-				{#if selectedAI?.url}
-					<button class="btn-secondary" onclick={openAI}>
-						打开 {selectedAI?.nameZh || selectedAI?.name} ↗
-					</button>
-				{/if}
-			</div>
-
-			{#if copyFailed}
-				<p class="copy-fallback">剪贴板不可用，请手动选择上方文字复制</p>
-			{/if}
-
-			{#if copied}
-				<div class="copy-hint" transition:fade={{ duration: 300 }}>
-					<p>✅ 已复制！去你的 AI 粘贴，拿到回答后回来点下面 ↓</p>
-					<p class="hint-example">AI 会回复类似：<strong>ABDCA</strong>（5 个字母）</p>
+				<div class="copy-hint">
+					<p>ChatGPT 回答后，复制它的 5 个字母（如 <strong>ABDCA</strong>）</p>
 				</div>
+			{:else}
+				<!-- Other AIs: copy-paste flow -->
+				<span class="section-tag">复制测试题</span>
+				<h1>把这段话发给你的 {selectedAI?.nameZh || selectedAI?.name}</h1>
+				<p class="subtitle">点击复制 → 打开你的 AI → 粘贴发送 → 等它回答</p>
+
+				<div class="prompt-box">
+					<pre>{quizPrompt}</pre>
+				</div>
+
+				<div class="action-row">
+					<button class="btn-primary" onclick={copyPrompt}>
+						{copied ? '✅ 已复制！' : '📋 一键复制'}
+					</button>
+
+					{#if selectedAI?.url}
+						<button class="btn-secondary" onclick={openAI}>
+							打开 {selectedAI?.nameZh || selectedAI?.name} ↗
+						</button>
+					{/if}
+				</div>
+
+				{#if copyFailed}
+					<p class="copy-fallback">剪贴板不可用，请手动选择上方文字复制</p>
+				{/if}
+
+				{#if copied}
+					<div class="copy-hint" transition:fade={{ duration: 300 }}>
+						<p>✅ 已复制！去你的 AI 粘贴，拿到回答后回来点下面 ↓</p>
+						<p class="hint-example">AI 会回复类似：<strong>ABDCA</strong>（5 个字母）</p>
+					</div>
+				{/if}
 			{/if}
 
 			<button class="btn-primary btn-next-step" onclick={goToPaste}>
@@ -308,6 +340,13 @@
 		color: var(--color-text-accent);
 		font-size: 12px;
 		margin-top: var(--space-xs);
+	}
+
+	.btn-chatgpt {
+		width: 100%;
+		font-size: 16px;
+		padding: var(--space-md) var(--space-lg);
+		margin-bottom: var(--space-md);
 	}
 
 	.btn-next-step {
