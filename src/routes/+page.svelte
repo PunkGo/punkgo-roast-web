@@ -17,11 +17,11 @@
 			<span>{isZh ? '本周 3,847 人发现了自己的 vibe' : '3,847 vibes discovered this week'}</span>
 		</div>
 		<span class="section-tag">{isZh ? '— 一 次 性 格 测 试 —' : '— A  P E R S O N A L I T Y  E X A M I N A T I O N —'}</span>
-		<h1>{isZh ? "给你的 AI\n做个体检" : "Give Your AI\na Checkup"}</h1>
+		<h1>{isZh ? "你的 AI\n是什么 Vibe？" : "What's Your\nAI Vibe?"}</h1>
 		<p class="subtitle">
 			{isZh
-				? '测测你的 ChatGPT / Claude / DeepSeek\n是 16 种犬种中的哪一个'
-				: 'Test if your ChatGPT / Claude / DeepSeek\nis one of 16 dog breeds'}
+				? '五道题，十六种犬种\n一次 AI 性格体检'
+				: 'Five questions. Sixteen breeds.\nAn AI personality examination.'}
 		</p>
 		<div class="dog-preview">
 			{#each ['philosopher','intern','vampire','speedrunner','googler'] as id}
@@ -30,7 +30,7 @@
 			<div class="dog-dot more">+11</div>
 		</div>
 		<a href="/quiz" class="cta-btn">
-			{isZh ? '开始体检 🐾' : 'Start Checkup 🐾'}
+			{isZh ? '开始测试 🐾' : 'Start the Test 🐾'}
 		</a>
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
 		<div class="ext-inline">
