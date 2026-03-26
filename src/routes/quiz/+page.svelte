@@ -6,6 +6,7 @@
 		type AIOption
 	} from '$lib/data/ai-quiz-prompt';
 	import { getDogByMBTI, encodeResultId } from '$lib/data/dogs';
+	import AILogo from '$lib/components/AILogo.svelte';
 
 	let step: number = $state(1);
 	let selectedAI: AIOption | null = $state(null);
@@ -81,7 +82,7 @@
 			<div class="ai-grid">
 				{#each aiOptions as ai}
 					<button class="ai-card" onclick={() => selectAI(ai)}>
-						<span class="ai-icon">{ai.icon}</span>
+						<AILogo aiId={ai.id} size={36} />
 						<span class="ai-name">{isZh ? ai.nameZh : ai.name}</span>
 					</button>
 				{/each}
@@ -260,8 +261,7 @@
 		box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 	}
 
-	.ai-icon { font-size: 28px; }
-	.ai-name { font-size: 13px; font-weight: 500; color: var(--color-text); }
+	.ai-name { font-size: 13px; font-weight: 500; color: var(--color-text); margin-top: 4px; }
 
 	/* Step 2: Prompt */
 	.prompt-box {
