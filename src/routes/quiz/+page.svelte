@@ -16,23 +16,26 @@
 	let parseError: boolean = $state(false);
 	let isZh: boolean = $state(true);
 
-	/** ChatGPT supports URL pre-fill via ?hints=search&q=... */
-	function getChatGPTUrl(): string {
+	/** Build pre-filled URL for AI platforms that support it */
+	function getAIRedirectUrl(): string | null {
 		const testPageUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai'}/test`;
 		const prompt = `请阅读这个页面上的 5 道性格测试题并回答：${testPageUrl}\n回答完后只回复 5 个字母，格式如：ABDCA`;
-		return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`;
+
+		switch (selectedAI?.id) {
+			case 'chatgpt':
+				return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`;
+			case 'claude':
+				return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
+			default:
+				return null;
+		}
 	}
 
-	const isChatGPT = $derived(selectedAI?.id === 'chatgpt');
+	const hasUrlRedirect = $derived(selectedAI?.id === 'chatgpt' || selectedAI?.id === 'claude');
 
 	function selectAI(ai: AIOption) {
 		selectedAI = ai;
-		if (ai.id === 'chatgpt') {
-			// ChatGPT: skip to step 2 with URL redirect option
-			step = 2;
-		} else {
-			step = 2;
-		}
+		step = 2;
 	}
 
 	async function copyPrompt() {
@@ -47,8 +50,9 @@
 	}
 
 	function openAI() {
-		if (isChatGPT) {
-			window.open(getChatGPTUrl(), '_blank');
+		const redirectUrl = getAIRedirectUrl();
+		if (redirectUrl) {
+			window.open(redirectUrl, '_blank');
 		} else if (selectedAI?.url) {
 			window.open(selectedAI.url, '_blank');
 		}
@@ -107,18 +111,18 @@
 
 	{:else if step === 2}
 		<div class="step-content" transition:fade={{ duration: 200 }}>
-			{#if isChatGPT}
-				<!-- ChatGPT: one-click URL redirect -->
+			{#if hasUrlRedirect}
+				<!-- ChatGPT / Claude: one-click URL redirect -->
 				<span class="section-tag">一键测试</span>
-				<h1>点击按钮，让 ChatGPT 自己答题</h1>
-				<p class="subtitle">ChatGPT 会自动读取测试题并回答，你只需要复制它的答案回来</p>
+				<h1>点击按钮，让 {selectedAI?.nameZh || selectedAI?.name} 自己答题</h1>
+				<p class="subtitle">{selectedAI?.nameZh || selectedAI?.name} 会自动读取测试题并回答，你只需要复制它的答案回来</p>
 
 				<button class="btn-primary btn-chatgpt" onclick={openAI}>
-					🟢 打开 ChatGPT 开始测试 ↗
+					打开 {selectedAI?.nameZh || selectedAI?.name} 开始测试 ↗
 				</button>
 
 				<div class="copy-hint">
-					<p>ChatGPT 回答后，复制它的 5 个字母（如 <strong>ABDCA</strong>）</p>
+					<p>{selectedAI?.nameZh || selectedAI?.name} 回答后，复制它的 5 个字母（如 <strong>ABDCA</strong>）</p>
 				</div>
 			{:else}
 				<!-- Other AIs: copy-paste flow -->
