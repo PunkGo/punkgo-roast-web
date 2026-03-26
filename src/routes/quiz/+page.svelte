@@ -1,11 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { goto } from '$app/navigation';
-	import {
-		aiOptions, parseAIResponse, computeMBTIv2, getAIName,
-		type AIOption
-	} from '$lib/data/ai-quiz-prompt';
-	import { getDogByMBTI, encodeResultId } from '$lib/data/dogs';
+	import { aiOptions, getAIName, type AIOption } from '$lib/data/ai-quiz-prompt';
 	import AILogo from '$lib/components/AILogo.svelte';
 
 	let step: number = $state(1);
@@ -13,34 +8,19 @@
 	let sessionId: string = $state('');
 	let copied: boolean = $state(false);
 	let copyFailed: boolean = $state(false);
-	let pasteValue: string = $state('');
-	let parseError: boolean = $state(false);
-	let isZh: boolean = $state(true);
+	let showFallback: boolean = $state(false);
 
-	/** The short prompt users copy — just tells AI to read our /test page */
+	// Filter out "other" for cleaner grid (6 items = 2 rows of 3)
+	const visibleAIs = aiOptions.filter(ai => ai.id !== 'other');
+
+	/** The short prompt users copy — tells AI to read our /test page */
 	function getCopyPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const aiId = selectedAI?.id || 'other';
 		return `请阅读这个页面并按要求回答：${origin}/test?ai=${aiId}&id=${sessionId}`;
 	}
 
-	/** Build pre-filled URL for AI platforms that support it */
-	function getAIRedirectUrl(): string | null {
-		const prompt = getCopyPrompt();
-
-		switch (selectedAI?.id) {
-			case 'chatgpt':
-				return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`;
-			case 'claude':
-				return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
-			default:
-				return null;
-		}
-	}
-
-	const hasUrlRedirect = $derived(selectedAI?.id === 'chatgpt' || selectedAI?.id === 'claude');
-
-	/** Fallback prompt with questions embedded (for when AI can't read the page) */
+	/** Fallback: questions embedded directly (for AIs that can't read the page) */
 	function getFallbackPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const aiId = selectedAI?.id || 'other';
@@ -53,17 +33,20 @@
 ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 	}
 
-	let showFallback: boolean = $state(false);
-
-	async function copyFallback() {
-		try {
-			await navigator.clipboard.writeText(getFallbackPrompt());
-			copied = true;
-			setTimeout(() => { copied = false; }, 3000);
-		} catch {
-			copyFailed = true;
+	/** Build pre-filled URL for platforms that support it */
+	function getAIRedirectUrl(): string | null {
+		const prompt = getCopyPrompt();
+		switch (selectedAI?.id) {
+			case 'chatgpt':
+				return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`;
+			case 'claude':
+				return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
+			default:
+				return null;
 		}
 	}
+
+	const hasUrlRedirect = $derived(selectedAI?.id === 'chatgpt' || selectedAI?.id === 'claude');
 
 	function selectAI(ai: AIOption) {
 		selectedAI = ai;
@@ -71,9 +54,9 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 		step = 2;
 	}
 
-	async function copyPrompt() {
+	async function copyText(text: string) {
 		try {
-			await navigator.clipboard.writeText(getCopyPrompt());
+			await navigator.clipboard.writeText(text);
 			copied = true;
 			copyFailed = false;
 			setTimeout(() => { copied = false; }, 3000);
@@ -90,25 +73,6 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 			window.open(selectedAI.url, '_blank');
 		}
 	}
-
-	function goToPaste() {
-		step = 3;
-	}
-
-	async function submitResult() {
-		parseError = false;
-		const answers = parseAIResponse(pasteValue);
-		if (!answers) {
-			parseError = true;
-			return;
-		}
-
-		const mbti = computeMBTIv2(answers);
-		const dog = getDogByMBTI(mbti);
-		const resultId = encodeResultId(answers);
-
-		goto(`/result/${resultId}?ai=${selectedAI?.id || 'other'}`);
-	}
 </script>
 
 <svelte:head>
@@ -118,12 +82,11 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 </svelte:head>
 
 <div class="quiz-container">
+	<!-- 2-step indicator -->
 	<div class="steps">
 		<div class="step-dot" class:active={step >= 1}>1</div>
 		<div class="step-line" class:active={step >= 2}></div>
 		<div class="step-dot" class:active={step >= 2}>2</div>
-		<div class="step-line" class:active={step >= 3}></div>
-		<div class="step-dot" class:active={step >= 3}>3</div>
 	</div>
 
 	{#if step === 1}
@@ -133,10 +96,10 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 			<p class="subtitle">选择你最常用的 AI 助手，测测它的性格</p>
 
 			<div class="ai-grid">
-				{#each aiOptions as ai}
+				{#each visibleAIs as ai}
 					<button class="ai-card" onclick={() => selectAI(ai)}>
 						<AILogo aiId={ai.id} size={36} />
-						<span class="ai-name">{isZh ? ai.nameZh : ai.name}</span>
+						<span class="ai-name">{ai.nameZh}</span>
 					</button>
 				{/each}
 			</div>
@@ -145,52 +108,34 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 	{:else if step === 2}
 		<div class="step-content" transition:fade={{ duration: 200 }}>
 			{#if hasUrlRedirect}
-				<!-- ChatGPT / Claude: one-click URL redirect -->
 				<span class="section-tag">一键测试</span>
-				<h1>点击按钮，让 {selectedAI?.nameZh || selectedAI?.name} 自己答题</h1>
-				<p class="subtitle">{selectedAI?.nameZh || selectedAI?.name} 会自动读取测试题并回答，给你一个链接，点击即可看结果</p>
+				<h1>让 {selectedAI?.nameZh} 自己答题</h1>
+				<p class="subtitle">点击按钮 → {selectedAI?.nameZh} 会自动回答 → 给你一个结果链接</p>
 
-				<button class="btn-primary btn-chatgpt" onclick={openAI}>
-					打开 {selectedAI?.nameZh || selectedAI?.name} 开始测试 ↗
+				<button class="btn-primary btn-main" onclick={openAI}>
+					打开 {selectedAI?.nameZh} 开始测试 ↗
 				</button>
 
 				<div class="copy-hint">
-					<p>{selectedAI?.nameZh || selectedAI?.name} 回答后会给你一个链接，点击即可 🐾</p>
+					<p>{selectedAI?.nameZh} 回答后会给你一个链接，点击即可看结果 🐾</p>
 				</div>
-
-				<button class="btn-help" onclick={() => showFallback = !showFallback}>
-					{showFallback ? '收起' : 'AI 无法生成链接？点这里 ↓'}
-				</button>
-
-				{#if showFallback}
-					<div class="fallback-box" transition:fade={{ duration: 200 }}>
-						<p class="fallback-hint">复制下面内容直接发给 AI：</p>
-						<div class="prompt-box">
-							<pre>{getFallbackPrompt()}</pre>
-						</div>
-						<button class="btn-primary" onclick={copyFallback}>
-							{copied ? '✅ 已复制！' : '📋 复制备用提示词'}
-						</button>
-					</div>
-				{/if}
 			{:else}
-				<!-- Other AIs: copy-paste flow -->
-				<span class="section-tag">复制测试题</span>
-				<h1>把这段话发给你的 {selectedAI?.nameZh || selectedAI?.name}</h1>
-				<p class="subtitle">点击复制 → 打开你的 AI → 粘贴发送 → AI 会给你一个链接</p>
+				<span class="section-tag">复制发送</span>
+				<h1>把这段话发给 {selectedAI?.nameZh}</h1>
+				<p class="subtitle">复制 → 打开 {selectedAI?.nameZh} → 粘贴发送 → 点击它给你的链接</p>
 
 				<div class="prompt-box">
 					<pre>{getCopyPrompt()}</pre>
 				</div>
 
 				<div class="action-row">
-					<button class="btn-primary" onclick={copyPrompt}>
+					<button class="btn-primary" onclick={() => copyText(getCopyPrompt())}>
 						{copied ? '✅ 已复制！' : '📋 一键复制'}
 					</button>
 
 					{#if selectedAI?.url}
 						<button class="btn-secondary" onclick={openAI}>
-							打开 {selectedAI?.nameZh || selectedAI?.name} ↗
+							打开 {selectedAI?.nameZh} ↗
 						</button>
 					{/if}
 				</div>
@@ -201,63 +146,30 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 
 				{#if copied}
 					<div class="copy-hint" transition:fade={{ duration: 300 }}>
-						<p>✅ 已复制！粘贴给你的 AI，它会给你一个链接</p>
-						<p class="hint-example">点击 AI 给你的链接 → 直接看结果 🐾</p>
-					</div>
-				{/if}
-
-				<button class="btn-help" onclick={() => showFallback = !showFallback}>
-					{showFallback ? '收起' : 'AI 无法生成链接？点这里 ↓'}
-				</button>
-
-				{#if showFallback}
-					<div class="fallback-box" transition:fade={{ duration: 200 }}>
-						<p class="fallback-hint">复制下面内容直接发给 AI：</p>
-						<div class="prompt-box">
-							<pre>{getFallbackPrompt()}</pre>
-						</div>
-						<button class="btn-primary" onclick={copyFallback}>
-							{copied ? '✅ 已复制！' : '📋 复制备用提示词'}
-						</button>
+						<p>✅ 已复制！粘贴给 {selectedAI?.nameZh}，它会给你一个链接</p>
 					</div>
 				{/if}
 			{/if}
-		</div>
 
-	{:else if step === 3}
-		<div class="step-content" transition:fade={{ duration: 200 }}>
-			<span class="section-tag">粘贴回答</span>
-			<h1>把 {selectedAI?.nameZh || selectedAI?.name} 的回答粘贴到这里</h1>
-			<p class="subtitle">只需要 5 个字母（如 ABDCA），也可以粘贴完整回答</p>
-
-			<textarea
-				class="paste-input"
-				bind:value={pasteValue}
-				placeholder="粘贴 AI 的回答..."
-				rows="4"
-			></textarea>
-
-			{#if parseError}
-				{@const validCount = pasteValue.toUpperCase().replace(/[^A-D]/g, '').length}
-				<p class="error">
-					{#if validCount > 0 && validCount < 5}
-						识别到 {validCount} 个选项，还差 {5 - validCount} 个。请确认粘贴了 AI 的完整回答。
-					{:else}
-						无法识别回答。请确保 AI 的回答包含 5 个选项（A/B/C/D）。
-					{/if}
-				</p>
-			{/if}
-
-			<button
-				class="btn-primary"
-				onclick={submitResult}
-				disabled={!pasteValue.trim()}
-			>
-				🐾 查看结果
+			<!-- Fallback for all modes -->
+			<button class="btn-help" onclick={() => showFallback = !showFallback}>
+				{showFallback ? '收起' : 'AI 无法生成链接？'}
 			</button>
 
-			<button class="btn-back" onclick={() => { step = 2; }}>
-				← 返回复制题目
+			{#if showFallback}
+				<div class="fallback-box" transition:fade={{ duration: 200 }}>
+					<p class="fallback-hint">复制下面内容直接发给 AI：</p>
+					<div class="prompt-box">
+						<pre>{getFallbackPrompt()}</pre>
+					</div>
+					<button class="btn-primary" onclick={() => copyText(getFallbackPrompt())}>
+						{copied ? '✅ 已复制！' : '📋 复制备用提示词'}
+					</button>
+				</div>
+			{/if}
+
+			<button class="btn-back" onclick={() => { step = 1; showFallback = false; }}>
+				← 换一个 AI
 			</button>
 		</div>
 	{/if}
@@ -277,49 +189,34 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 	.steps {
 		display: flex;
 		align-items: center;
-		gap: 0;
 		margin-bottom: var(--space-xl);
 	}
 
 	.step-dot {
-		width: 32px;
-		height: 32px;
+		width: 32px; height: 32px;
 		border-radius: var(--radius-full);
 		background: var(--color-bg-muted);
 		color: var(--color-text-tertiary);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 14px;
-		font-weight: 600;
+		display: flex; align-items: center; justify-content: center;
+		font-size: 14px; font-weight: 600;
 		transition: all 0.3s;
 	}
 
-	.step-dot.active {
-		background: var(--color-cta);
-		color: white;
-	}
+	.step-dot.active { background: var(--color-cta); color: white; }
 
 	.step-line {
-		width: 40px;
-		height: 2px;
+		width: 40px; height: 2px;
 		background: var(--color-bg-muted);
 		transition: background 0.3s;
 	}
 
-	.step-line.active {
-		background: var(--color-cta);
-	}
+	.step-line.active { background: var(--color-cta); }
 
-	.step-content {
-		width: 100%;
-		text-align: center;
-	}
+	.step-content { width: 100%; text-align: center; }
 
 	h1 {
 		font-family: var(--font-display);
-		font-size: 24px;
-		font-weight: 600;
+		font-size: 24px; font-weight: 600;
 		color: var(--color-text);
 		margin: var(--space-sm) 0;
 	}
@@ -330,7 +227,7 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 		margin-bottom: var(--space-lg);
 	}
 
-	/* Step 1: AI Grid */
+	/* AI Grid — 6 items, 3 columns, 2 rows */
 	.ai-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
@@ -339,10 +236,8 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 	}
 
 	.ai-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--space-xs);
+		display: flex; flex-direction: column;
+		align-items: center; gap: var(--space-xs);
 		padding: var(--space-md);
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border);
@@ -360,7 +255,7 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 
 	.ai-name { font-size: 13px; font-weight: 500; color: var(--color-text); margin-top: 4px; }
 
-	/* Step 2: Prompt */
+	/* Step 2 */
 	.prompt-box {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border);
@@ -373,18 +268,14 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 	}
 
 	.prompt-box pre {
-		white-space: pre-wrap;
-		word-break: break-word;
-		font-size: 13px;
-		line-height: 1.6;
+		white-space: pre-wrap; word-break: break-word;
+		font-size: 13px; line-height: 1.6;
 		color: var(--color-text);
-		margin: 0;
-		font-family: inherit;
+		margin: 0; font-family: inherit;
 	}
 
 	.action-row {
-		display: flex;
-		gap: var(--space-sm);
+		display: flex; gap: var(--space-sm);
 		justify-content: center;
 		margin-bottom: var(--space-md);
 	}
@@ -399,63 +290,36 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 	}
 
 	.copy-hint p { margin: 0; font-size: 13px; color: var(--color-text); }
-	.hint-example { color: var(--color-text-tertiary); font-size: 12px; margin-top: 4px !important; }
 
-	.copy-fallback {
-		color: var(--color-text-accent);
-		font-size: 12px;
-		margin-top: var(--space-xs);
+	.copy-fallback { color: var(--color-text-accent); font-size: 12px; margin-top: var(--space-xs); }
+
+	.btn-main { width: 100%; font-size: 16px; padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-md); }
+
+	.btn-help {
+		display: block;
+		margin: var(--space-lg) auto var(--space-sm);
+		background: none; border: none;
+		color: var(--color-text-tertiary);
+		font-size: 12px; cursor: pointer;
+		text-decoration: underline;
 	}
 
-	.btn-chatgpt {
-		width: 100%;
-		font-size: 16px;
-		padding: var(--space-md) var(--space-lg);
-		margin-bottom: var(--space-md);
-	}
-
-	.btn-next-step {
-		margin-top: var(--space-md);
-		width: 100%;
-	}
-
-	/* Step 3: Paste */
-	.paste-input {
-		width: 100%;
+	.fallback-box {
+		margin-top: var(--space-sm);
 		padding: var(--space-md);
-		border: 2px solid var(--color-border);
+		background: var(--color-bg-muted);
 		border-radius: var(--radius-lg);
-		font-size: 15px;
-		line-height: 1.5;
-		resize: vertical;
-		margin-bottom: var(--space-md);
-		font-family: inherit;
-		background: var(--color-bg-card);
-		min-height: 80px;
 	}
 
-	.paste-input:focus {
-		outline: none;
-		border-color: var(--color-cta);
-	}
-
-	.error {
-		color: #C75050;
-		font-size: 13px;
-		margin-bottom: var(--space-md);
-	}
+	.fallback-hint { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
 
 	/* Buttons */
 	.btn-primary {
 		padding: var(--space-sm) var(--space-lg);
-		background: var(--color-cta);
-		color: white;
-		border: none;
-		border-radius: var(--radius-full);
-		font-size: 15px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background 0.2s;
+		background: var(--color-cta); color: white;
+		border: none; border-radius: var(--radius-full);
+		font-size: 15px; font-weight: 600;
+		cursor: pointer; transition: background 0.2s;
 		min-height: 44px;
 	}
 
@@ -468,44 +332,16 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 		color: var(--color-cta);
 		border: 1px solid var(--color-cta);
 		border-radius: var(--radius-full);
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		min-height: 44px;
-	}
-
-	.btn-help {
-		display: block;
-		margin: var(--space-lg) auto var(--space-sm);
-		background: none;
-		border: none;
-		color: var(--color-text-tertiary);
-		font-size: 12px;
-		cursor: pointer;
-		text-decoration: underline;
-	}
-
-	.fallback-box {
-		margin-top: var(--space-sm);
-		padding: var(--space-md);
-		background: var(--color-bg-muted);
-		border-radius: var(--radius-lg);
-	}
-
-	.fallback-hint {
-		font-size: 13px;
-		color: var(--color-text-secondary);
-		margin-bottom: var(--space-sm);
+		font-size: 14px; font-weight: 500;
+		cursor: pointer; min-height: 44px;
 	}
 
 	.btn-back {
 		display: block;
 		margin: var(--space-md) auto 0;
-		background: none;
-		border: none;
+		background: none; border: none;
 		color: var(--color-text-tertiary);
-		font-size: 13px;
-		cursor: pointer;
+		font-size: 13px; cursor: pointer;
 	}
 
 	@media (max-width: 480px) {

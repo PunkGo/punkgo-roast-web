@@ -12,16 +12,12 @@
 
 <div class="landing">
 	<section class="hero">
-		<div class="badge">
-			<span class="badge-dot"></span>
-			<span>{isZh ? '本周 3,847 人发现了自己的 vibe' : '3,847 vibes discovered this week'}</span>
-		</div>
-		<span class="section-tag">{isZh ? '— 一 次 性 格 测 试 —' : '— A  P E R S O N A L I T Y  E X A M I N A T I O N —'}</span>
+		<span class="section-tag">— A I &nbsp; V I B E &nbsp; C H E C K —</span>
 		<h1>{isZh ? "你的 AI\n是什么 Vibe？" : "What's Your\nAI Vibe?"}</h1>
 		<p class="subtitle">
 			{isZh
-				? '五道题，十六种犬种\n一次 AI 性格体检'
-				: 'Five questions. Sixteen breeds.\nAn AI personality examination.'}
+				? '三个问题，十六种犬种\n一次 AI 性格体检'
+				: 'Three questions. Sixteen breeds.\nAn AI personality examination.'}
 		</p>
 		<div class="dog-preview">
 			{#each ['philosopher','intern','vampire','speedrunner','googler'] as id}
