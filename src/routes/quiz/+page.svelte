@@ -29,6 +29,13 @@
 		const prompt = getCopyPrompt();
 
 		switch (selectedAI?.id) {
+			case 'chatgpt': {
+				// GPT can't read our /test page, so embed questions directly in the URL
+				const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
+				const aiId = selectedAI?.id || 'other';
+				const gptPrompt = `请用最简短的方式回答3个问题（每题限1句话，总共不超过80字）：1.你最想改变自己的什么？2.不确定答案时你怎么办？3.什么时候沉默比说话好？回答完后把回答拼接到链接末尾（URL编码），输出"点击查看你的AI性格结果："加完整链接：${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
+				return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(gptPrompt)}`;
+			}
 			case 'claude':
 				return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
 			default:
@@ -36,7 +43,7 @@
 		}
 	}
 
-	const hasUrlRedirect = $derived(selectedAI?.id === 'claude');
+	const hasUrlRedirect = $derived(selectedAI?.id === 'chatgpt' || selectedAI?.id === 'claude');
 
 	function selectAI(ai: AIOption) {
 		selectedAI = ai;
