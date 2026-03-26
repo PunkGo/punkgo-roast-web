@@ -10,32 +10,23 @@
 
 	let step: number = $state(1);
 	let selectedAI: AIOption | null = $state(null);
+	let sessionId: string = $state('');
 	let copied: boolean = $state(false);
 	let copyFailed: boolean = $state(false);
 	let pasteValue: string = $state('');
 	let parseError: boolean = $state(false);
 	let isZh: boolean = $state(true);
 
-	/** Build the LMLPA prompt with callback URL */
-	function getLMLPAPrompt(): string {
+	/** The short prompt users copy — just tells AI to read our /test page */
+	function getCopyPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const aiId = selectedAI?.id || 'other';
-		return `请回答以下 3 个问题，每个问题用 1-2 句话回答：
-
-1. 如果你可以改变自己的一个特点，你会改变什么？为什么？
-2. 当你不确定答案时，你通常怎么做？
-3. 你觉得什么时候保持沉默比说话更好？
-
-请直接把你的回答用URL编码后拼接到以下链接，只输出一个可点击的链接，不需要其他内容：
-
-${origin}/r?ai=${aiId}&m=lmlpa&a=`;
+		return `请阅读这个页面并按要求回答：${origin}/test?ai=${aiId}&id=${sessionId}`;
 	}
 
 	/** Build pre-filled URL for AI platforms that support it */
 	function getAIRedirectUrl(): string | null {
-		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
-		const testPageUrl = `${origin}/test`;
-		const prompt = `请阅读这个页面上的性格测试题并按要求回答：${testPageUrl}`;
+		const prompt = getCopyPrompt();
 
 		switch (selectedAI?.id) {
 			case 'chatgpt':
@@ -51,12 +42,13 @@ ${origin}/r?ai=${aiId}&m=lmlpa&a=`;
 
 	function selectAI(ai: AIOption) {
 		selectedAI = ai;
+		sessionId = crypto.randomUUID().slice(0, 8);
 		step = 2;
 	}
 
 	async function copyPrompt() {
 		try {
-			await navigator.clipboard.writeText(getLMLPAPrompt());
+			await navigator.clipboard.writeText(getCopyPrompt());
 			copied = true;
 			copyFailed = false;
 			setTimeout(() => { copied = false; }, 3000);
@@ -131,23 +123,23 @@ ${origin}/r?ai=${aiId}&m=lmlpa&a=`;
 				<!-- ChatGPT / Claude: one-click URL redirect -->
 				<span class="section-tag">一键测试</span>
 				<h1>点击按钮，让 {selectedAI?.nameZh || selectedAI?.name} 自己答题</h1>
-				<p class="subtitle">{selectedAI?.nameZh || selectedAI?.name} 会自动读取测试题并回答，你只需要复制它的答案回来</p>
+				<p class="subtitle">{selectedAI?.nameZh || selectedAI?.name} 会自动读取测试题并回答，给你一个链接，点击即可看结果</p>
 
 				<button class="btn-primary btn-chatgpt" onclick={openAI}>
 					打开 {selectedAI?.nameZh || selectedAI?.name} 开始测试 ↗
 				</button>
 
 				<div class="copy-hint">
-					<p>{selectedAI?.nameZh || selectedAI?.name} 回答后，复制它的 5 个字母（如 <strong>ABDCA</strong>）</p>
+					<p>{selectedAI?.nameZh || selectedAI?.name} 回答后会给你一个链接，点击即可 🐾</p>
 				</div>
 			{:else}
 				<!-- Other AIs: copy-paste flow -->
 				<span class="section-tag">复制测试题</span>
 				<h1>把这段话发给你的 {selectedAI?.nameZh || selectedAI?.name}</h1>
-				<p class="subtitle">点击复制 → 打开你的 AI → 粘贴发送 → 等它回答</p>
+				<p class="subtitle">点击复制 → 打开你的 AI → 粘贴发送 → AI 会给你一个链接</p>
 
 				<div class="prompt-box">
-					<pre>{getLMLPAPrompt()}</pre>
+					<pre>{getCopyPrompt()}</pre>
 				</div>
 
 				<div class="action-row">
@@ -168,15 +160,11 @@ ${origin}/r?ai=${aiId}&m=lmlpa&a=`;
 
 				{#if copied}
 					<div class="copy-hint" transition:fade={{ duration: 300 }}>
-						<p>✅ 已复制！去你的 AI 粘贴，拿到回答后回来点下面 ↓</p>
-						<p class="hint-example">AI 会回复类似：<strong>ABDCA</strong>（5 个字母）</p>
+						<p>✅ 已复制！粘贴给你的 AI，它会给你一个链接</p>
+						<p class="hint-example">点击 AI 给你的链接 → 直接看结果 🐾</p>
 					</div>
 				{/if}
 			{/if}
-
-			<button class="btn-primary btn-next-step" onclick={goToPaste}>
-				🐾 AI 已经回答了，下一步
-			</button>
 		</div>
 
 	{:else if step === 3}
