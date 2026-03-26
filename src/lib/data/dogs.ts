@@ -83,6 +83,27 @@ export function encodeResultId(answers: {question: number; choice: string}[]): s
 	return result.padStart(5, '0');
 }
 
+/** Encode MBTI type directly (for LMLPA mode, no quiz answers) */
+export function encodeMBTI(mbti: string, aiId: string = 'other'): string {
+	// MBTI = 4 binary dimensions = 4 bits, AI type = 3 bits → 7 bits + 16 bit salt
+	const AI_IDS = ['chatgpt','claude','deepseek','doubao','kimi','gemini','other'];
+	const mbtiBits = ((mbti[0] === 'E' ? 1 : 0) << 3)
+		| ((mbti[1] === 'S' ? 1 : 0) << 2)
+		| ((mbti[2] === 'T' ? 1 : 0) << 1)
+		| (mbti[3] === 'J' ? 1 : 0);
+	const aiBits = Math.max(0, AI_IDS.indexOf(aiId));
+	const combined = (1 << 25) | (aiBits << 20) | (mbtiBits << 16) | Math.floor(Math.random() * 65536);
+	// bit 25 = 1 signals "LMLPA mode" to decoder
+	let result = '';
+	let n = combined;
+	while (n > 0) {
+		result = BASE62[n % 62] + result;
+		n = Math.floor(n / 62);
+	}
+	return result.padStart(5, '0');
+}
+
+/** Decode result ID → MBTI. Handles both quiz mode and LMLPA mode. */
 export function decodeResultId(id: string): string {
 	if (!id || id.length < 3 || id.length > 8) {
 		throw new Error('Invalid result ID length');
@@ -96,6 +117,18 @@ export function decodeResultId(id: string): string {
 	for (const c of id) {
 		n = n * 62 + BASE62.indexOf(c);
 	}
+
+	// Check if bit 25 is set → LMLPA mode
+	if (n & (1 << 25)) {
+		const mbtiBits = (n >> 16) & 0xF;
+		const mbti = (mbtiBits & 8 ? 'E' : 'I')
+			+ (mbtiBits & 4 ? 'S' : 'N')
+			+ (mbtiBits & 2 ? 'T' : 'F')
+			+ (mbtiBits & 1 ? 'J' : 'P');
+		return mbti;
+	}
+
+	// Legacy quiz mode
 	const bits = n >> 16;
 	if (bits < 0 || bits > 1023) {
 		throw new Error('Invalid result ID: decoded value out of range');

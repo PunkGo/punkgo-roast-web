@@ -16,7 +16,6 @@ export const load: PageServerLoad = async ({ params }) => {
 				quipZh: dog.quipZh,
 				catchphrase: dog.catchphrase,
 				catchphraseZh: dog.catchphraseZh,
-				dog_image: dog.dogImage,
 			},
 			error: null,
 		};

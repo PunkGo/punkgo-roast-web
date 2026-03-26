@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { analyzeLMLPA, getAIName } from '$lib/data/ai-quiz-prompt';
-	import { getDogByMBTI, encodeResultId } from '$lib/data/dogs';
+	import { getDogByMBTI, encodeMBTI } from '$lib/data/dogs';
 
 	const answer = decodeURIComponent($page.url.searchParams.get('a') || '');
 	const aiId = $page.url.searchParams.get('ai') || 'other';
@@ -22,9 +22,7 @@
 		const dog = getDogByMBTI(mbti);
 		dogId = dog.id;
 
-		// Build a fake answer array for encodeResultId compatibility
-		const fakeAnswers = mbti.split('').map((_, i) => ({ question: i + 1, choice: 'A' }));
-		const resultId = encodeResultId(fakeAnswers);
+		const resultId = encodeMBTI(mbti, aiId);
 
 		// Redirect to result page with all data
 		status = 'done';
