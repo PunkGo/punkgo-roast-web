@@ -29,8 +29,6 @@
 		const prompt = getCopyPrompt();
 
 		switch (selectedAI?.id) {
-			case 'chatgpt':
-				return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`;
 			case 'claude':
 				return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
 			default:
@@ -38,7 +36,7 @@
 		}
 	}
 
-	const hasUrlRedirect = $derived(selectedAI?.id === 'chatgpt' || selectedAI?.id === 'claude');
+	const hasUrlRedirect = $derived(selectedAI?.id === 'claude');
 
 	function selectAI(ai: AIOption) {
 		selectedAI = ai;

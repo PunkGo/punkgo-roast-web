@@ -33,12 +33,7 @@
 			{isZh ? '开始测试 🐾' : 'Start the Test 🐾'}
 		</a>
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
-		<div class="ext-inline">
-			<span>{isZh ? '想看你的 AI 人格雷达图？' : 'Want your AI personality radar chart?'}</span>
-			<a href="/install">
-				{isZh ? '🔒 解锁雷达图 →' : '🔒 Unlock Radar Chart →'}
-			</a>
-		</div>
+		<!-- ext-inline hidden for v2, /install page kept -->
 	</section>
 
 </div>

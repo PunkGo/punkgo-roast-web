@@ -169,31 +169,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="card-col">
-						<div class="radar-locked">
-								<div class="radar-blur">
-									<svg viewBox="-50 -20 420 370" width="260" height="260">
-										{#each [1, 0.66, 0.33] as scale}
-											<polygon points={[0,1,2,3,4,5].map(i => {
-												const rad = ([-90,-30,30,90,150,210][i] * Math.PI) / 180;
-												return `${160 + 90*scale*Math.cos(rad)},${160 + 90*scale*Math.sin(rad)}`;
-											}).join(' ')} fill="none" stroke="{dog.accentColor}30" stroke-width="1"/>
-										{/each}
-										<polygon points={[0,1,2,3,4,5].map(i => {
-											const v = [65,40,55,70,30,80][i];
-											const rad = ([-90,-30,30,90,150,210][i] * Math.PI) / 180;
-											return `${160 + (v/100)*90*Math.cos(rad)},${160 + (v/100)*90*Math.sin(rad)}`;
-										}).join(' ')} fill="{dog.accentColor}20" stroke="{dog.accentColor}" stroke-width="2" stroke-linejoin="round"/>
-									</svg>
-								</div>
-								<div class="radar-overlay">
-									<span class="lock-icon">🔒</span>
-									<span class="lock-title">{isZh ? '你的 AI 人格雷达图' : 'Your AI Radar Chart'}</span>
-									<span class="lock-sub">{isZh ? '安装扩展，分析真实行为数据' : 'Install extension for real behavior analysis'}</span>
-									<a href="/install" class="unlock-btn">{isZh ? '🐕 免费解锁' : '🐕 Unlock Free'}</a>
-								</div>
-						</div><!-- /radar-locked -->
-					</div><!-- /card-col -->
+					<!-- radar-locked hidden for v2, /install page kept -->
 				</div><!-- /cards-row -->
 
 				<a href="/quiz" class="retake fade-in d5">{isZh ? '换个 AI 再测 →' : 'Test another AI →'}</a>
