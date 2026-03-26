@@ -9,9 +9,9 @@
 
 <svelte:head>
 	{#if share}
-		<title>{share.personality_name} — PunkGo Roast</title>
-		<meta property="og:title" content={`I'm ${share.personality_name} — What's YOUR AI Vibe?`} />
-		<meta property="og:description" content={share.quip || share.catchphrase || "Take the quiz to find your AI dog personality."} />
+		<title>TA 的 AI 是{share.personality_name_zh || share.personality_name} | PunkGo Roast</title>
+		<meta property="og:title" content={`TA 的 AI 是${share.personality_name_zh || share.personality_name}`} />
+		<meta property="og:description" content={`${share.quipZh || share.quip || share.catchphrase} — 来测测你的 AI 是什么性格 🐾`} />
 		<meta property="og:image" content={`https://n78.xyz/api/v1/roast/share/${share.id}/card.png`} />
 		<meta property="og:url" content={`https://roast.punkgo.ai/s/${share.id}`} />
 		<meta name="twitter:card" content="summary_large_image" />
@@ -24,7 +24,7 @@
 	<div class="share-page">
 		<div class="share-body">
 			<div class="their-result">
-				<span class="shared-tag">{isZh ? '有人分享了他们的结果' : 'Someone shared their result with you'}</span>
+				<span class="shared-tag">{isZh ? 'TA 的 AI 是' : "Their AI is"}</span>
 				<img class="their-avatar" src="/dogs/{share.dog_image || `felt-${share.personality_id}-nobg.png`}" alt={share.personality_name} />
 				<h1>{share.personality_name_zh && isZh ? share.personality_name_zh : share.personality_name}</h1>
 				<div class="mbti-tag">{share.mbti}</div>
@@ -32,9 +32,9 @@
 			</div>
 			<div class="cta-side">
 				<span class="section-tag">— Y O U R &nbsp; T U R N —</span>
-				<h2>{isZh ? "你的 AI\n是什么 Vibe？" : "What's YOUR\nAI Vibe?"}</h2>
-				<p class="cta-sub">{isZh ? '五道题发现\n你是哪只狗。' : 'Five questions to discover\nwhich dog matches your style.'}</p>
-				<a href="/quiz" class="cta-btn">{isZh ? '开始测试' : 'Begin Examination'}</a>
+				<h2>{isZh ? "来测测你的 AI\n是什么性格" : "What's YOUR\nAI personality?"}</h2>
+				<p class="cta-sub">{isZh ? '五道题发现\n你的 AI 是哪只狗。' : 'Five questions to discover\nwhich dog matches your AI.'}</p>
+				<a href="/quiz" class="cta-btn">{isZh ? '来测测你的 AI 是什么性格' : 'Test your AI'}</a>
 				<div class="mini-dogs">
 					{#each ['#E0EFDA','#FFE0EC','#D0D4DC','#FFF0C8','#D0E0F4'] as c}
 						<div class="mini-dot" style="background:{c}"></div>
