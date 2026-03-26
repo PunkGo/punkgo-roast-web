@@ -82,12 +82,11 @@
 
 	const romanNumerals = ['I', 'II', 'III', 'IV', 'V'];
 
-	let phase: 'quiz' | 'result' = $state('quiz');
 	let currentQ = $state(0);
 	let answers: { question: number; choice: string }[] = $state([]);
-	let result: any = $state(null);
 	let isZh = $state(false);
 	let selectedChoice: string | null = $state(null);
+	let transitioning = $state(false);
 
 	onMount(() => { isZh = navigator.language.startsWith('zh'); });
 
@@ -96,9 +95,16 @@
 		selectedChoice = choice;
 		answers = [...answers, { question: questions[currentQ].id, choice }];
 		setTimeout(() => {
-			selectedChoice = null;
-			if (currentQ < questions.length - 1) { currentQ++; }
-			else { submitQuiz(); }
+			if (currentQ < questions.length - 1) {
+				transitioning = true;
+				setTimeout(() => {
+					selectedChoice = null;
+					currentQ++;
+					transitioning = false;
+				}, 200);
+			} else {
+				submitQuiz();
+			}
 		}, 300);
 	}
 
@@ -127,9 +133,9 @@
 	<title>{isZh ? '答题中 — PunkGo Roast' : 'Quiz — PunkGo Roast'}</title>
 </svelte:head>
 
-{#if phase === 'quiz'}
+{#if true}
 	{@const q = questions[currentQ]}
-	<div class="quiz-screen">
+	<div class="quiz-screen" class:fade-out={transitioning}>
 		<div class="progress">
 			{#each questions as _, i}
 				<div class="seg" class:active={i <= currentQ}></div>
@@ -166,28 +172,6 @@
 				</button>
 			{/each}
 		</div>
-	</div>
-
-{:else if phase === 'result' && result}
-	<div class="fallback-result">
-		<span class="section-tag">— Y O U R &nbsp; R E S U L T —</span>
-		<img class="result-avatar" src="/dogs/dog-{result.personality.id}.png" alt={result.personality.name} />
-		<h1>{result.personality.name}</h1>
-		<div class="result-mbti">{result.personality.mbti}</div>
-		<p class="quip">"{result.quip}"</p>
-		<p class="catch">— {result.catchphrase}</p>
-		<button class="retry-btn" onclick={() => { phase = 'quiz'; currentQ = 0; answers = []; result = null; selectedChoice = null; }}>
-			{isZh ? '再来一次' : 'Retake Examination'}
-		</button>
-	</div>
-{:else if phase === 'result' && !result}
-	<div class="fallback-result">
-		<span class="section-tag">— O O P S —</span>
-		<h1>{isZh ? '出了点问题' : 'Something went wrong'}</h1>
-		<p class="catch">{isZh ? '别担心，再试一次就好' : "Don't worry, just try again"}</p>
-		<button class="retry-btn" onclick={() => { phase = 'quiz'; currentQ = 0; answers = []; result = null; selectedChoice = null; }}>
-			{isZh ? '重新开始' : 'Start Over'}
-		</button>
 	</div>
 {/if}
 
@@ -251,38 +235,12 @@
 	.opt-emoji { font-size: 24px; }
 	.opt-text { font-size: 14px; color: var(--color-text-secondary); line-height: 1.4; }
 
-	/* Fallback result */
-	.fallback-result {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: calc(100vh - 56px);
-		gap: 16px;
-		text-align: center;
-		padding: 0 40px;
-	}
-	.result-avatar {
-		width: 120px; height: 120px; border-radius: var(--radius-full);
-		border: 2px solid var(--color-border-accent);
-	}
-	.result-mbti {
-		font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
-		padding: 4px 14px; border-radius: var(--radius-sm);
-		background: var(--color-bg-muted); border: 1px solid var(--color-border-accent);
-		color: var(--color-text-secondary);
-	}
-	.fallback-result h1 { font-size: 36px; }
-	.quip { font-size: 20px; font-style: italic; color: var(--color-text); max-width: 500px; line-height: 1.5; }
-	.catch { font-size: 14px; color: var(--color-text-secondary); font-style: italic; }
-	.retry-btn {
-		margin-top: 16px;
-		padding: 12px 32px;
-		border-radius: var(--radius-md);
-		background: var(--color-cta);
-		color: white;
-		font-size: 15px;
-		font-weight: 700;
+	/* Quiz transition */
+	.quiz-screen { transition: opacity 200ms ease; }
+	.quiz-screen.fade-out { opacity: 0; }
+
+	@media (prefers-reduced-motion: reduce) {
+		.quiz-screen { transition: none; }
 	}
 
 	@media (max-width: 768px) {

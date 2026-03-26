@@ -25,7 +25,7 @@
 		</p>
 		<div class="dog-preview">
 			{#each ['philosopher','intern','vampire','speedrunner','googler'] as id}
-				<img class="dog-dot" src="/dogs/dog-{id}.png" alt={id} />
+				<img class="dog-dot" src="/dogs/felt-{id}-nobg.png" alt={id} width="72" height="72" loading="lazy" />
 			{/each}
 			<div class="dog-dot more">+11</div>
 		</div>
@@ -34,9 +34,9 @@
 		</a>
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
 		<div class="ext-inline">
-			<span>{isZh ? '想要更精准？' : 'Want scary accuracy?'}</span>
-			<a href="https://github.com/PunkGo/punkgo-roast-extension" target="_blank">
-				{isZh ? '安装 Chrome 扩展 →' : 'Install Chrome Extension →'}
+			<span>{isZh ? '想看你的 AI 人格雷达图？' : 'Want your AI personality radar chart?'}</span>
+			<a href="/install">
+				{isZh ? '🔒 解锁雷达图 →' : '🔒 Unlock Radar Chart →'}
 			</a>
 		</div>
 	</section>
@@ -122,7 +122,5 @@
 		.trust { text-align: center; padding: 0 16px; }
 		.dog-preview { flex-wrap: wrap; justify-content: center; }
 		.dog-dot { width: 48px; height: 48px; }
-		.ext-promo { flex-direction: column; }
-		.ext-right { width: 100%; }
 	}
 </style>

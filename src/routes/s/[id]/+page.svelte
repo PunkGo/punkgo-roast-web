@@ -4,7 +4,7 @@
 	let isZh = $state(false);
 	onMount(() => { isZh = navigator.language.startsWith('zh'); });
 
-	const share = data.share;
+	const share = $derived(data.share);
 </script>
 
 <svelte:head>
@@ -25,7 +25,7 @@
 		<div class="share-body">
 			<div class="their-result">
 				<span class="shared-tag">{isZh ? '有人分享了他们的结果' : 'Someone shared their result with you'}</span>
-				<img class="their-avatar" src="/dogs/{share.dog_image || `dog-${share.personality_id}.png`}" alt={share.personality_name} />
+				<img class="their-avatar" src="/dogs/{share.dog_image || `felt-${share.personality_id}-nobg.png`}" alt={share.personality_name} />
 				<h1>{share.personality_name_zh && isZh ? share.personality_name_zh : share.personality_name}</h1>
 				<div class="mbti-tag">{share.mbti}</div>
 				<p class="their-quip">"{share.quip || share.catchphrase}"</p>

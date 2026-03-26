@@ -2,8 +2,8 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import confetti from 'canvas-confetti';
-	import { toPng } from 'html-to-image';
 	import { decodeResultId, getDogByMBTI, type Dog } from '$lib/data/dogs';
+	import QuizCard from '$lib/components/QuizCard.svelte';
 
 	let isZh = $state(false);
 	let dog: Dog | null = $state(null);
@@ -20,12 +20,11 @@
 	let typedQuip = $state('');
 	let showActions = $state(false);
 	let loadingFact = $state(funFacts[0]);
-	let cardRef: HTMLElement | null = $state(null);
 	let copied = $state(false);
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
-		resultId = $page.params.id;
+		resultId = $page.params.id ?? '';
 		loadingFact = funFacts[Math.floor(Math.random() * funFacts.length)];
 		try {
 			const mbti = decodeResultId(resultId);
@@ -33,20 +32,19 @@
 		} catch { dog = null; }
 
 		if (dog) {
-			setTimeout(() => { phase = 'card-back'; }, 2500);
-			setTimeout(() => { phase = 'flipping'; }, 4000);
 			setTimeout(() => {
 				phase = 'revealed';
 				fireConfetti();
 				typewriterQuip();
-			}, 4600);
-			setTimeout(() => { showActions = true; }, 6000);
+			}, 2500);
+			setTimeout(() => { showActions = true; }, 4000);
 		}
 	});
 
-	$effect(() => { resultId = $page.params.id; });
+	$effect(() => { resultId = $page.params.id ?? ''; });
 
 	function fireConfetti() {
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 		const colors = ['#5A8C6A', '#C4956A', '#D4B896', '#8060A0', '#C75050'];
 		confetti({ particleCount: 80, spread: 70, origin: { y: 0.4 }, colors, gravity: 1.2 });
 		setTimeout(() => {
@@ -55,6 +53,8 @@
 		}, 200);
 	}
 
+	let cursorVisible = $state(true);
+
 	function typewriterQuip() {
 		if (!dog) return;
 		const full = isZh ? dog.quipZh : dog.quip;
@@ -62,7 +62,10 @@
 		const interval = setInterval(() => {
 			typedQuip = full.slice(0, i + 1);
 			i++;
-			if (i >= full.length) clearInterval(interval);
+			if (i >= full.length) {
+				clearInterval(interval);
+				setTimeout(() => { cursorVisible = false; }, 2000);
+			}
 		}, 35);
 	}
 
@@ -85,14 +88,11 @@
 			copied = true; setTimeout(() => { copied = false; }, 2000);
 		});
 	}
+	let quizCardComponent: QuizCard = $state(null as any);
+
 	async function saveCard() {
-		if (!cardRef) return;
 		try {
-			const dataUrl = await toPng(cardRef, { pixelRatio: 2 });
-			const link = document.createElement('a');
-			link.download = `punkgo-roast-${dog?.id || 'card'}.png`;
-			link.href = dataUrl;
-			link.click();
+			await quizCardComponent?.saveAsPng();
 		} catch {
 			navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`);
 		}
@@ -127,66 +127,70 @@
 				</div>
 			</div>
 
-		{:else if phase === 'card-back' || phase === 'flipping'}
-			<div class="phase-block">
-				<div class="flip-card" class:flipping={phase === 'flipping'}>
-					<div class="card-back-face" style="background:{dog.cardColor}">
-						<span class="cb-paw">🐾</span>
-						<span class="cb-text">{isZh ? '你的 AI 人格是...' : 'Your AI personality is...'}</span>
-					</div>
-				</div>
-				<p class="revealing">{isZh ? '即将揭晓...' : 'Revealing...'}</p>
-			</div>
-
 		{:else}
-			<!-- Revealed: single column, everything stacked -->
+			<!-- Revealed: compact, two cards top-aligned -->
 			<div class="phase-block revealed">
 				<span class="section-tag fade-in">— Y O U R &nbsp; R E S U L T —</span>
-				<img class="avatar fade-in d1" src="/dogs/dog-{dog.id}.png" alt={dog.name} />
-				<h1 class="fade-in d2">{dog.name}</h1>
-				<div class="meta fade-in d2">
-					<span class="mbti-badge">{dog.mbti}</span>
-					<span class="breed">{dog.breed}</span>
-				</div>
-				<p class="quip fade-in d3">"{typedQuip}<span class="cursor">|</span>"</p>
-				<p class="catch fade-in d4">{isZh ? dog.catchphraseZh : dog.catchphrase}</p>
+				<h1 class="fade-in d1">{isZh ? dog.nameZh : dog.name}</h1>
 
 				{#if showActions}
-					<!-- Share buttons: icon pills -->
-					<div class="share-row fade-in">
-						<button class="share-pill" onclick={shareToX} title="Share on X">𝕏</button>
-						<button class="share-pill" onclick={shareToWeibo} title="微博">微</button>
-						<button class="share-pill" onclick={shareToWhatsApp} title="WhatsApp">W</button>
-						<button class="share-pill" onclick={copyLink} title="Copy Link">{copied ? '✓' : '🔗'}</button>
-					</div>
-
-					<!-- Card preview + save -->
-					<div class="card-section fade-in d5">
-						<span class="section-tag">— Y O U R &nbsp; C A R D —</span>
-						<div class="card-preview" style="background:{dog.cardColor}" bind:this={cardRef}>
-							<img class="card-img" src="/dogs/dog-{dog.id}.png" alt={dog.name} />
-							<span class="card-name">{dog.name}</span>
-							<span class="card-mbti">{dog.mbti}</span>
-							<p class="card-quip">"{isZh ? dog.quipZh : dog.quip}"</p>
-							<div class="card-foot">
-								<span>punkgo.ai</span>
-								<span>What's your AI vibe?</span>
+				<div class="cards-row fade-in d2">
+					<div class="card-col">
+						<QuizCard {dog} locale={isZh ? 'zh' : 'en'} bind:this={quizCardComponent} />
+						<div class="card-actions">
+							<button class="btn-primary" onclick={saveCard} title={isZh ? '保存卡片' : 'Save Card'}>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+							</button>
+							<div class="share-row">
+								<button class="share-pill" onclick={shareToX} title="X">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+								</button>
+								<button class="share-pill" onclick={shareToWeibo} title="微博">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM16.56 9.89c-.24-.66-.9-1.01-1.57-.84-.66.17-1.02.84-.85 1.5.09.32.09.68-.02 1.02-.18.53-.59.94-1.1 1.12-.23.08-.38.3-.33.54.05.24.27.4.51.37.03 0 .06-.01.09-.02.88-.29 1.57-1.01 1.87-1.91.19-.58.19-1.2.03-1.78zM20.5 7.65c-.62-1.71-2.34-2.6-4.08-2.1-1.73.5-2.66 2.26-2.04 3.97.15.41.54.64.95.53.41-.11.64-.54.49-.95-.31-.87.12-1.82 1.03-2.08.87-.25 1.81.21 2.13 1.07.32.88-.1 1.84-.99 2.12-.41.13-.63.56-.5.97.13.41.56.63.97.5 1.72-.56 2.66-2.32 2.04-4.03z"/></svg>
+								</button>
+								<button class="share-pill" onclick={shareToWhatsApp} title="WhatsApp">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+								</button>
+								<button class="share-pill" onclick={copyLink} title={isZh ? '复制链接' : 'Copy Link'}>
+									{#if copied}
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+									{:else}
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+									{/if}
+								</button>
 							</div>
 						</div>
-						<button class="btn-primary" onclick={saveCard}>💾 {isZh ? '保存卡片' : 'Save Card'}</button>
 					</div>
+					<div class="card-col">
+						<div class="radar-locked">
+								<div class="radar-blur">
+									<svg viewBox="-50 -20 420 370" width="260" height="260">
+										{#each [1, 0.66, 0.33] as scale}
+											<polygon points={[0,1,2,3,4,5].map(i => {
+												const rad = ([-90,-30,30,90,150,210][i] * Math.PI) / 180;
+												return `${160 + 90*scale*Math.cos(rad)},${160 + 90*scale*Math.sin(rad)}`;
+											}).join(' ')} fill="none" stroke="{dog.accentColor}30" stroke-width="1"/>
+										{/each}
+										<polygon points={[0,1,2,3,4,5].map(i => {
+											const v = [65,40,55,70,30,80][i];
+											const rad = ([-90,-30,30,90,150,210][i] * Math.PI) / 180;
+											return `${160 + (v/100)*90*Math.cos(rad)},${160 + (v/100)*90*Math.sin(rad)}`;
+										}).join(' ')} fill="{dog.accentColor}20" stroke="{dog.accentColor}" stroke-width="2" stroke-linejoin="round"/>
+									</svg>
+								</div>
+								<div class="radar-overlay">
+									<span class="lock-icon">🔒</span>
+									<span class="lock-title">{isZh ? '你的 AI 人格雷达图' : 'Your AI Radar Chart'}</span>
+									<span class="lock-sub">{isZh ? '安装扩展，分析真实行为数据' : 'Install extension for real behavior analysis'}</span>
+									<a href="/install" class="unlock-btn">{isZh ? '🐕 免费解锁' : '🐕 Unlock Free'}</a>
+								</div>
+						</div><!-- /radar-locked -->
+					</div><!-- /card-col -->
+				</div><!-- /cards-row -->
 
-					<!-- Extension upsell: compact inline -->
-					<div class="ext-inline fade-in d5">
-						<span>{isZh ? '这只是 5 道题的结果。想要真实数据？' : 'This was just 5 questions. Want real data?'}</span>
-						<a href="https://github.com/PunkGo/punkgo-roast-extension" target="_blank">
-							{isZh ? '安装 Chrome 扩展 →' : 'Install Extension →'}
-						</a>
-					</div>
-
-					<a href="/quiz" class="retake fade-in d5">{isZh ? '不是你？重新测试 →' : 'Not you? Retake →'}</a>
+				<a href="/quiz" class="retake fade-in d5">{isZh ? '不是你？重新测试 →' : 'Not you? Retake →'}</a>
 				{/if}
-			</div>
+			</div><!-- /phase-block -->
 		{/if}
 	</div>
 </div>
@@ -199,7 +203,7 @@
 	}
 	.center-col {
 		width: 100%;
-		max-width: 560px;
+		max-width: 860px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -219,10 +223,12 @@
 		justify-content: center;
 	}
 	.phase-block.revealed {
-		justify-content: flex-start;
+		justify-content: center;
 		min-height: auto;
-		padding-bottom: 64px;
+		padding: 32px 0 64px;
 	}
+
+	/* Two cards row */
 
 	/* Loading */
 	.paw-ring {
@@ -281,7 +287,7 @@
 	/* Share pills */
 	.share-row { display: flex; gap: 8px; padding-top: 8px; }
 	.share-pill {
-		width: 40px; height: 40px;
+		width: 44px; height: 44px;
 		border-radius: var(--radius-full);
 		background: var(--color-bg-muted);
 		border: 1px solid var(--color-border);
@@ -297,36 +303,65 @@
 		display: flex; flex-direction: column; align-items: center;
 		gap: 12px; padding-top: 24px; width: 100%;
 	}
-	.card-preview {
-		width: 240px; height: 320px; border-radius: var(--radius-lg);
-		display: flex; flex-direction: column;
-		align-items: center; justify-content: center; gap: 8px;
-		padding: 20px; border: 1px solid var(--color-border-accent);
+	/* Two cards side by side, top-aligned */
+	.cards-row {
+		display: flex; gap: 24px; justify-content: center;
+		align-items: flex-start;
+		padding-top: 16px;
 	}
-	.card-img { width: 48px; height: 48px; border-radius: var(--radius-full); object-fit: cover; }
-	.card-name { font-size: 12px; font-weight: 700; color: #3A2518; letter-spacing: 0.05em; }
-	.card-mbti { font-size: 9px; font-weight: 700; color: #5A8C6A; letter-spacing: 0.15em; }
-	.card-quip { font-size: 10px; font-weight: 600; font-style: italic; text-align: center; color: #3A2518; line-height: 1.4; max-width: 200px; }
-	.card-foot { display: flex; justify-content: space-between; width: 100%; }
-	.card-foot span { font-size: 8px; color: #8B7060; }
+	.card-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+	.card-actions { display: flex; align-items: center; gap: 8px; }
+	.card-actions .btn-primary {
+		width: 44px; height: 44px; padding: 0;
+		display: flex; align-items: center; justify-content: center;
+		border-radius: var(--radius-full);
+	}
+
+	/* Locked radar preview */
+	.radar-locked {
+		width: 340px; height: 453px;
+		border-radius: 20px;
+		background: #F5F0E8;
+		box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+		position: relative; overflow: hidden;
+		display: flex; align-items: center; justify-content: center;
+	}
+	.radar-blur {
+		position: absolute; inset: 0;
+		display: flex; align-items: center; justify-content: center;
+		filter: blur(3px); opacity: 0.5;
+	}
+	.radar-overlay {
+		position: relative; z-index: 1;
+		display: flex; flex-direction: column; align-items: center;
+		gap: 8px; text-align: center; padding: 20px;
+	}
+	.lock-icon { font-size: 32px; }
+	.lock-title { font-size: 16px; font-weight: 700; color: var(--color-text); }
+	.lock-sub { font-size: 12px; color: var(--color-text-secondary); max-width: 220px; line-height: 1.5; }
+	.unlock-btn {
+		margin-top: 4px; padding: 12px 24px;
+		background: var(--color-cta); color: white;
+		border-radius: 100px; font-size: 14px; font-weight: 700;
+		min-height: 44px; display: flex; align-items: center;
+		box-shadow: 0 2px 12px rgba(90,140,106,0.3);
+		transition: transform 150ms ease;
+	}
+	.unlock-btn:hover { transform: translateY(-1px); }
 
 	.btn-primary {
-		padding: 10px 24px; border-radius: var(--radius-md);
+		padding: 12px 28px; border-radius: var(--radius-md);
 		background: var(--color-cta); color: white;
 		font-size: 13px; font-weight: 700;
+		min-height: 44px;
 		transition: transform 150ms ease;
 	}
 	.btn-primary:hover { transform: translateY(-1px); }
 
 	/* Extension inline */
-	.ext-inline {
-		display: flex; align-items: center; gap: 6px;
-		font-size: 12px; color: var(--color-text-tertiary);
-		padding-top: 20px;
-	}
-	.ext-inline a { color: var(--color-cta); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+	/* removed: ext-inline replaced by radar-locked card */
 
-	.retake { font-size: 12px; color: var(--color-text-tertiary); padding-top: 8px; }
+	.retake { font-size: 12px; color: var(--color-text-tertiary); padding: 12px 0; min-height: 44px; display: flex; align-items: center; }
 
 	/* Fade-in */
 	.fade-in { animation: fadeInUp 0.5s ease-out both; }
@@ -337,10 +372,10 @@
 	.d5 { animation-delay: 1.0s; }
 	@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-	@media (max-width: 639px) {
+	@media (max-width: 768px) {
+		.cards-row { flex-direction: column; align-items: center; }
 		h1 { font-size: 24px; }
 		.quip { font-size: 16px; }
-		.avatar { width: 100px; height: 100px; }
 	}
 
 	@media (prefers-reduced-motion: reduce) {

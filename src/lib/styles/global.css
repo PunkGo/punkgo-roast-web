@@ -8,10 +8,10 @@
   --color-bg-dark: #3A2518;
 
   --color-text: #3A2518;
-  --color-text-secondary: #8B7060;
-  --color-text-tertiary: #B8A898;
+  --color-text-secondary: #6B5545;
+  --color-text-tertiary: #8B7B6B;
   --color-text-on-dark: #F5F0E8;
-  --color-text-accent: #C4956A;
+  --color-text-accent: #9A7040;
 
   --color-border: #E8E0D4;
   --color-border-accent: #D4B896;
@@ -64,6 +64,14 @@ a {
   text-decoration: none;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--color-cta);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 button {
   font-family: inherit;
   cursor: pointer;
@@ -72,7 +80,7 @@ button {
 
 /* Wes Anderson section tag */
 .section-tag {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.3em;
   color: var(--color-text-accent);

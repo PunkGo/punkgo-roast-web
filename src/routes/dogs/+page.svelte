@@ -19,8 +19,8 @@
 	</header>
 	<div class="grid">
 		{#each dogList as dog}
-			<div class="dog-card" style="background:{dog.cardColor}">
-				<img class="dog-avatar" src="/dogs/dog-{dog.id}.png" alt={dog.name} />
+			<div class="dog-card">
+				<img class="dog-avatar" src="/dogs/felt-{dog.id}-nobg.png" alt={dog.name} width="44" height="44" loading="lazy" />
 				<div class="dog-info">
 					<span class="dog-name">{isZh ? dog.nameZh : dog.name}</span>
 					<span class="dog-mbti" style="color:{dog.accentColor}">{dog.mbti}</span>
@@ -51,6 +51,8 @@
 		align-items: center;
 		gap: 14px;
 		min-height: 100px;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border);
 	}
 	.dog-avatar { width: 44px; height: 44px; border-radius: var(--radius-full); flex-shrink: 0; object-fit: cover; }
 	.dog-info { display: flex; flex-direction: column; gap: 2px; }
