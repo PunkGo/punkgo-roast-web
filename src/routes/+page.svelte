@@ -37,6 +37,11 @@
 			{isZh ? '开始测试 🐾' : 'Start the Test 🐾'}
 		</a>
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
+		<p class="methodology">
+			{isZh
+				? '基于投射性心理测试原理，通过 AI 对模糊情境的自然反应，解码其隐藏的行为人格。'
+				: 'Built on projective psychological testing. We decode hidden behavioral personality through AI\'s natural response to ambiguous scenarios.'}
+		</p>
 		<!-- ext-inline hidden for v2, /install page kept -->
 	</section>
 
@@ -103,6 +108,15 @@
 	.trust {
 		font-size: 14px; font-weight: 500;
 		color: var(--color-text-secondary); letter-spacing: 0.05em;
+	}
+	.methodology {
+		font-size: 11px;
+		color: var(--color-text-tertiary);
+		max-width: 400px;
+		text-align: center;
+		line-height: 1.6;
+		font-style: italic;
+		margin-top: 8px;
 	}
 	.ext-inline {
 		display: flex; align-items: center; gap: 6px;
