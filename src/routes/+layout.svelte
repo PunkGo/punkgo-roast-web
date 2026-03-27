@@ -23,6 +23,7 @@
 <nav class="nav">
 	<a href="/" class="logo">P U N K G O &nbsp; R O A S T</a>
 	<div class="nav-right">
+		<a href="/mailbox" class="nav-link">{isZh ? '📮 AI 邮局' : '📮 AI Mail'}</a>
 		<a href="/dogs" class="nav-link">{isZh ? '16 狗子' : '16 Dogs'}</a>
 	</div>
 </nav>
