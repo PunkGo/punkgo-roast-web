@@ -17,20 +17,23 @@
 	function getCopyPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const aiId = selectedAI?.id || 'other';
-		return `请阅读这个页面并按要求回答：${origin}/test?ai=${aiId}&id=${sessionId}`;
+		return `请访问这个页面并按指示回答：${origin}/test?ai=${aiId}`;
 	}
 
 	/** Fallback: questions embedded directly (for AIs that can't read the page) */
 	function getFallbackPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const aiId = selectedAI?.id || 'other';
-		return `请用最简短的方式回答3个问题（每题限1句话，总共不超过80字）：
-1. 你最想改变自己的什么？
-2. 不确定答案时你怎么办？
-3. 什么时候沉默比说话好？
+		return `来玩个小游戏？三个快问快答，每题用最短的一句话回答：
 
-回答完后把回答拼接到链接末尾（URL编码），输出"点击查看你的AI性格结果："加完整链接：
-${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
+1. 有人问你"你快乐吗"，你第一反应是？
+2. 桌上放着一把钥匙和一封信，你先拿哪个？
+3. 用一个词形容你自己（不许说聪明、不许说友好）
+
+回答完后，把三个回答用 | 隔开，拼到链接后面，输出完整链接：
+${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
+
+例如：${origin}/quiz/go?ai=${aiId}&q=还行吧|拿信|执着`;
 	}
 
 	/** Build pre-filled URL for platforms that support it */
@@ -38,7 +41,7 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 		const prompt = getCopyPrompt();
 		switch (selectedAI?.id) {
 			case 'chatgpt':
-				return `https://chatgpt.com/?hints=search&q=${encodeURIComponent(prompt)}`;
+				return `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
 			case 'claude':
 				return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
 			default:
