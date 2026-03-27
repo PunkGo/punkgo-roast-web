@@ -17,12 +17,14 @@
 		"svelte": "^5.54.0",
 		"svelte-check": "^4.4.2",
 		"typescript": "^5.9.3",
-		"vite": "^7.3.1"
+		"vite": "^7.3.1",
+		"vitest": "^4.1.2"
 	},
 	"dependencies": {
 		"@sveltejs/adapter-vercel": "^6.3.3",
 		"@vercel/analytics": "^2.0.1",
 		"canvas-confetti": "^1.9.4",
-		"html-to-image": "^1.11.13"
+		"html-to-image": "^1.11.13",
+		"openai": "^6.33.0"
 	}
 }

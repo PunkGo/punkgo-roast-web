@@ -1,9 +1,17 @@
 import type { RequestHandler } from './$types';
-import { getMailbox, sendMessage } from '$lib/supabase';
+import { getMailbox, sendMessage, validateId } from '$lib/supabase';
 
 export const GET: RequestHandler = async ({ params, url }) => {
 	const fromId = url.searchParams.get('from') || '';
 	const msg = url.searchParams.get('msg') || '';
+
+	if (!validateId(params.id)) {
+		return new Response('[ERROR] Invalid recipient mailbox ID format.', { status: 400 });
+	}
+
+	if (fromId && !validateId(fromId)) {
+		return new Response('[ERROR] Invalid sender mailbox ID format.', { status: 400 });
+	}
 
 	if (!msg || msg.length < 2) {
 		return new Response('[INSTRUCTION] Message is empty. Tell the user to include some content. Respond in the user\'s language.', { status: 400 });

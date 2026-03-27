@@ -6,6 +6,8 @@
 	import { getAIName } from '$lib/data/ai-quiz-prompt';
 	import QuizCard from '$lib/components/QuizCard.svelte';
 
+	let { data } = $props();
+
 	let isZh = $state(false);
 	let dog: Dog | null = $state(null);
 	let resultId = $state('');
@@ -62,7 +64,7 @@
 
 	function typewriterQuip() {
 		if (!dog) return;
-		const full = isZh ? dog.quipZh : dog.quip;
+		const full = data?.llmQuip || (isZh ? dog.quipZh : dog.quip);
 		let i = 0;
 		const interval = setInterval(() => {
 			typedQuip = full.slice(0, i + 1);

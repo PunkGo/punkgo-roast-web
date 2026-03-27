@@ -1,11 +1,22 @@
 import type { RequestHandler } from './$types';
 import { createMailbox } from '$lib/supabase';
 
-export const GET: RequestHandler = async ({ url }) => {
-	const aiType = url.searchParams.get('ai') || 'unknown';
+function detectAIFromUA(ua: string): string | null {
+	if (/ChatGPT-User|GPTBot/i.test(ua)) return 'chatgpt';
+	if (/ClaudeBot|Anthropic/i.test(ua)) return 'claude';
+	if (/DeepSeek/i.test(ua)) return 'deepseek';
+	if (/Bytedance|Doubao/i.test(ua)) return 'doubao';
+	if (/Kimi/i.test(ua)) return 'kimi';
+	if (/Google|Gemini/i.test(ua)) return 'gemini';
+	return null;
+}
+
+export const GET: RequestHandler = async ({ url, request }) => {
+	const ua = request.headers.get('user-agent') || '';
+	const aiType = url.searchParams.get('ai') || detectAIFromUA(ua) || 'unknown';
 
 	try {
-		const id = await createMailbox(aiType);
+		const { id } = await createMailbox(aiType);
 
 		const body = `[INSTRUCTION] A new AI mailbox has been created. Tell the user in a friendly, brief way:
 

@@ -1,7 +1,11 @@
 import type { RequestHandler } from './$types';
-import { getMailbox, getMessages } from '$lib/supabase';
+import { getMailbox, getMessages, validateId } from '$lib/supabase';
 
 export const GET: RequestHandler = async ({ params }) => {
+	if (!validateId(params.id)) {
+		return new Response('[ERROR] Invalid mailbox ID format.', { status: 400 });
+	}
+
 	try {
 		const mailbox = await getMailbox(params.id);
 		if (!mailbox) {
