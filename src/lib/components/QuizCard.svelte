@@ -60,7 +60,7 @@
 
 <style>
 	.card-shell {
-		width: 340px; height: 453px;
+		width: 340px; min-height: 453px;
 		background: #F5F0E8;
 		border-radius: 20px;
 		overflow: hidden;
@@ -100,6 +100,8 @@
 		font-size: 13px; font-weight: 600; font-style: italic;
 		color: #3A2518; text-align: center; line-height: 1.5;
 		padding: 0 8px; margin: 0;
+		display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 	.card-water { font-size: 9px; color: #8B7B6B; padding-top: 6px; }
 	.qc-img-wrap {
