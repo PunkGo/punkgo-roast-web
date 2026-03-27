@@ -10,17 +10,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const count = config.question_count || 3;
 	const maxChars = config.answer_max_chars || 60;
 
-	// Detect language from Accept-Language header
-	const acceptLang = request.headers.get('accept-language') || '';
-	const isZh = acceptLang.includes('zh');
-
-	// Pick random questions from pool
+	// Pick random questions from pool — always English (prompt is English)
 	let questions: string[];
 	if (pool.length > 0) {
 		const shuffled = [...pool].sort(() => Math.random() - 0.5);
-		questions = shuffled.slice(0, count).map((q: { zh: string; en: string }) => isZh ? q.zh : q.en);
+		questions = shuffled.slice(0, count).map((q: { zh: string; en: string }) => q.en);
 	} else {
-		// Fallback to old fixed questions
 		questions = config.questions || [];
 	}
 
