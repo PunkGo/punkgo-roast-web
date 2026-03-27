@@ -17,7 +17,8 @@
 	function getCopyPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const aiId = selectedAI?.id || 'other';
-		return `请访问这个页面并按指示回答：${origin}/test?ai=${aiId}`;
+		const t = Math.random().toString(36).slice(2, 7);
+		return `请访问这个页面并按指示操作：${origin}/test?ai=${aiId}&t=${t}`;
 	}
 
 	/** Fallback: questions embedded directly (for AIs that can't read the page) */
