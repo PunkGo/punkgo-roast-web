@@ -11,22 +11,15 @@ export const GET: RequestHandler = async ({ url }) => {
 		const dog = getDogByMBTI(mbti);
 
 		const t0 = Date.now();
-		const quip = await generatePersonalityText(
-			dog.breed,
-			dog.nameZh,
-			mbti,
-			locale
-		);
-		const latency = Date.now() - t0;
+		const quip = await generatePersonalityText(dog.breed, dog.nameZh, mbti, locale);
+		console.log(`[generate-quip] ${mbti} locale=${locale} latency=${Date.now() - t0}ms quip=${quip ? 'ok' : 'null'}`);
 
-		console.log(`[generate-quip] ${mbti} locale=${locale} latency=${latency}ms quip=${quip ? 'ok' : 'null'}`);
-
-		return new Response(JSON.stringify({ quip: quip || null, latency }), {
+		return new Response(JSON.stringify({ quip: quip || null }), {
 			headers: { 'Content-Type': 'application/json' },
 		});
 	} catch (e) {
 		console.error(`[generate-quip] error:`, e);
-		return new Response(JSON.stringify({ quip: null, error: String(e) }), {
+		return new Response(JSON.stringify({ quip: null }), {
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}

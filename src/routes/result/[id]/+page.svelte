@@ -50,9 +50,7 @@
 				const data = await res.json();
 				clearTimeout(timeout);
 				quip = data.quip || null;
-				console.log(`[quip] client=${Math.round(performance.now() - t0)}ms server=${data.latency}ms quip=${quip ? 'ok' : 'null'}`);
-			} catch (e) {
-				console.error('[quip] failed:', e);
+			} catch {
 			}
 
 			// Ensure minimum 2.5s loading animation
@@ -61,9 +59,7 @@
 				await new Promise(r => setTimeout(r, 2500 - elapsed));
 			}
 
-			// Reveal — quip is guaranteed to be resolved (or null) at this point
 			llmQuip = quip;
-			console.log(`[reveal] quip=${quip ? 'ok' : 'null'} isZh=${isZh}`);
 			phase = 'revealed';
 			fireConfetti();
 			typewriterQuip(quip || (isZh ? dog.quipZh : dog.quip));
@@ -88,7 +84,6 @@
 	function typewriterQuip(text?: string) {
 		if (!dog) return;
 		const full = text || llmQuip || (isZh ? dog.quipZh : dog.quip);
-		console.log(`[typewriter] text=${JSON.stringify(text)} full=${JSON.stringify(full)}`);
 		let i = 0;
 		const interval = setInterval(() => {
 			typedQuip = full.slice(0, i + 1);
