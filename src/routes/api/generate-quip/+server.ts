@@ -10,18 +10,23 @@ export const GET: RequestHandler = async ({ url }) => {
 		const mbti = decodeResultId(resultId);
 		const dog = getDogByMBTI(mbti);
 
+		const t0 = Date.now();
 		const quip = await generatePersonalityText(
 			dog.breed,
 			dog.nameZh,
 			mbti,
 			locale
 		);
+		const latency = Date.now() - t0;
 
-		return new Response(JSON.stringify({ quip: quip || null }), {
+		console.log(`[generate-quip] ${mbti} locale=${locale} latency=${latency}ms quip=${quip ? 'ok' : 'null'}`);
+
+		return new Response(JSON.stringify({ quip: quip || null, latency }), {
 			headers: { 'Content-Type': 'application/json' },
 		});
-	} catch {
-		return new Response(JSON.stringify({ quip: null }), {
+	} catch (e) {
+		console.error(`[generate-quip] error:`, e);
+		return new Response(JSON.stringify({ quip: null, error: String(e) }), {
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}

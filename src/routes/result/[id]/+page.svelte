@@ -40,10 +40,15 @@
 		if (dog) {
 			// Fetch DeepSeek quip during loading animation (fire and forget)
 			const locale = isZh ? 'zh' : 'en';
+			const fetchStart = performance.now();
 			fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
 				.then(r => r.json())
-				.then(d => { if (d.quip) llmQuip = d.quip; })
-				.catch(() => {});
+				.then(d => {
+					const clientLatency = Math.round(performance.now() - fetchStart);
+					console.log(`[quip] client=${clientLatency}ms server=${d.latency}ms quip=${d.quip ? 'ok' : 'null'}`);
+					if (d.quip) llmQuip = d.quip;
+				})
+				.catch(e => console.error(`[quip] fetch failed:`, e));
 
 			// Reveal after 2.5s loading animation (don't wait for DeepSeek)
 			setTimeout(() => {
