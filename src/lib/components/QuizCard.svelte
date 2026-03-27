@@ -5,9 +5,10 @@
 		dog: Dog;
 		locale?: string;
 		aiName?: string;
+		customQuip?: string | null;
 	}
 
-	let { dog, locale = 'en', aiName = 'AI' }: Props = $props();
+	let { dog, locale = 'en', aiName = 'AI', customQuip = null }: Props = $props();
 	let cardRef: HTMLElement | null = $state(null);
 
 	$effect(() => { void dog; void locale; });
@@ -52,7 +53,7 @@
 		<p class="card-ai-label">你的 {aiName} 是</p>
 		<span class="card-name">{isZh ? dog.nameZh : dog.name}</span>
 		<span class="card-meta">{dog.mbti} · {dog.breed}</span>
-		<p class="card-quip">"{isZh ? dog.quipZh : dog.quip}"</p>
+		<p class="card-quip">"{customQuip || (isZh ? dog.quipZh : dog.quip)}"</p>
 		<span class="card-water">roast.punkgo.ai</span>
 	</div>
 </div>
