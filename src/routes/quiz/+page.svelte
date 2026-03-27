@@ -21,8 +21,11 @@
 	function getCopyPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const aiId = selectedAI?.id || 'other';
+		const aiName = selectedAI?.nameZh || 'AI';
 		const t = Math.random().toString(36).slice(2, 7);
-		return `${origin}/test?ai=${aiId}&t=${t}`;
+		const url = `${origin}/test?ai=${aiId}&t=${t}`;
+		const teaser = (data.copyPrompt || '').replaceAll('{{aiName}}', aiName);
+		return `${teaser}\n\n${url}`;
 	}
 
 	function getAIRedirectUrl(): string | null {
@@ -65,10 +68,6 @@
 		}
 	}
 
-	const copyPromptLabel = $derived(
-		(data.copyPrompt || '把下面这段话发给你的 {{aiName}}：')
-			.replaceAll('{{aiName}}', selectedAI?.nameZh || 'AI')
-	);
 </script>
 
 <svelte:head>
@@ -117,7 +116,7 @@
 			{:else}
 				<span class="section-tag">{ui('step2_tag_copy') || '测测 TA 的性格'}</span>
 				<h1>{ui('step2_title_copy') || `让你的 ${selectedAI?.nameZh} 做一个性格测试`}</h1>
-				<p class="subtitle">{copyPromptLabel}</p>
+				<p class="subtitle">{ui('step2_subtitle_copy') || `复制下面的话 → 发给 ${selectedAI?.nameZh} → 点击它给你的链接看结果`}</p>
 
 				<div class="prompt-box">
 					<pre>{getCopyPrompt()}</pre>
