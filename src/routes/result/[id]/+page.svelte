@@ -38,25 +38,20 @@
 		} catch { dog = null; }
 
 		if (dog) {
-			// Fetch DeepSeek quip during loading animation
+			// Fetch DeepSeek quip during loading animation (fire and forget)
 			const locale = isZh ? 'zh' : 'en';
-			const quipPromise = fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
+			fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
 				.then(r => r.json())
-				.then(d => { llmQuip = d.quip; })
+				.then(d => { if (d.quip) llmQuip = d.quip; })
 				.catch(() => {});
 
-			// Wait for BOTH: minimum 2.5s animation AND DeepSeek response (max 10s)
-			const minDelay = new Promise(r => setTimeout(r, 2500));
-			const maxDelay = new Promise(r => setTimeout(r, 10000));
-			Promise.race([
-				Promise.all([minDelay, quipPromise]),  // both done
-				maxDelay,                               // or 10s timeout
-			]).then(() => {
+			// Reveal after 2.5s loading animation (don't wait for DeepSeek)
+			setTimeout(() => {
 				phase = 'revealed';
 				fireConfetti();
 				typewriterQuip();
-				setTimeout(() => { showActions = true; }, 1500);
-			});
+			}, 2500);
+			setTimeout(() => { showActions = true; }, 4000);
 		}
 	});
 
