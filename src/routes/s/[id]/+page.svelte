@@ -28,7 +28,7 @@
 				<img class="their-avatar" src="/dogs/felt-{share.personality_id}-nobg.png" alt={share.personality_name} />
 				<h1>{share.personality_name_zh && isZh ? share.personality_name_zh : share.personality_name}</h1>
 				<div class="mbti-tag">{share.mbti}</div>
-				<p class="their-quip">"{share.quip || share.catchphrase}"</p>
+				<p class="their-quip">"{isZh ? (share.quipZh || share.quip) : (share.quip || share.catchphrase)}"</p>
 			</div>
 			<div class="cta-side">
 				<span class="section-tag">— Y O U R &nbsp; T U R N —</span>
