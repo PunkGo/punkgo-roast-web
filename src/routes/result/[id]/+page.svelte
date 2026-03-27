@@ -43,34 +43,23 @@
 			const fetchStart = performance.now();
 			let fetchedQuip: string | null = null;
 
-			const quipReady = fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
+			fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
 				.then(r => r.json())
 				.then(d => {
-					const clientLatency = Math.round(performance.now() - fetchStart);
-					console.log(`[quip] client=${clientLatency}ms server=${d.latency}ms quip=${d.quip ? 'ok' : 'null'}`);
+					const ms = Math.round(performance.now() - fetchStart);
+					console.log(`[quip] client=${ms}ms server=${d.latency}ms quip=${d.quip ? 'ok' : 'null'}`);
 					fetchedQuip = d.quip || null;
 				})
 				.catch(e => console.error(`[quip] fetch failed:`, e));
 
-			// Wait for BOTH min animation (2.5s) AND DeepSeek, max 6s
-			const minWait = new Promise<void>(r => setTimeout(r, 2500));
-			const maxWait = new Promise<void>(r => setTimeout(r, 6000));
-
-			let revealed = false;
-			function reveal() {
-				if (revealed) return;
-				revealed = true;
-				llmQuip = fetchedQuip;
+			// 4s = enough for DeepSeek (~2.7s). No Promises, just setTimeout.
+			setTimeout(() => {
+				console.log(`[reveal] fetchedQuip=${fetchedQuip ? 'ok' : 'null'} isZh=${isZh}`);
 				phase = 'revealed';
 				fireConfetti();
-				// Pass quip directly instead of reading $state
-				const quipText = fetchedQuip || (isZh ? dog!.quipZh : dog!.quip);
-				typewriterQuip(quipText);
-				setTimeout(() => { showActions = true; }, 1500);
-			}
-
-			Promise.all([minWait, quipReady]).then(reveal);
-			maxWait.then(reveal);
+				typewriterQuip(fetchedQuip || (isZh ? dog!.quipZh : dog!.quip));
+			}, 4000);
+			setTimeout(() => { showActions = true; }, 5500);
 		}
 	});
 
