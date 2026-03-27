@@ -12,9 +12,11 @@
 
 	// 5 random dogs for the mini preview (exclude current dog)
 	const allDogIds = ['philosopher','architect','intern','commander','rereader','caretaker','perfectionist','mentor','vampire','drifter','goldfish','helper','brute','ghost','speedrunner','googler'];
-	const previewDogs = $derived(
-		allDogIds.filter(id => id !== share?.personality_id).slice(0, 5)
-	);
+	let previewDogs = $state(allDogIds.slice(0, 5));
+	onMount(() => {
+		const filtered = allDogIds.filter(id => id !== share?.personality_id);
+		previewDogs = [...filtered].sort(() => Math.random() - 0.5).slice(0, 5);
+	});
 </script>
 
 <svelte:head>

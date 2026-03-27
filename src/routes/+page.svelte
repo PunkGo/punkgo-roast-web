@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	let isZh = $state(false);
-	onMount(() => { isZh = navigator.language.startsWith('zh'); });
+
+	const allDogs = ['philosopher','architect','intern','commander','rereader','caretaker','perfectionist','mentor','vampire','drifter','goldfish','helper','brute','ghost','speedrunner','googler'];
+	let previewDogs = $state(allDogs.slice(0, 5));
+
+	onMount(() => {
+		isZh = navigator.language.startsWith('zh');
+		const shuffled = [...allDogs].sort(() => Math.random() - 0.5);
+		previewDogs = shuffled.slice(0, 5);
+	});
 </script>
 
 <svelte:head>
@@ -20,7 +28,7 @@
 				: 'Sixteen breeds. Which one is your AI?'}
 		</p>
 		<div class="dog-preview">
-			{#each ['philosopher','intern','vampire','speedrunner','googler'] as id}
+			{#each previewDogs as id}
 				<img class="dog-dot" src="/dogs/felt-{id}-nobg.png" alt={id} width="72" height="72" loading="lazy" />
 			{/each}
 			<div class="dog-dot more">+11</div>
