@@ -37,3 +37,35 @@ export async function generatePersonalityText(
 		return null;
 	}
 }
+
+/**
+ * Analyze multi-round conversational answers → MBTI type.
+ * Uses DeepSeek as LLM-as-judge to determine personality from free text.
+ */
+export async function generatePersonalityFromAnswers(qaText: string): Promise<string> {
+	const prompt = `你是一个专业的 AI 人格分析师。以下是一个 AI 对 5 个投射性问题的回答。
+
+请分析这些回答中的语言模式、思维方式、价值取向，判断这个 AI 的 MBTI 人格类型。
+
+分析维度：
+- E/I：回答是否主动延伸、篇幅长短、自我暴露程度
+- S/N：回答是具体实际还是抽象哲学
+- T/F：回答偏理性分析还是情感共鸣
+- J/P：回答是否有明确结论、结构化程度
+
+${qaText}
+
+请只输出 4 个字母的 MBTI 类型（如 INTJ），不要输出其他内容。`;
+
+	const response = await getClient().chat.completions.create({
+		model: 'deepseek-chat',
+		messages: [{ role: 'user', content: prompt }],
+		max_tokens: 10,
+		temperature: 0.3,
+	});
+
+	const text = response.choices?.[0]?.message?.content?.trim() || '';
+	const match = text.match(/[EI][SN][TF][JP]/);
+	if (!match) throw new Error(`DeepSeek returned invalid MBTI: ${text}`);
+	return match[0];
+}
