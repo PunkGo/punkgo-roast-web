@@ -87,6 +87,7 @@
 	function typewriterQuip(text?: string) {
 		if (!dog) return;
 		const full = text || llmQuip || (isZh ? dog.quipZh : dog.quip);
+		console.log(`[typewriter] text=${JSON.stringify(text)} full=${JSON.stringify(full)}`);
 		let i = 0;
 		const interval = setInterval(() => {
 			typedQuip = full.slice(0, i + 1);
