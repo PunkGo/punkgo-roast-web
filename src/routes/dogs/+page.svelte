@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-	<title>{isZh ? '犬种图鉴 — PunkGo Roast' : 'All Breeds — PunkGo Roast'}</title>
+	<title>{isZh ? '狗子图鉴 — PunkGo Roast' : 'All Breeds — PunkGo Roast'}</title>
 </svelte:head>
 
 <div class="wall">
