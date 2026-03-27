@@ -50,13 +50,13 @@
 				})
 				.catch(e => console.error(`[quip] fetch failed:`, e));
 
-			// Reveal after 2.5s loading animation (don't wait for DeepSeek)
+			// Reveal after 4s loading animation (DeepSeek typically responds in ~2.7s)
 			setTimeout(() => {
 				phase = 'revealed';
 				fireConfetti();
 				typewriterQuip();
-			}, 2500);
-			setTimeout(() => { showActions = true; }, 4000);
+			}, 4000);
+			setTimeout(() => { showActions = true; }, 5500);
 		}
 	});
 
