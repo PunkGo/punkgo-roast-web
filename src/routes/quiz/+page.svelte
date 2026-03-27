@@ -78,7 +78,7 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 <svelte:head>
 	<title>你的 AI 是什么 Vibe？ — PunkGo Roast</title>
 	<meta property="og:title" content="你的 AI 是什么 Vibe？ | PunkGo Roast" />
-	<meta property="og:description" content="测测你的 ChatGPT / Claude / DeepSeek 是 16 种犬种中的哪一个 🐾" />
+	<meta property="og:description" content="十六种狗子，你的 AI 是哪一只？🐾" />
 </svelte:head>
 
 <div class="quiz-container">
@@ -109,7 +109,7 @@ ${origin}/r?id=${sessionId}&ai=${aiId}&m=lmlpa&a=`;
 		<div class="step-content" transition:fade={{ duration: 200 }}>
 			{#if hasUrlRedirect}
 				<span class="section-tag">一键测试</span>
-				<h1>让 {selectedAI?.nameZh} 自己答题</h1>
+				<h1>让 {selectedAI?.nameZh} 做个性格测试</h1>
 				<p class="subtitle">点击按钮 → {selectedAI?.nameZh} 会自动回答 → 给你一个结果链接</p>
 
 				<button class="btn-primary btn-main" onclick={openAI}>

@@ -16,14 +16,14 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet" />
 	<meta property="og:site_name" content="PunkGo Roast" />
-	<meta name="description" content="Five questions. Sixteen breeds. Sixty seconds. Discover your AI personality — which dog matches your vibe?" />
+	<meta name="description" content="Sixteen breeds. Which one is your AI? Discover your AI's personality vibe 🐾" />
 	<meta name="theme-color" content="#F5F0E8" />
 </svelte:head>
 
 <nav class="nav">
 	<a href="/" class="logo">P U N K G O &nbsp; R O A S T</a>
 	<div class="nav-right">
-		<a href="/dogs" class="nav-link">{isZh ? '16 犬种' : '16 Dogs'}</a>
+		<a href="/dogs" class="nav-link">{isZh ? '16 狗子' : '16 Dogs'}</a>
 	</div>
 </nav>
 

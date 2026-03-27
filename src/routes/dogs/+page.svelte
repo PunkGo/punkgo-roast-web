@@ -8,14 +8,14 @@
 </script>
 
 <svelte:head>
-	<title>{isZh ? '十六犬种 — PunkGo Roast' : '16 Dogs — PunkGo Roast'}</title>
+	<title>{isZh ? '十六狗子 — PunkGo Roast' : '16 Dogs — PunkGo Roast'}</title>
 </svelte:head>
 
 <div class="wall">
 	<header>
 		<span class="section-tag">— T H E &nbsp; C O L L E C T I O N —</span>
-		<h1>{isZh ? '十六犬种。十六种 Vibe。' : 'Sixteen Dogs. Sixteen Vibes.'}</h1>
-		<p>{isZh ? '每个 AI 用户都是其中之一。你是哪个？' : 'Every AI user is one of these personalities. Which one are you?'}</p>
+		<h1>{isZh ? '十六狗子。十六种 Vibe。' : 'Sixteen Dogs. Sixteen Vibes.'}</h1>
+		<p>{isZh ? '每个 AI 都是其中之一。你的 AI 是哪只？' : 'Every AI is one of these. Which one is yours?'}</p>
 	</header>
 	<div class="grid">
 		{#each dogList as dog}

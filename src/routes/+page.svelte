@@ -7,7 +7,7 @@
 <svelte:head>
 	<title>{isZh ? 'PunkGo Roast — 你的 AI 是什么 Vibe？' : "PunkGo Roast — What's Your AI Vibe?"}</title>
 	<meta property="og:title" content="What's Your AI Vibe?" />
-	<meta property="og:description" content="Five questions. Sixteen breeds. A whimsical examination of your AI personality." />
+	<meta property="og:description" content="Sixteen breeds. Which one is your AI? 🐾" />
 </svelte:head>
 
 <div class="landing">
@@ -16,8 +16,8 @@
 		<h1>{isZh ? "你的 AI\n是什么 Vibe？" : "What's Your\nAI Vibe?"}</h1>
 		<p class="subtitle">
 			{isZh
-				? '三个问题，十六种犬种\n一次 AI 性格体检'
-				: 'Three questions. Sixteen breeds.\nAn AI personality examination.'}
+				? '十六种狗子，你的 AI 是哪一只？'
+				: 'Sixteen breeds. Which one is your AI?'}
 		</p>
 		<div class="dog-preview">
 			{#each ['philosopher','intern','vampire','speedrunner','googler'] as id}

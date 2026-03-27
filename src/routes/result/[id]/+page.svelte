@@ -127,7 +127,7 @@
 				<span class="section-tag">— A N A L Y Z I N G —</span>
 				<div class="paw-ring" style="background:{dog.cardColor}">🐾</div>
 				<h2>{isZh ? `正在检测你的 ${aiName} 的性格...` : `Examining your ${aiName}'s personality...`}</h2>
-				<p class="sub">{isZh ? '匹配十六个犬种之一' : 'Matching with one of sixteen breeds'}</p>
+				<p class="sub">{isZh ? '在十六只狗子中匹配...' : 'Matching with one of sixteen dogs...'}</p>
 				<div class="progress-bar"><div class="progress-fill"></div></div>
 				<div class="fun-fact">
 					<span class="section-tag">— D I D &nbsp; Y O U &nbsp; K N O W ? —</span>

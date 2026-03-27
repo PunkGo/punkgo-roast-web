@@ -33,7 +33,7 @@
 			<div class="cta-side">
 				<span class="section-tag">— Y O U R &nbsp; T U R N —</span>
 				<h2>{isZh ? "来测测你的 AI\n是什么性格" : "What's YOUR\nAI personality?"}</h2>
-				<p class="cta-sub">{isZh ? '五道题发现\n你的 AI 是哪只狗。' : 'Five questions to discover\nwhich dog matches your AI.'}</p>
+				<p class="cta-sub">{isZh ? '十六种狗子\n你的 AI 是哪一只？' : 'Sixteen breeds.\nWhich one is your AI?'}</p>
 				<a href="/quiz" class="cta-btn">{isZh ? '来测测你的 AI 是什么性格' : 'Test your AI'}</a>
 				<div class="mini-dogs">
 					{#each ['#E0EFDA','#FFE0EC','#D0D4DC','#FFF0C8','#D0E0F4'] as c}
