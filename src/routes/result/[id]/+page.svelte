@@ -62,6 +62,7 @@
 			}
 
 			// Reveal — quip is guaranteed to be resolved (or null) at this point
+			llmQuip = quip;
 			console.log(`[reveal] quip=${quip ? 'ok' : 'null'} isZh=${isZh}`);
 			phase = 'revealed';
 			fireConfetti();
