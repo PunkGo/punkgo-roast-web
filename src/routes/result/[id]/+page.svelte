@@ -28,7 +28,7 @@
 	let loadingFact = $state(funFacts[0]);
 	let copied = $state(false);
 
-	onMount(() => {
+	onMount(async () => {
 		isZh = navigator.language.startsWith('zh');
 		resultId = $page.params.id ?? '';
 		loadingFact = funFacts[Math.floor(Math.random() * funFacts.length)];
@@ -38,28 +38,35 @@
 		} catch { dog = null; }
 
 		if (dog) {
-			// Fetch DeepSeek quip during loading animation
 			const locale = isZh ? 'zh' : 'en';
-			const fetchStart = performance.now();
-			let fetchedQuip: string | null = null;
+			const t0 = performance.now();
 
-			fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
-				.then(r => r.json())
-				.then(d => {
-					const ms = Math.round(performance.now() - fetchStart);
-					console.log(`[quip] client=${ms}ms server=${d.latency}ms quip=${d.quip ? 'ok' : 'null'}`);
-					fetchedQuip = d.quip || null;
-				})
-				.catch(e => console.error(`[quip] fetch failed:`, e));
+			// Fetch DeepSeek quip with 8s abort timeout
+			let quip: string | null = null;
+			try {
+				const ctrl = new AbortController();
+				const timeout = setTimeout(() => ctrl.abort(), 8000);
+				const res = await fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`, { signal: ctrl.signal });
+				const data = await res.json();
+				clearTimeout(timeout);
+				quip = data.quip || null;
+				console.log(`[quip] client=${Math.round(performance.now() - t0)}ms server=${data.latency}ms quip=${quip ? 'ok' : 'null'}`);
+			} catch (e) {
+				console.error('[quip] failed:', e);
+			}
 
-			// 4s = enough for DeepSeek (~2.7s). No Promises, just setTimeout.
-			setTimeout(() => {
-				console.log(`[reveal] fetchedQuip=${fetchedQuip ? 'ok' : 'null'} isZh=${isZh}`);
-				phase = 'revealed';
-				fireConfetti();
-				typewriterQuip(fetchedQuip || (isZh ? dog!.quipZh : dog!.quip));
-			}, 4000);
-			setTimeout(() => { showActions = true; }, 5500);
+			// Ensure minimum 2.5s loading animation
+			const elapsed = performance.now() - t0;
+			if (elapsed < 2500) {
+				await new Promise(r => setTimeout(r, 2500 - elapsed));
+			}
+
+			// Reveal — quip is guaranteed to be resolved (or null) at this point
+			console.log(`[reveal] quip=${quip ? 'ok' : 'null'} isZh=${isZh}`);
+			phase = 'revealed';
+			fireConfetti();
+			typewriterQuip(quip || (isZh ? dog.quipZh : dog.quip));
+			setTimeout(() => { showActions = true; }, 1500);
 		}
 	});
 
