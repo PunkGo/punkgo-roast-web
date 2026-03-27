@@ -91,7 +91,7 @@
 	</div>
 
 	{#if step === 1}
-		<div class="step-content" transition:fade={{ duration: 200 }}>
+		<div class="step-content" in:fade={{ duration: 200 }}>
 			<span class="section-tag">— A I &nbsp; V I B E &nbsp; C H E C K —</span>
 			<h1>你的 AI 是什么 Vibe？</h1>
 			<p class="subtitle">选择你最常用的 AI 助手，测测它的性格</p>
@@ -107,7 +107,7 @@
 		</div>
 
 	{:else if step === 2}
-		<div class="step-content" transition:fade={{ duration: 200 }}>
+		<div class="step-content" in:fade={{ duration: 200 }}>
 			{#if hasUrlRedirect}
 				<span class="section-tag">{ui('step2_tag_redirect') || '一键测试'}</span>
 				<h1>{ui('step2_title_redirect') || `让 ${selectedAI?.nameZh} 做个性格测试`}</h1>
