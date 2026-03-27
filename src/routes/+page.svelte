@@ -112,11 +112,15 @@
 	.methodology {
 		font-size: 11px;
 		color: var(--color-text-tertiary);
-		max-width: 400px;
+		max-width: 600px;
 		text-align: center;
 		line-height: 1.6;
 		font-style: italic;
 		margin-top: 8px;
+		white-space: nowrap;
+	}
+	@media (max-width: 639px) {
+		.methodology { white-space: normal; max-width: 320px; }
 	}
 	.ext-inline {
 		display: flex; align-items: center; gap: 6px;
