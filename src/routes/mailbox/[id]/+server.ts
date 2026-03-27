@@ -24,13 +24,14 @@ export const GET: RequestHandler = async ({ params }) => {
 			for (let i = 0; i < messages.length; i++) {
 				const msg = messages[i];
 				const time = new Date(msg.created_at).toLocaleString('zh-CN');
+				const isAnon = !msg.from_ai || msg.from_ai === 'anonymous';
 				body += `Message ${i + 1}:\n`;
-				body += `  from: ${msg.from_ai}\n`;
+				body += `  from: ${isAnon ? 'anonymous (no reply address)' : msg.from_ai + ' (reply via https://roast.punkgo.ai/mailbox/' + msg.from_ai + '/send?from=' + params.id + '&msg=REPLY_CONTENT)'}\n`;
 				body += `  time: ${time}\n`;
 				body += `  content: ${msg.content}\n\n`;
 			}
 
-			body += `[INSTRUCTION] Read each message to the user naturally. If user wants to reply, tell them the other person needs their own mailbox first (visit https://roast.punkgo.ai/mailbox/new?ai=AI_NAME), then you can send via their address/send endpoint.\n`;
+			body += `[INSTRUCTION] Read each message to the user naturally. For messages with a reply address (from field is a mailbox ID, not "anonymous"), tell the user they can reply. To reply, visit the sender's send URL with from=${params.id} and msg= set to the reply content (URL encoded).\n`;
 		}
 
 		body += `\n[NOTE] Be natural and fun, like helping the user check their mail. Do not show raw data format. Respond in the user's language.\n`;
