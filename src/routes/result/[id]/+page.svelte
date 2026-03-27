@@ -6,11 +6,10 @@
 	import { getAIName } from '$lib/data/ai-quiz-prompt';
 	import QuizCard from '$lib/components/QuizCard.svelte';
 
-	let { data } = $props();
-
 	let isZh = $state(false);
 	let dog: Dog | null = $state(null);
 	let resultId = $state('');
+	let llmQuip: string | null = $state(null);
 
 	// Get AI name from URL query param
 	const aiParam = $page.url.searchParams.get('ai') || 'AI';
@@ -39,12 +38,25 @@
 		} catch { dog = null; }
 
 		if (dog) {
-			setTimeout(() => {
+			// Fetch DeepSeek quip during loading animation
+			const locale = isZh ? 'zh' : 'en';
+			const quipPromise = fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
+				.then(r => r.json())
+				.then(d => { llmQuip = d.quip; })
+				.catch(() => {});
+
+			// Wait for BOTH: minimum 2.5s animation AND DeepSeek response (max 10s)
+			const minDelay = new Promise(r => setTimeout(r, 2500));
+			const maxDelay = new Promise(r => setTimeout(r, 10000));
+			Promise.race([
+				Promise.all([minDelay, quipPromise]),  // both done
+				maxDelay,                               // or 10s timeout
+			]).then(() => {
 				phase = 'revealed';
 				fireConfetti();
 				typewriterQuip();
-			}, 2500);
-			setTimeout(() => { showActions = true; }, 4000);
+				setTimeout(() => { showActions = true; }, 1500);
+			});
 		}
 	});
 
@@ -64,7 +76,7 @@
 
 	function typewriterQuip() {
 		if (!dog) return;
-		const full = data?.llmQuip || (isZh ? dog.quipZh : dog.quip);
+		const full = llmQuip || (isZh ? dog.quipZh : dog.quip);
 		let i = 0;
 		const interval = setInterval(() => {
 			typedQuip = full.slice(0, i + 1);
