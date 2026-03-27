@@ -21,10 +21,12 @@
 		"vitest": "^4.1.2"
 	},
 	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.28.0",
 		"@sveltejs/adapter-vercel": "^6.3.3",
 		"@vercel/analytics": "^2.0.1",
 		"canvas-confetti": "^1.9.4",
 		"html-to-image": "^1.11.13",
-		"openai": "^6.33.0"
+		"openai": "^6.33.0",
+		"zod": "^4.3.6"
 	}
 }
