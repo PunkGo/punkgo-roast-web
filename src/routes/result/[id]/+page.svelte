@@ -38,10 +38,10 @@
 		} catch { dog = null; }
 
 		if (dog) {
-			// Fetch DeepSeek quip during loading animation (fire and forget)
+			// Fetch DeepSeek quip during loading animation
 			const locale = isZh ? 'zh' : 'en';
 			const fetchStart = performance.now();
-			fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
+			const quipReady = fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
 				.then(r => r.json())
 				.then(d => {
 					const clientLatency = Math.round(performance.now() - fetchStart);
@@ -50,13 +50,20 @@
 				})
 				.catch(e => console.error(`[quip] fetch failed:`, e));
 
-			// Reveal after 4s loading animation (DeepSeek typically responds in ~2.7s)
-			setTimeout(() => {
+			// Wait for BOTH min animation (2.5s) AND DeepSeek, max 6s
+			const minWait = new Promise<void>(r => setTimeout(r, 2500));
+			const maxWait = new Promise<void>(r => setTimeout(r, 6000));
+
+			function reveal() {
 				phase = 'revealed';
 				fireConfetti();
 				typewriterQuip();
-			}, 4000);
-			setTimeout(() => { showActions = true; }, 5500);
+				setTimeout(() => { showActions = true; }, 1500);
+			}
+
+			// Reveal when both are done, or after 6s max
+			Promise.all([minWait, quipReady]).then(reveal);
+			maxWait.then(() => { if (phase === 'loading') reveal(); });
 		}
 	});
 
