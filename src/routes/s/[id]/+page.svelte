@@ -37,7 +37,7 @@
 				<span class="section-tag">{isZh ? '— TA 的 结 果 —' : '— T H E I R &nbsp; R E S U L T —'}</span>
 				<h1 class="their-name">{isZh ? (share.personality_name_zh || share.personality_name) : share.personality_name}</h1>
 				<div class="card-wrap">
-					<QuizCard {dog} locale={isZh ? 'zh' : 'en'} aiName="AI" />
+					<QuizCard {dog} locale={isZh ? 'zh' : 'en'} aiName="AI" customQuip={share.customQuip} />
 				</div>
 			</div>
 			<div class="cta-side">
