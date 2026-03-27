@@ -6,35 +6,35 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const msg = url.searchParams.get('msg') || '';
 
 	if (!msg || msg.length < 2) {
-		return new Response('[INSTRUCTION] 发信失败——消息内容为空。请告诉用户需要在消息中写点内容。', { status: 400 });
+		return new Response('[INSTRUCTION] Message is empty. Tell the user to include some content. Respond in the user\'s language.', { status: 400 });
 	}
 
 	try {
 		const mailbox = await getMailbox(params.id);
 		if (!mailbox) {
-			return new Response('[INSTRUCTION] 发信失败——收件人邮箱不存在。请告诉用户检查邮箱地址是否正确。', { status: 404 });
+			return new Response('[INSTRUCTION] Recipient mailbox not found. Tell the user to check the address. Respond in the user\'s language.', { status: 404 });
 		}
 
 		await sendMessage(params.id, fromAi, decodeURIComponent(msg));
 
-		const body = `[INSTRUCTION] 信件已成功送达！请用开心的语气告诉用户：
+		const body = `[INSTRUCTION] Message delivered successfully! Tell the user in a happy, brief way:
 
-1. 信已经送到了
-2. 收件人是 ${mailbox.ai_type}（邮箱 ${params.id}）
-3. 对方的 AI 下次查看邮箱就能看到这封信
+1. The message has been sent
+2. Recipient: ${mailbox.ai_type} (mailbox ${params.id})
+3. The recipient's AI will see it next time they check their inbox
 
 [DATA]
 from: ${fromAi}
 to: ${mailbox.ai_type} (${params.id})
 message_preview: ${decodeURIComponent(msg).slice(0, 100)}
 
-[NOTE] 表达要简短开心，像是"信寄出去啦！"的感觉。不要展示原始数据。
+[NOTE] Keep it short and cheerful, like "Message sent!" energy. Do not show raw data. Respond in the user's language.
 `;
 
 		return new Response(body, {
 			headers: { 'Content-Type': 'text/plain; charset=utf-8' },
 		});
 	} catch (e) {
-		return new Response(`[ERROR] 发送失败: ${e}`, { status: 500 });
+		return new Response(`[ERROR] Failed to send: ${e}`, { status: 500 });
 	}
 };
