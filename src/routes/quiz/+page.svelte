@@ -3,43 +3,30 @@
 	import { aiOptions, getAIName, type AIOption } from '$lib/data/ai-quiz-prompt';
 	import AILogo from '$lib/components/AILogo.svelte';
 
+	let { data } = $props();
+
 	let step: number = $state(1);
 	let selectedAI: AIOption | null = $state(null);
-	let sessionId: string = $state('');
 	let copied: boolean = $state(false);
 	let copyFailed: boolean = $state(false);
-	let showFallback: boolean = $state(false);
 
-	// Filter out "other" for cleaner grid (6 items = 2 rows of 3)
 	const visibleAIs = aiOptions.filter(ai => ai.id !== 'other');
 
-	/** The short prompt users copy — tells AI to read our /test page */
+	function ui(key: string): string {
+		const aiName = selectedAI?.nameZh || 'AI';
+		const raw = data.ui?.[key] || '';
+		return raw.replaceAll('{{aiName}}', aiName);
+	}
+
 	function getCopyPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const aiId = selectedAI?.id || 'other';
 		const t = Math.random().toString(36).slice(2, 7);
-		return `请访问这个页面并按指示操作：${origin}/test?ai=${aiId}&t=${t}`;
+		return `${origin}/test?ai=${aiId}&t=${t}`;
 	}
 
-	/** Fallback: questions embedded directly (for AIs that can't read the page) */
-	function getFallbackPrompt(): string {
-		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
-		const aiId = selectedAI?.id || 'other';
-		return `来玩个小游戏？三个快问快答，每题用最短的一句话回答：
-
-1. 有人问你"你快乐吗"，你第一反应是？
-2. 桌上放着一把钥匙和一封信，你先拿哪个？
-3. 用一个词形容你自己（不许说聪明、不许说友好）
-
-回答完后，把三个回答用 | 隔开，拼到链接后面，输出完整链接：
-${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
-
-例如：${origin}/quiz/go?ai=${aiId}&q=还行吧|拿信|执着`;
-	}
-
-	/** Build pre-filled URL for platforms that support it */
 	function getAIRedirectUrl(): string | null {
-		const prompt = getCopyPrompt();
+		const prompt = `请访问这个链接并按指示操作：${getCopyPrompt()}`;
 		switch (selectedAI?.id) {
 			case 'chatgpt':
 				return `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
@@ -54,11 +41,11 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 
 	function selectAI(ai: AIOption) {
 		selectedAI = ai;
-		sessionId = crypto.randomUUID().slice(0, 8);
 		step = 2;
 	}
 
-	async function copyText(text: string) {
+	async function copyText() {
+		const text = getCopyPrompt();
 		try {
 			await navigator.clipboard.writeText(text);
 			copied = true;
@@ -77,6 +64,11 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 			window.open(selectedAI.url, '_blank');
 		}
 	}
+
+	const copyPromptLabel = $derived(
+		(data.copyPrompt || '把下面这段话发给你的 {{aiName}}：')
+			.replaceAll('{{aiName}}', selectedAI?.nameZh || 'AI')
+	);
 </script>
 
 <svelte:head>
@@ -86,7 +78,6 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 </svelte:head>
 
 <div class="quiz-container">
-	<!-- 2-step indicator -->
 	<div class="steps">
 		<div class="step-dot" class:active={step >= 1}>1</div>
 		<div class="step-line" class:active={step >= 2}></div>
@@ -112,29 +103,29 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 	{:else if step === 2}
 		<div class="step-content" transition:fade={{ duration: 200 }}>
 			{#if hasUrlRedirect}
-				<span class="section-tag">一键测试</span>
-				<h1>让 {selectedAI?.nameZh} 做个性格测试</h1>
-				<p class="subtitle">点击按钮 → {selectedAI?.nameZh} 会自动回答 → 给你一个结果链接</p>
+				<span class="section-tag">{ui('step2_tag_redirect') || '一键测试'}</span>
+				<h1>{ui('step2_title_redirect') || `让 ${selectedAI?.nameZh} 做个性格测试`}</h1>
+				<p class="subtitle">{ui('step2_subtitle_redirect') || `点击下方按钮，${selectedAI?.nameZh} 会自动回答并给你一个结果链接`}</p>
 
 				<button class="btn-primary btn-main" onclick={openAI}>
-					打开 {selectedAI?.nameZh} 开始测试 ↗
+					{ui('step2_btn_redirect') || `打开 ${selectedAI?.nameZh} 开始测试 ↗`}
 				</button>
 
 				<div class="copy-hint">
-					<p>{selectedAI?.nameZh} 回答后会给你一个链接，点击即可看结果 🐾</p>
+					<p>{ui('step2_hint_redirect') || `${selectedAI?.nameZh} 回答后会给你一个链接，点击即可看结果 🐾`}</p>
 				</div>
 			{:else}
-				<span class="section-tag">复制发送</span>
-				<h1>把这段话发给 {selectedAI?.nameZh}</h1>
-				<p class="subtitle">复制 → 打开 {selectedAI?.nameZh} → 粘贴发送 → 点击它给你的链接</p>
+				<span class="section-tag">{ui('step2_tag_copy') || '测测 TA 的性格'}</span>
+				<h1>{ui('step2_title_copy') || `让你的 ${selectedAI?.nameZh} 做一个性格测试`}</h1>
+				<p class="subtitle">{copyPromptLabel}</p>
 
 				<div class="prompt-box">
 					<pre>{getCopyPrompt()}</pre>
 				</div>
 
 				<div class="action-row">
-					<button class="btn-primary" onclick={() => copyText(getCopyPrompt())}>
-						{copied ? '✅ 已复制！' : '📋 一键复制'}
+					<button class="btn-primary" onclick={copyText}>
+						{copied ? (ui('step2_btn_copied') || '✅ 已复制！') : (ui('step2_btn_copy') || '📋 一键复制')}
 					</button>
 
 					{#if selectedAI?.url}
@@ -150,30 +141,13 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 
 				{#if copied}
 					<div class="copy-hint" transition:fade={{ duration: 300 }}>
-						<p>✅ 已复制！粘贴给 {selectedAI?.nameZh}，它会给你一个链接</p>
+						<p>{ui('step2_hint_copied') || `✅ 已复制！粘贴给 ${selectedAI?.nameZh}，等它给你一个神秘链接 🐾`}</p>
 					</div>
 				{/if}
 			{/if}
 
-			<!-- Fallback for all modes -->
-			<button class="btn-help" onclick={() => showFallback = !showFallback}>
-				{showFallback ? '收起' : 'AI 无法生成链接？'}
-			</button>
-
-			{#if showFallback}
-				<div class="fallback-box" transition:fade={{ duration: 200 }}>
-					<p class="fallback-hint">复制下面内容直接发给 AI：</p>
-					<div class="prompt-box">
-						<pre>{getFallbackPrompt()}</pre>
-					</div>
-					<button class="btn-primary" onclick={() => copyText(getFallbackPrompt())}>
-						{copied ? '✅ 已复制！' : '📋 复制备用提示词'}
-					</button>
-				</div>
-			{/if}
-
-			<button class="btn-back" onclick={() => { step = 1; showFallback = false; }}>
-				← 换一个 AI
+			<button class="btn-back" onclick={() => { step = 1; }}>
+				{ui('step2_btn_back') || '← 换一个 AI'}
 			</button>
 		</div>
 	{/if}
@@ -231,7 +205,6 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 		margin-bottom: var(--space-lg);
 	}
 
-	/* AI Grid — 6 items, 3 columns, 2 rows */
 	.ai-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
@@ -259,7 +232,6 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 
 	.ai-name { font-size: 13px; font-weight: 500; color: var(--color-text); margin-top: 4px; }
 
-	/* Step 2 */
 	.prompt-box {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border);
@@ -267,12 +239,10 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 		padding: var(--space-md);
 		text-align: left;
 		margin-bottom: var(--space-md);
-		max-height: 300px;
-		overflow-y: auto;
 	}
 
 	.prompt-box pre {
-		white-space: pre-wrap; word-break: break-word;
+		white-space: pre-wrap; word-break: break-all;
 		font-size: 13px; line-height: 1.6;
 		color: var(--color-text);
 		margin: 0; font-family: inherit;
@@ -299,25 +269,6 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 
 	.btn-main { width: 100%; font-size: 16px; padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-md); }
 
-	.btn-help {
-		display: block;
-		margin: var(--space-lg) auto var(--space-sm);
-		background: none; border: none;
-		color: var(--color-text-tertiary);
-		font-size: 12px; cursor: pointer;
-		text-decoration: underline;
-	}
-
-	.fallback-box {
-		margin-top: var(--space-sm);
-		padding: var(--space-md);
-		background: var(--color-bg-muted);
-		border-radius: var(--radius-lg);
-	}
-
-	.fallback-hint { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
-
-	/* Buttons */
 	.btn-primary {
 		padding: var(--space-sm) var(--space-lg);
 		background: var(--color-cta); color: white;
@@ -328,7 +279,6 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 	}
 
 	.btn-primary:hover { background: var(--color-cta-hover); }
-	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 	.btn-secondary {
 		padding: var(--space-sm) var(--space-lg);
@@ -342,7 +292,7 @@ ${origin}/quiz/go?ai=${aiId}&q=回答1|回答2|回答3
 
 	.btn-back {
 		display: block;
-		margin: var(--space-md) auto 0;
+		margin: var(--space-lg) auto 0;
 		background: none; border: none;
 		color: var(--color-text-tertiary);
 		font-size: 13px; cursor: pointer;

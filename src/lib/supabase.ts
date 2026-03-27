@@ -110,7 +110,7 @@ const DEFAULT_QUIZ_CONFIG = {
 让用户对结果产生好奇心，想点击查看。`,
 };
 
-export async function getQuizConfig(): Promise<{ questions: string[]; prompt_template: string }> {
+export async function getQuizConfig(): Promise<{ questions: string[]; prompt_template: string; copy_prompt?: string; ui?: Record<string, string> }> {
 	try {
 		const rows = await supabaseFetch('quiz_config?id=eq.default&select=config');
 		return rows?.[0]?.config || DEFAULT_QUIZ_CONFIG;
