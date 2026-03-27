@@ -18,7 +18,13 @@ export const GET: RequestHandler = async ({ url }) => {
 		.replaceAll('{{origin}}', origin)
 		.replaceAll('{{aiId}}', aiId);
 
-	return new Response(body, {
-		headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+	// Append timestamp to prevent AI caching
+	const ts = `\n\n<!-- t=${Date.now()} -->`;
+
+	return new Response(body + ts, {
+		headers: {
+			'Content-Type': 'text/plain; charset=utf-8',
+			'Cache-Control': 'no-store, no-cache, must-revalidate',
+		},
 	});
 };
