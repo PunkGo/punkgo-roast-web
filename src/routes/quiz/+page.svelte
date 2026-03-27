@@ -5,16 +5,22 @@
 
 	let { data } = $props();
 
+	import { onMount } from 'svelte';
+
 	let step: number = $state(1);
 	let selectedAI: AIOption | null = $state(null);
 	let copied: boolean = $state(false);
 	let copyFailed: boolean = $state(false);
+	let isZh: boolean = $state(true);
+
+	onMount(() => { isZh = navigator.language.startsWith('zh'); });
 
 	const visibleAIs = aiOptions.filter(ai => ai.id !== 'other');
 
 	function ui(key: string): string {
 		const aiName = selectedAI?.nameZh || 'AI';
-		const raw = data.ui?.[key] || '';
+		const langKey = isZh ? key : `${key}_en`;
+		const raw = data.ui?.[langKey] || data.ui?.[key] || '';
 		return raw.replaceAll('{{aiName}}', aiName);
 	}
 
@@ -24,7 +30,8 @@
 		const aiName = selectedAI?.nameZh || 'AI';
 		const t = Math.random().toString(36).slice(2, 7);
 		const url = `${origin}/test?ai=${aiId}&t=${t}`;
-		const teaser = (data.copyPrompt || '').replaceAll('{{aiName}}', aiName);
+		const teaser = (isZh ? data.copyPromptZh : data.copyPromptEn || data.copyPromptZh || '')
+			.replaceAll('{{aiName}}', aiName);
 		return `${teaser}\n\n${url}`;
 	}
 
