@@ -11,6 +11,7 @@
 	const aiName = getAIName(aiId);
 
 	let status: 'analyzing' | 'done' | 'error' = $state('analyzing');
+	const isZh = typeof navigator !== 'undefined' && navigator.language.startsWith('zh');
 	let mbti = '';
 	let dogId = '';
 
@@ -50,13 +51,13 @@
 
 <div class="callback-page">
 	{#if status === 'analyzing'}
-		<p>正在分析 {aiName} 的性格...</p>
+		<p>{isZh ? `正在分析 ${aiName} 的性格...` : `Analyzing ${aiName}'s personality...`}</p>
 	{:else if status === 'error'}
-		<h1>回答内容不足</h1>
-		<p>没有收到有效的 AI 回答。请重新测试。</p>
-		<a href="/quiz" class="btn-primary">重新开始 🐾</a>
+		<h1>{isZh ? '回答内容不足' : 'Not enough answers'}</h1>
+		<p>{isZh ? '没有收到有效的 AI 回答。请重新测试。' : 'No valid AI response received. Please try again.'}</p>
+		<a href="/quiz" class="btn-primary">{isZh ? '重新开始 🐾' : 'Start over 🐾'}</a>
 	{:else}
-		<p>跳转中...</p>
+		<p>{isZh ? '跳转中...' : 'Redirecting...'}</p>
 	{/if}
 </div>
 

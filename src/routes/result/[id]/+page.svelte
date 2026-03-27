@@ -95,22 +95,27 @@
 		}, 35);
 	}
 
+	function getShareText(): string {
+		if (!dog) return '';
+		const name = isZh ? dog.nameZh : dog.name;
+		return isZh
+			? `我的${aiName}居然是${name}！来测测你的AI是什么性格 🐾`
+			: `My ${aiName} is a ${name}! Find out your AI's personality 🐾`;
+	}
+
 	function shareToX() {
 		if (!dog) return;
 		const url = `https://roast.punkgo.ai/s/${resultId}`;
-		const text = `我的${aiName}居然是${isZh ? dog.nameZh : dog.name}！来测测你的AI是什么性格 🐾`;
-		window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+		window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(getShareText())}&url=${encodeURIComponent(url)}`, '_blank');
 	}
 	function shareToWeibo() {
 		if (!dog) return;
 		const url = `https://roast.punkgo.ai/s/${resultId}`;
-		const text = `我的${aiName}居然是${isZh ? dog.nameZh : dog.name}！来测测你的AI是什么性格 🐾`;
-		window.open(`https://service.weibo.com/share/share.php?title=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+		window.open(`https://service.weibo.com/share/share.php?title=${encodeURIComponent(getShareText())}&url=${encodeURIComponent(url)}`, '_blank');
 	}
 	function shareToWhatsApp() {
 		if (!dog) return;
-		const text = `我的${aiName}居然是${isZh ? dog.nameZh : dog.name}！来测测你的AI是什么性格 🐾 https://roast.punkgo.ai/s/${resultId}`;
-		window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+		window.open(`https://wa.me/?text=${encodeURIComponent(getShareText() + ' https://roast.punkgo.ai/s/' + resultId)}`, '_blank');
 	}
 	function copyLink() {
 		navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`).then(() => {
