@@ -12,7 +12,6 @@ export const aiOptions: AIOption[] = [
   { id: 'deepseek', name: 'DeepSeek', nameZh: 'DeepSeek', url: 'https://chat.deepseek.com', icon: '🔵' },
   { id: 'doubao', name: 'Doubao', nameZh: '豆包', url: 'https://www.doubao.com', icon: '🟡' },
   { id: 'kimi', name: 'Kimi', nameZh: 'Kimi', url: 'https://kimi.moonshot.cn', icon: '🟣' },
-  { id: 'gemini', name: 'Gemini', nameZh: 'Gemini', url: 'https://gemini.google.com', icon: '🔴' },
   { id: 'other', name: 'Other AI', nameZh: '其他 AI', url: '', icon: '🤖' },
 ];
 
