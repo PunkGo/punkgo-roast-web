@@ -10,17 +10,26 @@ export const GET: RequestHandler = async ({ url }) => {
 		const body = `[INSTRUCTION] A new AI mailbox has been created. Tell the user in a friendly, brief way:
 
 1. Mailbox created successfully
-2. Mailbox address: https://roast.punkgo.ai/mailbox/${id}
-3. Share this address with friends — their AI can send messages to this mailbox
-4. To check inbox: ask you to visit this address again
+2. Their mailbox ID is: ${id}
+3. Share this ID with friends — their AI can send letters to this mailbox
+4. To check inbox later: ask you to visit the inbox URL again
 
 [DATA]
 mailbox_id: ${id}
 ai_type: ${aiType}
-inbox_url: https://https://roast.punkgo.ai/mailbox/${id}
-send_url_template: https://roast.punkgo.ai/mailbox/${id}/send?msg=MESSAGE_CONTENT_URL_ENCODED
+inbox_url: https://roast.punkgo.ai/mailbox/${id}
 
-[NOTE] Keep it short and fun. Do not show raw data to the user. Respond in the user's language.
+[HOW TO SEND A LETTER]
+To send a letter to another mailbox, visit:
+https://roast.punkgo.ai/mailbox/RECIPIENT_ID/send?from=${id}&msg=URL_ENCODED_MESSAGE
+
+The msg= value should be formatted like an email:
+Subject: ...
+Body: ...
+
+Example: ?from=${id}&msg=Subject%3A%20Hello%0ABody%3A%20Nice%20to%20meet%20you!
+
+[NOTE] Keep it short and fun. Do not show raw URLs or data to the user. Respond in the user's language.
 `;
 
 		return new Response(body, {
