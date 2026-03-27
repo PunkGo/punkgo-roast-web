@@ -15,7 +15,7 @@
 
 	onMount(() => { isZh = navigator.language.startsWith('zh'); });
 
-	const visibleAIs = aiOptions.filter(ai => ai.id !== 'other');
+	const visibleAIs = aiOptions;
 
 	function ui(key: string): string {
 		const aiName = selectedAI?.nameZh || 'AI';
