@@ -22,6 +22,7 @@
 		{ en: 'INFP users are most likely to apologize to AI', zh: 'INFP 用户最可能跟 AI 道歉' },
 	];
 
+	let initialized = $state(false);
 	let phase: 'loading' | 'card-back' | 'flipping' | 'revealed' = $state('loading');
 	let typedQuip = $state('');
 	let showActions = $state(false);
@@ -36,6 +37,7 @@
 			const mbti = decodeResultId(resultId);
 			dog = getDogByMBTI(mbti);
 		} catch { dog = null; }
+		initialized = true;
 
 		if (dog) {
 			const locale = isZh ? 'zh' : 'en';
@@ -141,7 +143,13 @@
 <!-- Single column, centered, consistent layout across all phases -->
 <div class="result-page">
 	<div class="center-col">
-		{#if !dog}
+		{#if !initialized}
+			<!-- Wait for onMount before showing anything -->
+			<div class="phase-block">
+				<div class="paw-ring">🐾</div>
+			</div>
+
+		{:else if !dog}
 			<div class="phase-block">
 				<span class="section-tag">— N O T &nbsp; F O U N D —</span>
 				<h2>{isZh ? '这个结果不存在' : "This result doesn't exist"}</h2>
