@@ -41,12 +41,14 @@
 			// Fetch DeepSeek quip during loading animation
 			const locale = isZh ? 'zh' : 'en';
 			const fetchStart = performance.now();
+			let fetchedQuip: string | null = null;
+
 			const quipReady = fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`)
 				.then(r => r.json())
 				.then(d => {
 					const clientLatency = Math.round(performance.now() - fetchStart);
 					console.log(`[quip] client=${clientLatency}ms server=${d.latency}ms quip=${d.quip ? 'ok' : 'null'}`);
-					if (d.quip) llmQuip = d.quip;
+					fetchedQuip = d.quip || null;
 				})
 				.catch(e => console.error(`[quip] fetch failed:`, e));
 
@@ -54,16 +56,21 @@
 			const minWait = new Promise<void>(r => setTimeout(r, 2500));
 			const maxWait = new Promise<void>(r => setTimeout(r, 6000));
 
+			let revealed = false;
 			function reveal() {
+				if (revealed) return;
+				revealed = true;
+				llmQuip = fetchedQuip;
 				phase = 'revealed';
 				fireConfetti();
-				typewriterQuip();
+				// Pass quip directly instead of reading $state
+				const quipText = fetchedQuip || (isZh ? dog!.quipZh : dog!.quip);
+				typewriterQuip(quipText);
 				setTimeout(() => { showActions = true; }, 1500);
 			}
 
-			// Reveal when both are done, or after 6s max
 			Promise.all([minWait, quipReady]).then(reveal);
-			maxWait.then(() => { if (phase === 'loading') reveal(); });
+			maxWait.then(reveal);
 		}
 	});
 
@@ -81,9 +88,9 @@
 
 	let cursorVisible = $state(true);
 
-	function typewriterQuip() {
+	function typewriterQuip(text?: string) {
 		if (!dog) return;
-		const full = llmQuip || (isZh ? dog.quipZh : dog.quip);
+		const full = text || llmQuip || (isZh ? dog.quipZh : dog.quip);
 		let i = 0;
 		const interval = setInterval(() => {
 			typedQuip = full.slice(0, i + 1);
