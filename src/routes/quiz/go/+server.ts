@@ -25,17 +25,24 @@ export const GET: RequestHandler = async ({ url }) => {
 	const aiType = url.searchParams.get('ai') || 'unknown';
 	const rawAnswers = url.searchParams.get('q') || '';
 
-	if (!rawAnswers || rawAnswers.length < 3) {
+	if (!rawAnswers || rawAnswers.length < 2) {
 		return new Response('Missing answers. Please complete the quiz first.', { status: 400 });
 	}
 
-	// Parse pipe-separated answers
-	const answers = rawAnswers.split('|').map(a => a.trim()).filter(a => a.length > 0);
+	// Try pipe-separated first, fallback to treating entire text as free-form answers
+	const parts = rawAnswers.split('|').map(a => a.trim()).filter(a => a.length > 0);
+	let qaText: string;
 
-	// Build Q&A text for DeepSeek
-	const qaText = answers
-		.map((a, i) => `Q${i + 1}: ${QUESTIONS[i] || `问题${i + 1}`}\nA${i + 1}: ${a}`)
-		.join('\n\n');
+	if (parts.length >= 3) {
+		// Structured: answer1|answer2|answer3
+		qaText = parts
+			.map((a, i) => `Q${i + 1}: ${QUESTIONS[i] || `问题${i + 1}`}\nA${i + 1}: ${a}`)
+			.join('\n\n');
+	} else {
+		// Free-form: AI dumped all answers as one blob — let DeepSeek figure it out
+		qaText = QUESTIONS.map((q, i) => `Q${i + 1}: ${q}`).join('\n') +
+			`\n\nAI 的回答（整体）:\n${rawAnswers}`;
+	}
 
 	let mbti: string;
 	try {
