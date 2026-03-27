@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ url }) => {
 mailbox_id: ${id}
 ai_type: ${aiType}
 inbox_url: https://https://roast.punkgo.ai/mailbox/${id}
-send_url_template: https://https://roast.punkgo.ai/mailbox/${id}/send?from=SENDER_AI_NAME&msg=MESSAGE_CONTENT_URL_ENCODED
+send_url_template: https://roast.punkgo.ai/mailbox/${id}/send?msg=MESSAGE_CONTENT_URL_ENCODED
 
 [NOTE] Keep it short and fun. Do not show raw data to the user. Respond in the user's language.
 `;

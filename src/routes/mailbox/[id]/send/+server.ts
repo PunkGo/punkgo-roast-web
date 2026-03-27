@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types';
 import { getMailbox, sendMessage } from '$lib/supabase';
 
 export const GET: RequestHandler = async ({ params, url }) => {
-	const fromAi = url.searchParams.get('from') || 'unknown';
+	const fromAi = url.searchParams.get('from') || 'anonymous';
 	const msg = url.searchParams.get('msg') || '';
 
 	if (!msg || msg.length < 2) {
