@@ -6,7 +6,7 @@
 	interface Props {
 		dog: Dog;
 		kennelId: string;
-		recoveryCode: string;
+		recoveryCode: string; // empty string = not available (re-view mode)
 		aiName: string;
 		issuedDate: string;
 		isFirstTime: boolean;
@@ -173,20 +173,26 @@
 								{#if qrDataURL}
 									<img src={qrDataURL} alt="QR Code" class="qr-code" />
 								{/if}
-								<div class="code-area">
-									<span class="code-display">{displayCode}</span>
-									<button
-										class="toggle-btn"
-										onclick={toggleCode}
-										aria-label={showCode ? 'Hide recovery code' : 'Show recovery code'}
-									>
-										{showCode ? '🙈' : '👁'}
-									</button>
-								</div>
+								{#if recoveryCode}
+									<div class="code-area">
+										<span class="code-display">{displayCode}</span>
+										<button
+											class="toggle-btn"
+											onclick={toggleCode}
+											aria-label={showCode ? 'Hide recovery code' : 'Show recovery code'}
+										>
+											{showCode ? '🙈' : '👁'}
+										</button>
+									</div>
+								{:else}
+									<p class="code-hint">{isZh ? '恢复码仅在首次领取时显示' : 'Recovery code shown only on first claim'}</p>
+								{/if}
 							</div>
 
 							<!-- Warning -->
-							<p class="warning-text">{warningText}</p>
+							{#if recoveryCode}
+								<p class="warning-text">{warningText}</p>
+							{/if}
 
 							<!-- Footer -->
 							<div class="card-footer">
@@ -489,6 +495,13 @@
 		text-align: center;
 		line-height: 1.5;
 		padding: 0 4px;
+	}
+	.code-hint {
+		font-size: 11px;
+		color: var(--color-text-tertiary);
+		font-style: italic;
+		text-align: center;
+		margin: 4px 0 0;
 	}
 
 	/* Footer */
