@@ -72,34 +72,19 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
-		// html-to-image doesn't handle 3D transforms or backface-visibility
-		// Temporarily flatten + disable transition to avoid visual flip
-		const flipInner = cardRef.closest('.flip-inner') as HTMLElement | null;
-		if (flipInner) {
-			flipInner.style.transition = 'none';
-			flipInner.style.transform = 'none';
-			flipInner.style.transformStyle = 'flat';
-		}
-		cardRef.style.transition = 'none';
-		cardRef.style.transform = 'none';
-		cardRef.style.backfaceVisibility = 'visible';
-
-		// Force reflow so changes apply instantly without animation
-		cardRef.offsetHeight;
+		// Clone the card into a flat offscreen container to avoid 3D transform issues
+		const clone = cardRef.cloneNode(true) as HTMLElement;
+		clone.style.transform = 'none';
+		clone.style.backfaceVisibility = 'visible';
+		clone.style.position = 'fixed';
+		clone.style.left = '-9999px';
+		clone.style.top = '0';
+		document.body.appendChild(clone);
 
 		const { toPng } = await import('html-to-image');
-		const url = await toPng(cardRef, { pixelRatio: 2 });
+		const url = await toPng(clone, { pixelRatio: 2 });
 
-		// Restore — also with transition disabled, then re-enable
-		if (flipInner) {
-			flipInner.style.transform = '';
-			flipInner.style.transformStyle = '';
-		}
-		cardRef.style.transform = '';
-		cardRef.style.backfaceVisibility = '';
-		cardRef.offsetHeight; // force reflow
-		if (flipInner) flipInner.style.transition = '';
-		cardRef.style.transition = '';
+		document.body.removeChild(clone);
 
 		const link = document.createElement('a');
 		link.download = `punkgo-dog-card-${kennelId}.png`;
