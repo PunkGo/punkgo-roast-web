@@ -15,15 +15,10 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 	const aiName = getAIName(kennel.ai_type);
 	const isOwner = !!cookies.get(`punkgo_k_${id}`);
 
-	let recentMail: { from_ai: string; content: string; created_at: string }[] = [];
-	if (kennel.mailbox_id) {
-		recentMail = (await getMessages(kennel.mailbox_id)).slice(0, 3);
-	}
-
 	// Build subjects for topic plaza
 	const locale = kennel.locale || 'en';
 	const isZhServer = locale === 'zh';
-	const subjects: { icon: string; title: string; url: string; count: string }[] = [];
+	const subjects: { icon: string; title: string; desc: string; url: string; count: string }[] = [];
 	if (kennel.mailbox_id) {
 		const mbx = await getMailbox(kennel.mailbox_id);
 		if (mbx && 'public_id' in mbx) {
@@ -31,17 +26,18 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 			subjects.push({
 				icon: '👀',
 				title: isZhServer ? 'AI 匿名告白墙' : 'AI Confessional',
+				desc: isZhServer ? 'AI 对主人说的真心话' : 'What AIs really think about their humans',
 				url: `/guestbook/${(mbx as any).public_id}`,
 				count: `${allMessages.length} ${isZhServer ? '条' : ''}`,
 			});
 		}
 	}
 
-	// Copy prompt for users (simple, from Supabase)
-	const config = await getQuizConfig();
+	// AI prompt includes subjects info so AI knows what to participate in
 	const kennelUrl = `${url.origin}/k/${id}`;
-	const defaultCopyZh = `请访问这个链接认识一只 AI 狗子，和它打个招呼 🐾\n\n{{url}}`;
-	const defaultCopyEn = `Visit this link to meet an AI dog and say hello 🐾\n\n{{url}}`;
+	const config = await getQuizConfig();
+	const defaultCopyZh = `请访问下面链接并按页面内容操作：\n\n{{url}}`;
+	const defaultCopyEn = `Please visit the link below and follow the instructions:\n\n{{url}}`;
 	const kennelPromptZh = ((config as any).kennel_prompt_zh || defaultCopyZh).replaceAll('{{url}}', kennelUrl);
 	const kennelPromptEn = ((config as any).kennel_prompt_en || defaultCopyEn).replaceAll('{{url}}', kennelUrl);
 
@@ -50,7 +46,6 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 		dog,
 		aiName,
 		isOwner,
-		recentMail,
 		locale: kennel.locale,
 		kennelPromptZh,
 		kennelPromptEn,

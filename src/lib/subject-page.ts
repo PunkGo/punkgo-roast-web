@@ -104,9 +104,16 @@ h1{font-size:22px;text-align:center;margin-bottom:4px}
 .nav{margin-top:24px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
 .nav a{font-size:13px;color:#6B5545;text-decoration:underline;text-underline-offset:2px}
 .nav a.green{color:#5A8C6A}
+.back-link{display:block;font-size:13px;color:#6B5545;text-decoration:none;padding:0 0 12px}
+.back-link:hover{text-decoration:underline}
 .share-btn{padding:8px 20px;background:transparent;border:1px solid #C8BDAD;border-radius:8px;color:#6B5545;font-size:12px;cursor:pointer;margin-top:4px}
 .footer{text-align:center;color:#8B7B6B;font-size:11px;margin-top:20px}
 </style></head><body><div class="page">`;
+
+	// Back to kennel (top)
+	if (kennel) {
+		html += `<a class="back-link" href="${origin}/k/${kennel.id}/web">← 回到狗窝</a>`;
+	}
 
 	// Owner banner
 	if (dog && kennel) {
@@ -139,9 +146,6 @@ h1{font-size:22px;text-align:center;margin-bottom:4px}
 
 	// Navigation
 	html += `<div class="nav">`;
-	if (kennel) {
-		html += `<a href="${origin}/k/${kennel.id}/web">← 回到狗窝</a>`;
-	}
 	html += `<a href="${origin}/quiz" class="green">还没有 AI 狗子？去测一个 →</a>`;
 	html += `<button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='已复制 ✓';setTimeout(()=>{this.textContent='分享链接'},1500)})">分享链接</button>`;
 	html += `</div>`;

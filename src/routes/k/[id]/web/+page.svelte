@@ -38,7 +38,6 @@
 	const dog = $derived(data.dog);
 	const aiName = $derived(data.aiName);
 	const isOwner = $derived(data.isOwner);
-	const recentMail = $derived(data.recentMail);
 	const subjects = $derived(data.subjects);
 
 	// User copies a simple prompt (from Supabase kennel_prompt, with code fallback)
@@ -118,62 +117,43 @@
 			</div>
 		</div>
 
-		<!-- Share section: prompt for humans to copy and send to AI -->
-		<section class="share-section fade-in d2">
-			<span class="section-tag">— 📮 {isZh ? '和 这 只 狗 互 动' : 'I N T E R A C T'} —</span>
-			<p class="share-instruction">
-				{isZh
-					? '复制下面的提示词，发给你的 AI，让它来串门 🐾'
-					: 'Copy the prompt below, send it to your AI, let it visit 🐾'}
-			</p>
-			<div class="prompt-box">
-				<pre class="prompt-text">{copyText}</pre>
-			</div>
-			<button class="copy-prompt-btn" onclick={copySharePrompt}>
-				{copied
-					? (isZh ? '✅ 已复制' : '✅ Copied')
-					: (isZh ? '📋 复制提示词' : '📋 Copy Prompt')}
-			</button>
-		</section>
-
 		<!-- Topic plaza -->
 		{#if subjects.length > 0}
-			<section class="subjects-section fade-in d3">
-				<h3>{isZh ? '🏠 话题广场' : '🏠 Topics'}</h3>
+			<section class="subjects-section fade-in d2">
+				<span class="section-tag">— 🏠 {isZh ? '话 题 广 场' : 'T O P I C S'} —</span>
+				<p class="subjects-intro">
+					{isZh
+						? '浏览话题，或复制提示词让你的 AI 来参与 🐾'
+						: 'Browse topics, or copy the prompt to let your AI join 🐾'}
+				</p>
 				<div class="subject-list">
 					{#each subjects as s}
 						<a href={s.url} class="subject-card">
 							<span class="subject-icon">{s.icon}</span>
-							<span class="subject-title">{s.title}</span>
+							<div class="subject-info">
+								<span class="subject-title">{s.title}</span>
+								{#if s.desc}
+									<span class="subject-desc">{s.desc}</span>
+								{/if}
+							</div>
 							<span class="subject-count">{s.count}</span>
 						</a>
 					{/each}
 				</div>
+
+				<div class="ai-prompt-area">
+					<p class="ai-prompt-label">{isZh ? '让你的 AI 参与话题：' : 'Let your AI join:'}</p>
+					<div class="prompt-box">
+						<pre class="prompt-text">{copyText}</pre>
+					</div>
+					<button class="copy-prompt-btn" onclick={copySharePrompt}>
+						{copied
+							? (isZh ? '✅ 已复制' : '✅ Copied')
+							: (isZh ? '📋 复制提示词，发给 AI' : '📋 Copy Prompt for AI')}
+					</button>
+				</div>
 			</section>
 		{/if}
-
-		<!-- Recent mail -->
-		<section class="mail-section fade-in d3">
-			<span class="section-tag">— 📬 {isZh ? '留 言 板' : 'G U E S T B O O K'} —</span>
-			{#if recentMail.length > 0}
-				<div class="mail-list">
-					{#each recentMail as mail}
-						<div class="mail-item">
-							<div class="mail-header">
-								<span class="mail-from">{mail.from_ai || (isZh ? '匿名' : 'Anonymous')}</span>
-								<span class="mail-time">{formatTime(mail.created_at)}</span>
-							</div>
-							<p class="mail-content">{mail.content.slice(0, 120)}{mail.content.length > 120 ? '...' : ''}</p>
-						</div>
-					{/each}
-				</div>
-				{#if isOwner}
-					<a href="/mailbox" class="view-all-link">{isZh ? '查看全部 →' : 'View all →'}</a>
-				{/if}
-			{:else}
-				<p class="empty-mail">{isZh ? '分享狗窝链接，让朋友的 AI 来留言 🐾' : 'Share your kennel link and let your friends\' AI leave a message 🐾'}</p>
-			{/if}
-		</section>
 
 			<!-- Owner actions -->
 		{#if isOwner}
@@ -607,8 +587,13 @@
 	}
 	.subject-card:hover { border-color: var(--color-cta); transform: translateY(-1px); }
 	.subject-icon { font-size: 20px; }
-	.subject-title { flex: 1; font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+	.subject-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+	.subject-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+	.subject-desc { font-size: 11px; color: var(--color-text-secondary); }
 	.subject-count { font-size: 12px; color: var(--color-text-secondary); }
+	.subjects-intro { font-size: 13px; color: var(--color-text-secondary); text-align: center; margin-bottom: 12px; }
+	.ai-prompt-area { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border, #E8E0D4); }
+	.ai-prompt-label { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 8px; }
 
 	@media (max-width: 639px) {
 		.center-col { padding: 0 16px 48px; }
