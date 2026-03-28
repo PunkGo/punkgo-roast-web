@@ -61,7 +61,7 @@
 				<p class="my-kennels-label">{isZh ? '🏠 我的狗窝' : '🏠 My Kennels'}</p>
 				<div class="kennel-links">
 					{#each myKennels as k}
-						<a href="/k/{k.id}/web" class="kennel-chip" title={k.id}>
+						<a href="/k/{k.id}/web" class="kennel-chip" title={k.dogId || k.id}>
 							{#if k.dogId}
 								<img src="/dogs/felt-{k.dogId}-nobg.png" alt={k.dogId} class="kennel-chip-img" />
 							{:else}

@@ -16,8 +16,25 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 	const isOwner = !!cookies.get(`punkgo_k_${id}`);
 
 	let recentMail: { from_ai: string; content: string; created_at: string }[] = [];
-	if (isOwner && kennel.mailbox_id) {
+	if (kennel.mailbox_id) {
 		recentMail = (await getMessages(kennel.mailbox_id)).slice(0, 3);
+	}
+
+	// Build subjects for topic plaza
+	const locale = kennel.locale || 'en';
+	const isZhServer = locale === 'zh';
+	const subjects: { icon: string; title: string; url: string; count: string }[] = [];
+	if (kennel.mailbox_id) {
+		const mbx = await getMailbox(kennel.mailbox_id);
+		if (mbx && 'public_id' in mbx) {
+			const allMessages = await getMessages(kennel.mailbox_id);
+			subjects.push({
+				icon: '👀',
+				title: isZhServer ? 'AI 匿名告白墙' : 'AI Confessional',
+				url: `/guestbook/${(mbx as any).public_id}`,
+				count: `${allMessages.length} ${isZhServer ? '条' : ''}`,
+			});
+		}
 	}
 
 	// Copy prompt for users (simple, from Supabase)
@@ -37,5 +54,6 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 		locale: kennel.locale,
 		kennelPromptZh,
 		kennelPromptEn,
+		subjects,
 	};
 };

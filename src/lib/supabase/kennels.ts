@@ -75,6 +75,11 @@ export async function updateKennel(
 	return true;
 }
 
+export async function getKennelByMailboxId(mailboxId: string): Promise<Kennel | null> {
+	const rows = await supabaseFetch(`kennels?mailbox_id=eq.${mailboxId}&select=*`);
+	return rows?.[0] || null;
+}
+
 export async function getKennelByRecoveryCode(code: string): Promise<Kennel | null> {
 	const formatted = formatRecoveryCode(code);
 	const rows = await supabaseFetch(`kennels?recovery_code=eq.${formatted}&select=*`);
