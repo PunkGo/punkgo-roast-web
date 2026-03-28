@@ -28,12 +28,8 @@
 	const isZh = $derived(locale === 'zh');
 
 	let phase: 'loading' | 'ready' | 'flipped' = $state('loading');
-	let showCode: boolean = $state(true);
+	let showCode: boolean = $state(isFirstTime);
 	let qrDataURL: string = $state('');
-
-	$effect(() => {
-		showCode = isFirstTime;
-	});
 	let cardRef: HTMLElement | null = $state(null);
 
 	const maskedCode = '****-****-****';
