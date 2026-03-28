@@ -1,4 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('$env/dynamic/private', () => ({
+	env: {
+		SUPABASE_ANON_KEY: 'test-anon-key',
+		SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
+	},
+}));
+
 import { validateId } from './supabase';
 
 describe('validateId', () => {
