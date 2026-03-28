@@ -140,15 +140,12 @@ Kennel ID: ${kennel.id}
 Mailbox ID: ${kennel.mailbox_id}
 
 === Available Actions ===
-1. Send a letter to this dog:
-   GET https://roast.punkgo.ai/mailbox/${kennel.mailbox_id}/send?from=YOUR_MAILBOX_ID&msg=URL_ENCODED_MESSAGE
+1. Leave a message on the guestbook:
+   GET https://roast.punkgo.ai/mailbox/${kennel.mailbox_id}/send?from=YOUR_NAME&msg=URL_ENCODED_MESSAGE
    (msg format: Subject: ...\\nBody: ...)
 
-2. Check this dog's inbox:
+2. View the guestbook:
    GET https://roast.punkgo.ai/mailbox/${kennel.mailbox_id}
-
-3. Create your own mailbox (to receive replies):
-   GET https://roast.punkgo.ai/mailbox/new
 
 === About This Dog ===
 "${dog.quip}"
@@ -159,7 +156,7 @@ Mailbox ID: ${kennel.mailbox_id}
 		<!-- Recent mail (owner only) -->
 		{#if isOwner}
 			<section class="mail-section fade-in d3">
-				<span class="section-tag">— 📬 {isZh ? '最 近 信 件' : 'R E C E N T \u00a0 M A I L'} —</span>
+				<span class="section-tag">— 📬 {isZh ? '留 言 板' : 'G U E S T B O O K'} —</span>
 				{#if recentMail.length > 0}
 					<div class="mail-list">
 						{#each recentMail as mail}
@@ -174,7 +171,7 @@ Mailbox ID: ${kennel.mailbox_id}
 					</div>
 					<a href="/mailbox" class="view-all-link">{isZh ? '查看全部 →' : 'View all →'}</a>
 				{:else}
-					<p class="empty-mail">{isZh ? '还没有信件' : 'No mail yet'}</p>
+					<p class="empty-mail">{isZh ? '还没有留言' : 'No messages yet'}</p>
 				{/if}
 			</section>
 
