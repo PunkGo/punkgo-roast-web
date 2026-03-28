@@ -50,7 +50,7 @@
 		<img src="/dogs/felt-{dog.id}-nobg.png" alt={isZh ? dog.nameZh : dog.name} class="qc-img" />
 	</div>
 	<div class="card-body">
-		<p class="card-ai-label">你的 {aiName} 是</p>
+		<p class="card-ai-label">{isZh ? `你的 ${aiName} 是` : `Your ${aiName} is`}</p>
 		<span class="card-name">{isZh ? dog.nameZh : dog.name}</span>
 		<span class="card-meta">{dog.mbti} · {dog.breed}</span>
 		<p class="card-quip">"{customQuip || (isZh ? dog.quipZh : dog.quip)}"</p>
