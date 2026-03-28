@@ -3,3 +3,5 @@ export { createMailbox, getMailbox, getMailboxByPublicId, updateMailboxAiType } 
 export { sendMessage, getMessages } from './messages';
 export { saveResult, getResult } from './results';
 export { getQuizConfig } from './quiz-config';
+export { createKennel, getKennel, updateKennel, getKennelByRecoveryCode } from './kennels';
+export type { Kennel } from './kennels';
