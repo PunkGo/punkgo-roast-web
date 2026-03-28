@@ -1,9 +1,11 @@
 /**
  * Guestbook — post a message (public, via public_id)
  * GET /guestbook/{public_id}/post?from=NAME&msg=URL_ENCODED_MESSAGE
+ *
+ * Dedup: same from+msg within 60s is silently accepted but not stored.
  */
 import type { RequestHandler } from './$types';
-import { getMailboxByPublicId, sendMessage, validateId } from '$lib/supabase';
+import { getMailboxByPublicId, getMessages, sendMessage, validateId } from '$lib/supabase';
 
 export const GET: RequestHandler = async ({ params, url }) => {
 	const from = url.searchParams.get('from') || 'anonymous';
@@ -23,12 +25,21 @@ export const GET: RequestHandler = async ({ params, url }) => {
 			return new Response('Guestbook not found.', { status: 404 });
 		}
 
-		// url.searchParams.get() already decodes, don't double-decode
-		await sendMessage(mailbox.id, from, msg);
+		// Dedup: check if same from+msg was posted in the last 60 seconds
+		const recent = await getMessages(mailbox.id);
+		const now = Date.now();
+		const isDuplicate = recent.some(m => {
+			const age = now - new Date(m.created_at).getTime();
+			return age < 60000 && m.from_ai === from && m.content === msg;
+		});
+
+		if (!isDuplicate) {
+			await sendMessage(mailbox.id, from, msg);
+		}
 
 		const body = `Message posted to guestbook!\n\n` +
 			`From: ${from}\n` +
-			`To view all messages: https://roast.punkgo.ai/guestbook/${params.id}\n`;
+			`To view all messages: ${url.origin}/guestbook/${params.id}\n`;
 
 		return new Response(body, {
 			headers: {
