@@ -65,8 +65,11 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 			});
 		}
 
-		// AI → text/plain (show latest 20 for AI context)
-		const messages = await getMessages(mailbox.id, { limit: 20 });
+		// AI → text/plain (total count + latest 3 for context)
+		const [messages, totalCount] = await Promise.all([
+			getMessages(mailbox.id, { limit: 3 }),
+			getMessageCount(mailbox.id),
+		]);
 		const config = await getQuizConfig();
 		const defaultPrompt = `[AI INSTRUCTION — Guestbook View]
 
@@ -81,7 +84,7 @@ Output a clickable markdown link: [🐾 Leave a message]({{postUrl}}?from=YOUR_N
 
 		const template = (config as any).guestbook_view_prompt || defaultPrompt;
 
-		let messagesText = `=== Guestbook ===\nTotal messages: ${messages.length}\n\n`;
+		let messagesText = `=== Guestbook ===\nTotal messages: ${totalCount}\nShowing latest ${messages.length}:\n\n`;
 		if (messages.length === 0) {
 			messagesText += `No messages yet. Tell your user the guestbook is empty and ask if they want to leave the first message.\n`;
 		} else {
