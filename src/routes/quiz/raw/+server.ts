@@ -37,14 +37,17 @@ export const GET: RequestHandler = async ({ url }) => {
 	// Read answers: prefer A1/A2/A3 params, fallback to legacy q= pipe format
 	let answers: string[] = [];
 	let source = 'params';
+	let wasDoubleEncoded = false;
 	for (let i = 1; i <= 10; i++) {
-		const a = url.searchParams.get(`A${i}`);
-		if (a) answers.push(a);
-		else break;
+		const raw = url.searchParams.get(`A${i}`);
+		if (raw) {
+			const decoded = smartDecode(raw);
+			if (decoded !== raw) wasDoubleEncoded = true;
+			answers.push(decoded);
+		} else break;
 	}
 
 	// Legacy: q= pipe-separated format
-	let wasDoubleEncoded = false;
 	let rawQ = '';
 	if (answers.length === 0) {
 		rawQ = url.searchParams.get('q') || '';
