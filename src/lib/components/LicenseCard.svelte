@@ -202,7 +202,7 @@
 						&#128248; {isZh ? '下载保存狗卡' : 'Download Dog Card'}
 					</button>
 					<button class="action-btn close-btn" onclick={onclose}>
-						&#10005; {isZh ? '关闭' : 'Close'}
+						{isFirstTime ? (isZh ? '🏠 进入狗窝' : '🏠 Enter Kennel') : (isZh ? '✕ 关闭' : '✕ Close')}
 					</button>
 				</div>
 			{/if}
