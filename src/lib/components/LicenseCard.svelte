@@ -31,6 +31,8 @@
 	let showCode: boolean = $state(isFirstTime);
 	let qrDataURL: string = $state('');
 	let cardRef: HTMLElement | null = $state(null);
+	let savePreviewUrl: string = $state('');
+	const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
 	const maskedCode = '****-****-****';
 	const displayCode = $derived(showCode ? recoveryCode : maskedCode);
@@ -76,7 +78,6 @@
 		const wrapper = document.createElement('div');
 		wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;';
 		const clone = cardRef.cloneNode(true) as HTMLElement;
-		// Strip all CSS classes that carry 3D transforms
 		clone.className = '';
 		clone.style.cssText = `
 			width: ${cardRef.offsetWidth}px;
@@ -95,14 +96,20 @@
 		document.body.appendChild(wrapper);
 
 		const { toPng } = await import('html-to-image');
-		const url = await toPng(clone, { pixelRatio: 2 });
+		const dataUrl = await toPng(clone, { pixelRatio: 2 });
 
 		document.body.removeChild(wrapper);
 
-		const link = document.createElement('a');
-		link.download = `punkgo-dog-card-${kennelId}.png`;
-		link.href = url;
-		link.click();
+		if (isMobile) {
+			// Mobile: show image for long-press save (download doesn't work in WeChat/Douyin WebView)
+			savePreviewUrl = dataUrl;
+		} else {
+			// Desktop: trigger download
+			const link = document.createElement('a');
+			link.download = `punkgo-dog-card-${kennelId}.png`;
+			link.href = dataUrl;
+			link.click();
+		}
 	}
 
 	onMount(() => {
@@ -212,7 +219,7 @@
 				{/if}
 				<div class="actions">
 					<button class="action-btn save-btn" onclick={saveAsPng}>
-						&#128248; {isZh ? '下载保存狗卡' : 'Download Dog Card'}
+						&#128248; {isZh ? '保存狗卡' : 'Save Dog Card'}
 					</button>
 					<button class="action-btn close-btn" onclick={onclose}>
 						{isFirstTime ? (isZh ? '🏠 进入狗窝' : '🏠 Enter Kennel') : (isZh ? '✕ 关闭' : '✕ Close')}
@@ -222,6 +229,21 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Mobile save preview: long-press to save -->
+{#if savePreviewUrl}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div class="save-preview-overlay" onclick={() => { savePreviewUrl = ''; }}>
+		<div class="save-preview-content" onclick={(e) => e.stopPropagation()}>
+			<p class="save-hint">{isZh ? '长按图片保存到相册' : 'Long press the image to save'}</p>
+			<img src={savePreviewUrl} alt="Dog Card" class="save-preview-img" />
+			<button class="save-preview-close" onclick={() => { savePreviewUrl = ''; }}>
+				{isZh ? '✕ 关闭' : '✕ Close'}
+			</button>
+		</div>
+	</div>
+{/if}
 
 <style>
 	/* Overlay */
@@ -592,6 +614,47 @@
 		.overlay {
 			padding: var(--space-sm);
 		}
+	}
+
+	/* Mobile save preview */
+	.save-preview-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 2000;
+		background: rgba(0, 0, 0, 0.85);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+	}
+	.save-preview-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
+		max-width: 340px;
+		width: 100%;
+	}
+	.save-hint {
+		color: white;
+		font-size: 15px;
+		font-weight: 600;
+		text-align: center;
+		margin: 0;
+	}
+	.save-preview-img {
+		width: 100%;
+		border-radius: 16px;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+	}
+	.save-preview-close {
+		padding: 10px 24px;
+		border-radius: var(--radius-md);
+		background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		color: white;
+		font-size: 14px;
+		cursor: pointer;
 	}
 
 	/* Reduced motion */
