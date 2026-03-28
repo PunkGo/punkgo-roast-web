@@ -44,6 +44,7 @@
 			width: ${cardRef.offsetWidth}px;
 			min-height: ${cardRef.offsetHeight}px;
 			background: #F5F0E8;
+			border: 1.5px solid #D4C9B8;
 			border-radius: 20px;
 			overflow: hidden;
 			display: flex;
@@ -105,6 +106,7 @@
 	.card-shell {
 		width: min(340px, 80vw); min-height: 400px;
 		background: #F5F0E8;
+		border: 1.5px solid #D4C9B8;
 		border-radius: 20px;
 		overflow: hidden;
 		-webkit-mask-image: -webkit-radial-gradient(white, black); /* force clip on iOS/WeChat */
