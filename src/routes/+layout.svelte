@@ -20,6 +20,12 @@
 	<meta name="theme-color" content="#F5F0E8" />
 </svelte:head>
 
+<div class="top-banner">
+	{isZh
+		? '喜欢胖狗？想吐槽？有好点子？一起来建设 → feijiu@punkgo.ai'
+		: 'Love it? Hate it? Got ideas? Help build PunkGo → feijiu@punkgo.ai'}
+</div>
+
 <nav class="nav">
 	<a href="/" class="logo">P U N K G O &nbsp; R O A S T</a>
 	<div class="nav-right">
@@ -80,8 +86,17 @@
 	}
 	.ext-btn:hover { opacity: 0.9; }
 
+	.top-banner {
+		background: var(--color-bg-dark);
+		color: var(--color-text-on-dark);
+		font-size: 12px;
+		text-align: center;
+		padding: 6px 16px;
+		letter-spacing: 0.02em;
+	}
+
 	main {
-		min-height: calc(100vh - 56px);
+		min-height: calc(100vh - 56px - 30px);
 	}
 
 	@keyframes subtlePulse {
