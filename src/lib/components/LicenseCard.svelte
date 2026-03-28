@@ -72,19 +72,32 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
-		// Clone the card into a flat offscreen container to avoid 3D transform issues
+		// Create a clean wrapper — no 3D classes, no transforms, no backface issues
+		const wrapper = document.createElement('div');
+		wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;';
 		const clone = cardRef.cloneNode(true) as HTMLElement;
-		clone.style.transform = 'none';
-		clone.style.backfaceVisibility = 'visible';
-		clone.style.position = 'fixed';
-		clone.style.left = '-9999px';
-		clone.style.top = '0';
-		document.body.appendChild(clone);
+		// Strip all CSS classes that carry 3D transforms
+		clone.className = '';
+		clone.style.cssText = `
+			width: ${cardRef.offsetWidth}px;
+			height: ${cardRef.offsetHeight}px;
+			background: var(--color-bg-card, #FAFAF5);
+			border: 3px solid ${dog.cardColor || '#D4B896'};
+			border-radius: 20px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			padding: 20px 22px 16px;
+			box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+			position: relative;
+		`;
+		wrapper.appendChild(clone);
+		document.body.appendChild(wrapper);
 
 		const { toPng } = await import('html-to-image');
 		const url = await toPng(clone, { pixelRatio: 2 });
 
-		document.body.removeChild(clone);
+		document.body.removeChild(wrapper);
 
 		const link = document.createElement('a');
 		link.download = `punkgo-dog-card-${kennelId}.png`;
