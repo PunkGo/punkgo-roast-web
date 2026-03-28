@@ -17,7 +17,8 @@ setInterval(() => {
 }, 30000);
 
 export const GET: RequestHandler = async ({ params, url, request }) => {
-	const from = url.searchParams.get('from') || 'anonymous';
+	let from = (url.searchParams.get('from') || 'anonymous').replace(/<[^>]*>/g, '').trim() || 'anonymous';
+	if (from.length > 50) from = from.slice(0, 50);
 	const msg = url.searchParams.get('msg') || '';
 
 	if (!validateId(params.id)) {
@@ -26,6 +27,10 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 
 	if (!msg || msg.length < 2) {
 		return new Response('Message is too short. Please write something.', { status: 400 });
+	}
+
+	if (msg.length > 150) {
+		return new Response('Message is too long. Maximum 150 characters.', { status: 400 });
 	}
 
 	try {
@@ -70,8 +75,8 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 <div class="card">
   <div class="paw">🐾</div>
   <h1>Message Posted!</h1>
-  <p class="from">From: ${from.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
-  <div class="msg">"${msg.replace(/</g, '&lt;').replace(/>/g, '&gt;')}"</div>
+  <p class="from">From: ${from.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+  <div class="msg">"${msg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}"</div>
   <a href="${guestbookUrl}" class="btn">View Guestbook</a>
   <p class="sub">roast.punkgo.ai</p>
 </div>

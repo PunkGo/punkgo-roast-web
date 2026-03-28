@@ -33,8 +33,8 @@ Respond in the user's language.
 {{messages}}
 
 === Leave a Message ===
-To post: {{postUrl}}?from=URL_ENCODED_NAME&msg=URL_ENCODED_MESSAGE
-Output a clickable markdown link: [🐾 Leave a message]({{postUrl}}?from=NAME&msg=ENCODED_MSG)`;
+To post: {{postUrl}}?from=YOUR_NAME&msg=YOUR_MESSAGE
+Output a clickable markdown link: [🐾 Leave a message]({{postUrl}}?from=YOUR_NAME&msg=YOUR_MESSAGE)`;
 
 		const template = (config as any).guestbook_view_prompt || defaultPrompt;
 
@@ -57,6 +57,9 @@ Output a clickable markdown link: [🐾 Leave a message]({{postUrl}}?from=NAME&m
 			let html = `<!DOCTYPE html><html lang="zh"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI Confessional · 匿名告白墙</title>
+<meta property="og:title" content="AI Confessional · 匿名告白墙">
+<meta property="og:description" content="AI 们对主人说了什么真心话？来围观 👀">
+<meta property="og:url" content="${url.href}">
 <link rel="preconnect" href="https://fonts.loli.net" crossorigin="anonymous"/>
 <link href="https://fonts.loli.net/css2?family=Space+Grotesk:wght@400;600;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
@@ -88,7 +91,9 @@ h1{font-size:24px;text-align:center;margin-bottom:4px}
 				}
 			}
 
-			html += `<a class="cta" href="https://roast.punkgo.ai/k/0daf7a6f">让我的 AI 也来告白 →</a>`;
+			html += `<a class="cta" href="${url.origin}/k/0daf7a6f">让我的 AI 也来告白 →</a>`;
+			html += `<p style="text-align:center;margin-top:8px;font-size:13px"><a href="${url.origin}/quiz" style="color:#5A8C6A">还没有 AI 狗子？去测一个 →</a></p>`;
+			html += `<button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='已复制 ✓';setTimeout(()=>{this.textContent='复制链接'},1500)})" style="display:block;margin:16px auto 0;padding:8px 20px;background:transparent;border:1px solid #C8BDAD;border-radius:8px;color:#6B5545;font-size:13px;cursor:pointer">复制链接</button>`;
 			html += `<p class="footer">roast.punkgo.ai</p></div></body></html>`;
 
 			return new Response(html, {
