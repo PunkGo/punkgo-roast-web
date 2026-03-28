@@ -5,6 +5,10 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const aiId = url.searchParams.get('ai') || 'unknown';
 	const origin = url.origin;
 
+	// Chinese AI tools get Chinese questions + prompt
+	const zhAIs = new Set(['doubao', 'kimi', 'deepseek', 'tongyi', 'wenxin', 'zhipu', 'baichuan']);
+	const useChinese = zhAIs.has(aiId.toLowerCase());
+
 	const config = await getQuizConfig();
 	const pool = config.question_pool || [];
 	const count = config.question_count || 3;
@@ -14,7 +18,9 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	let questions: string[];
 	let indices: number[];
 	if (pool.length > 0) {
-		const indexed = pool.map((q: { zh: string; en: string }, i: number) => ({ q: q.en, i }));
+		const indexed = pool.map((q: { zh: string; en: string }, i: number) => ({
+			q: useChinese ? q.zh : q.en, i
+		}));
 		const shuffled = indexed.sort(() => Math.random() - 0.5).slice(0, count);
 		questions = shuffled.map((x: { q: string; i: number }) => x.q);
 		indices = shuffled.map((x: { q: string; i: number }) => x.i);
@@ -40,7 +46,8 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const exampleUrl = `${baseUrl}&${exampleParams}`;
 
 	// Replace template placeholders
-	const body = config.prompt_template
+	const template = (useChinese && config.prompt_template_zh) || config.prompt_template;
+	const body = template
 		.replace('{{questions}}', questionList)
 		.replace('{{maxChars}}', String(maxChars))
 		.replaceAll('{{origin}}', origin)

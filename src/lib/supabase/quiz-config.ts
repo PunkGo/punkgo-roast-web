@@ -33,6 +33,7 @@ const DEFAULT_QUIZ_CONFIG = {
 export async function getQuizConfig(): Promise<{
 	questions: string[];
 	prompt_template: string;
+	prompt_template_zh?: string;
 	copy_prompt?: string;
 	copy_prompt_zh?: string;
 	copy_prompt_en?: string;
