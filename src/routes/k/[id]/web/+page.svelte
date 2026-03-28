@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import LicenseCard from '$lib/components/LicenseCard.svelte';
+	import { copyToClipboard } from '$lib/utils/copy';
 
 	let { data } = $props();
 	const ssrLocale = data.locale;
@@ -43,7 +44,7 @@
 	const copyText = $derived(isZh ? data.kennelPromptZh : data.kennelPromptEn);
 
 	function copySharePrompt() {
-		navigator.clipboard.writeText(copyText).then(() => {
+		copyToClipboard(copyText).then(() => {
 			copied = true;
 			setTimeout(() => { copied = false; }, 2000);
 		});
@@ -177,7 +178,7 @@
 					🪪 {isZh ? '查看狗卡' : 'Dog Card'}
 				</button>
 				<button class="action-btn primary" onclick={() => {
-					navigator.clipboard.writeText(`https://roast.punkgo.ai/k/${kennel.id}`);
+					copyToClipboard(`https://roast.punkgo.ai/k/${kennel.id}`);
 				}}>
 					🔗 {isZh ? '分享' : 'Share'}
 				</button>

@@ -2,6 +2,7 @@
 	import { fade } from 'svelte/transition';
 	import { aiOptions, getAIName, type AIOption } from '$lib/data/ai-quiz-prompt';
 	import AILogo from '$lib/components/AILogo.svelte';
+	import { copyToClipboard } from '$lib/utils/copy';
 
 	let { data } = $props();
 
@@ -57,7 +58,7 @@
 	async function copyText() {
 		const text = getCopyPrompt();
 		try {
-			await navigator.clipboard.writeText(text);
+			await copyToClipboard(text);
 			copied = true;
 			copyFailed = false;
 			setTimeout(() => { copied = false; }, 3000);

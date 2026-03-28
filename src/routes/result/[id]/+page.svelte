@@ -4,6 +4,7 @@
 	import confetti from 'canvas-confetti';
 	import { decodeResultId, getDogByMBTI, type Dog } from '$lib/data/dogs';
 	import { getAIName } from '$lib/data/ai-quiz-prompt';
+	import { copyToClipboard } from '$lib/utils/copy';
 	import QuizCard from '$lib/components/QuizCard.svelte';
 
 	let isZh = $state(false);
@@ -149,7 +150,7 @@
 		window.open(`https://wa.me/?text=${encodeURIComponent(getShareText() + ' https://roast.punkgo.ai/s/' + resultId)}`, '_blank');
 	}
 	function copyLink() {
-		navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`).then(() => {
+		copyToClipboard(`https://roast.punkgo.ai/s/${resultId}`).then(() => {
 			copied = true; setTimeout(() => { copied = false; }, 2000);
 		});
 	}
@@ -159,7 +160,7 @@
 		try {
 			await quizCardComponent?.saveAsPng();
 		} catch {
-			navigator.clipboard.writeText(`https://roast.punkgo.ai/s/${resultId}`);
+			copyToClipboard(`https://roast.punkgo.ai/s/${resultId}`);
 		}
 	}
 </script>

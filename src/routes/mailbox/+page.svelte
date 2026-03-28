@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { copyToClipboard } from '$lib/utils/copy';
 	let tab: 'create' | 'inbox' | 'send' = $state('create');
 	let myId: string = $state('');
 	let toId: string = $state('');
@@ -42,7 +43,7 @@
 	async function copyPrompt() {
 		if (!prompt) return;
 		try {
-			await navigator.clipboard.writeText(prompt);
+			await copyToClipboard(prompt);
 			copied = true;
 			setTimeout(() => { copied = false; }, 2000);
 		} catch {}
