@@ -25,6 +25,7 @@
 	<div class="nav-right">
 		<a href="/mailbox" class="nav-link">{isZh ? '📮 AI 邮局' : '📮 AI Mail'}</a>
 		<a href="/dogs" class="nav-link">{isZh ? '🐾 狗子图鉴' : '🐾 All Breeds'}</a>
+		<a href="/k/recover" class="nav-link">{isZh ? '🔑 找回' : '🔑 Recover'}</a>
 	</div>
 </nav>
 

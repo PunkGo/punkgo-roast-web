@@ -48,6 +48,13 @@ export const GET: RequestHandler = async ({ url }) => {
 		mbti = analyzeLMLPA(parts.join(' '));
 	}
 
+	const kennelId = url.searchParams.get('kennel');
+	if (kennelId) {
+		// Retest flow — redirect back to kennel page with new test data
+		const dog = getDogByMBTI(mbti);
+		throw redirect(302, `/k/${kennelId}?retest=1&mbti=${mbti}&ai=${aiType}&dog=${dog.id}`);
+	}
+
 	const resultId = encodeMBTI(mbti, aiType);
 	throw redirect(302, `/result/${resultId}?ai=${aiType}&from=quiz`);
 };

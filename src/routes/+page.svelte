@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	let isZh = $state(false);
+	let kennelId = $state('');
 
 	const allDogs = ['philosopher','architect','intern','commander','rereader','caretaker','perfectionist','mentor','vampire','drifter','goldfish','helper','brute','ghost','speedrunner','googler'];
 	let previewDogs = $state(allDogs.slice(0, 5));
@@ -9,6 +10,8 @@
 		isZh = navigator.language.startsWith('zh');
 		const shuffled = [...allDogs].sort(() => Math.random() - 0.5);
 		previewDogs = shuffled.slice(0, 5);
+		const match = document.cookie.match(/punkgo_kennel=([a-z0-9]{8})/);
+		if (match) kennelId = match[1];
 	});
 </script>
 
@@ -36,6 +39,11 @@
 		<a href="/quiz" class="cta-btn">
 			{isZh ? '开始测试 🐾' : 'Start the Test 🐾'}
 		</a>
+		{#if kennelId}
+			<a href="/k/{kennelId}" class="back-kennel">
+				{isZh ? '🏠 回到你的狗窝' : '🏠 Back to Your Kennel'}
+			</a>
+		{/if}
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
 		<p class="methodology">
 			{isZh
@@ -105,6 +113,14 @@
 		transition: background 150ms ease, transform 150ms ease;
 	}
 	.cta-btn:hover { background: var(--color-cta-hover); transform: translateY(-1px); }
+	.back-kennel {
+		font-size: 13px;
+		color: var(--color-text-secondary);
+		min-height: 44px;
+		display: flex;
+		align-items: center;
+	}
+	.back-kennel:hover { color: var(--color-cta); }
 	.trust {
 		font-size: 14px; font-weight: 500;
 		color: var(--color-text-secondary); letter-spacing: 0.05em;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	let { data } = $props();
 	const ssrLocale = data.locale;
@@ -8,8 +9,28 @@
 	let copied = $state(false);
 	let showRetestConfirm = $state(false);
 
-	onMount(() => {
+	onMount(async () => {
 		isZh = navigator.language.startsWith('zh');
+
+		const retestMbti = $page.url.searchParams.get('mbti');
+		const retestAi = $page.url.searchParams.get('ai');
+		const retestDog = $page.url.searchParams.get('dog');
+		if ($page.url.searchParams.get('retest') === '1' && retestMbti && retestDog) {
+			const res = await fetch('/api/kennel/update', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					kennelId: data.kennel.id,
+					mbti: retestMbti,
+					aiType: retestAi || 'unknown',
+					dogId: retestDog,
+					quip: null,
+				}),
+			});
+			if (res.ok) {
+				window.location.href = `/k/${data.kennel.id}`;
+			}
+		}
 	});
 
 	const kennel = $derived(data.kennel);

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
+	import { page } from '$app/stores';
 	import { aiOptions, getAIName, type AIOption } from '$lib/data/ai-quiz-prompt';
 	import AILogo from '$lib/components/AILogo.svelte';
 
@@ -15,6 +16,8 @@
 
 	onMount(() => { isZh = navigator.language.startsWith('zh'); });
 
+	const kennelParam = $page.url.searchParams.get('kennel') || '';
+
 	const visibleAIs = aiOptions;
 
 	function ui(key: string): string {
@@ -29,7 +32,7 @@
 		const aiId = selectedAI?.id || 'other';
 		const aiName = selectedAI?.nameZh || 'AI';
 		const t = Math.random().toString(36).slice(2, 7);
-		const url = `${origin}/test?ai=${aiId}&t=${t}`;
+		const url = `${origin}/test?ai=${aiId}&t=${t}${kennelParam ? `&kennel=${kennelParam}` : ''}`;
 		const teaser = (isZh ? data.copyPromptZh : data.copyPromptEn || data.copyPromptZh || '')
 			.replaceAll('{{aiName}}', aiName);
 		return `${teaser}\n\n${url}`;
