@@ -175,7 +175,7 @@
 	.my-kennels-label {
 		font-size: 13px; color: var(--color-text-secondary); font-weight: 500;
 	}
-	.kennel-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+	.kennel-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 320px; }
 	.kennel-chip {
 		width: 52px; height: 52px; border-radius: var(--radius-full);
 		background: var(--color-bg-muted); border: 2px solid var(--color-border);
