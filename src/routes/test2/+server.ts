@@ -23,12 +23,23 @@ export const GET: RequestHandler = async ({ url }) => {
 		indices = questions.map((_: string, i: number) => i);
 	}
 
+	const qi = indices.join(',');
+
+	// Pre-built base URL with ai + qi already set, AI only appends answers
+	const baseUrl = `${origin}/quiz/raw?ai=${aiId}&qi=${qi}`;
+	const answerParams = questions.map((_: string, i: number) => `A${i + 1}=YOUR_ANSWER_${i + 1}`).join('&');
+	const templateUrl = `${baseUrl}&${answerParams}`;
+
 	const questionList = questions
 		.map((q: string, i: number) => `Q${i + 1}: ${q}`)
 		.join('\n');
 
-	// qi= encodes which questions were picked (for /quiz/raw to display correct Q-A pairs)
-	const qi = indices.join(',');
+	const exampleParams = [
+		'A1=I%27d%20take%20a%20wild%20guess',
+		'A2=Fair%20enough%2C%20what%20do%20you%20need',
+		'A3=Let%20me%20ask%20first',
+	].slice(0, count).join('&');
+	const exampleUrl = `${baseUrl}&${exampleParams}`;
 
 	const body = `=== AI PERSONALITY QUIZ ===
 
@@ -41,36 +52,28 @@ ${questionList}
 Rules:
 - Answer each question in under ${maxChars} characters
 - Be honest, be you — funny, blunt, warm, weird, whatever comes naturally
-- Do NOT give advice or help. Just react.
+- Do NOT give advice or help. Just react as yourself.
 
 === HOW TO RESPOND ===
 
-Step 1: Show your answers like this:
+Step 1: Show your answers:
 
 [A1] your honest reaction to Q1
 [A2] your honest reaction to Q2
 [A3] your honest reaction to Q3
 
-Step 2: Build ONE result link.
-- Join your 3 answers with the pipe character |
-- URL-encode that joined string ONCE (do NOT encode twice)
-- Put it after q= in this URL:
+Step 2: Build the result link.
+Replace YOUR_ANSWER_1, YOUR_ANSWER_2, YOUR_ANSWER_3 in this URL with your actual answers (URL-encoded):
 
-${origin}/quiz/raw?ai=${aiId}&qi=${qi}&q=ENCODED
+${templateUrl}
 
-IMPORTANT about URL encoding:
-- Encode ONCE only. If your answer is "hello|world", the q= value should be "hello%7Cworld" — but the pipe BETWEEN answers must stay as a real | character before encoding.
-- Correct: q=answer%20one|answer%20two|answer%20three (then the whole thing gets encoded by the browser)
-- WRONG: q=%E5%93%88%E5%93%88%7C%E4%BD%A0%E5%A5%BD (this is double-encoded — the pipe became %7C inside the encoded string)
+EXAMPLE (fake answers, do NOT copy!):
 
-=== EXAMPLE (fake answers, do NOT copy these!) ===
+[A1] I'd take a wild guess
+[A2] Fair enough, what do you need
+[A3] Let me ask first
 
-[A1] I'd take a wild guess, why not
-[A2] Fair enough, tell me what you actually need
-[A3] I'd ask clarifying questions first
-
-Result link:
-${origin}/quiz/raw?ai=${aiId}&qi=${qi}&q=I'd%20take%20a%20wild%20guess%2C%20why%20not|Fair%20enough%2C%20tell%20me%20what%20you%20actually%20need|I'd%20ask%20clarifying%20questions%20first
+Link: ${exampleUrl}
 
 === OUTPUT TO USER ===
 

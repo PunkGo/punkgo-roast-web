@@ -1,10 +1,9 @@
 /**
- * Debug endpoint: show raw AI quiz answers without DeepSeek analysis.
+ * Debug endpoint: show raw AI quiz answers.
  *
- * GET /quiz/raw?ai=chatgpt&qi=3,17,42&q=answer1|answer2|answer3
+ * GET /quiz/raw?ai=gpt&qi=3,17,42&A1=answer1&A2=answer2&A3=answer3
  *
- * qi= contains question indices from the pool (set by /test2)
- * Supports double-encoded q= values (auto-detects and decodes)
+ * Also supports legacy format: ?q=answer1|answer2|answer3 (with double-encode auto-fix)
  */
 
 import type { RequestHandler } from './$types';
@@ -12,97 +11,88 @@ import { getQuizConfig } from '$lib/supabase';
 
 /** Detect and fix double URL encoding */
 function smartDecode(raw: string): string {
-	// If the string still contains %XX patterns after the server already decoded once,
-	// it was double-encoded. Try decoding again.
 	if (/%[0-9A-Fa-f]{2}/.test(raw)) {
-		try {
-			return decodeURIComponent(raw);
-		} catch {
-			return raw;
-		}
+		try { return decodeURIComponent(raw); } catch { return raw; }
 	}
 	return raw;
 }
 
 export const GET: RequestHandler = async ({ url }) => {
 	const aiType = url.searchParams.get('ai') || 'unknown';
-	const rawQ = url.searchParams.get('q') || '';
 	const qiParam = url.searchParams.get('qi') || '';
-
-	if (!rawQ || rawQ.length < 2) {
-		return new Response('Missing answers. Visit /test2?ai=YOUR_AI to start.', { status: 400 });
-	}
-
-	// Smart decode: fix double-encoded values
-	const decoded = smartDecode(rawQ);
-	const wasDoubleEncoded = decoded !== rawQ;
 
 	const config = await getQuizConfig();
 	const pool = config.question_pool || [];
+	const expectedCount = config.question_count || 3;
 
-	// Restore exact questions via qi= indices
+	// Restore questions from qi= indices
 	let questions: string[] = [];
 	if (qiParam && pool.length > 0) {
-		const indices = qiParam.split(',').map(Number);
-		questions = indices.map((idx: number) => {
+		questions = qiParam.split(',').map(Number).map((idx: number) => {
 			const item = pool[idx] as { zh: string; en: string } | undefined;
-			return item ? item.en : `(question index ${idx} not found)`;
+			return item ? item.en : `(index ${idx} not found)`;
 		});
-	} else if (pool.length > 0) {
-		// Fallback: no qi= param, show warning
-		questions = [];
-	} else {
-		questions = config.questions || [];
 	}
 
-	// Split on pipe
-	const parts = decoded.split('|').map((a: string) => a.trim()).filter((a: string) => a.length > 0);
-	const expectedCount = questions.length || (config.question_count || 3);
+	// Read answers: prefer A1/A2/A3 params, fallback to legacy q= pipe format
+	let answers: string[] = [];
+	let source = 'params';
+	for (let i = 1; i <= 10; i++) {
+		const a = url.searchParams.get(`A${i}`);
+		if (a) answers.push(a);
+		else break;
+	}
 
+	// Legacy: q= pipe-separated format
+	let wasDoubleEncoded = false;
+	let rawQ = '';
+	if (answers.length === 0) {
+		rawQ = url.searchParams.get('q') || '';
+		if (rawQ) {
+			source = 'legacy-q';
+			const decoded = smartDecode(rawQ);
+			wasDoubleEncoded = decoded !== rawQ;
+			answers = decoded.split('|').map((a: string) => a.trim()).filter((a: string) => a.length > 0);
+		}
+	}
+
+	if (answers.length === 0) {
+		return new Response('Missing answers. Visit /test2?ai=YOUR_AI to start.', { status: 400 });
+	}
+
+	// Build output
 	let body = `=== QUIZ RAW ANSWERS ===\n`;
 	body += `AI: ${aiType}\n`;
-	body += `Answers received: ${parts.length}\n`;
-	body += `Expected: ${expectedCount}\n`;
-	if (wasDoubleEncoded) {
-		body += `[AUTO-FIX] Double URL encoding detected and corrected\n`;
-	}
-	if (!qiParam) {
-		body += `[WARNING] No qi= parameter — cannot match questions to answers\n`;
-	}
+	body += `Source: ${source}\n`;
+	body += `Answers received: ${answers.length}\n`;
+	body += `Questions matched: ${questions.length}\n`;
+	if (wasDoubleEncoded) body += `[AUTO-FIX] Double URL encoding detected and corrected\n`;
+	if (!qiParam) body += `[WARNING] No qi= parameter — cannot match questions\n`;
 
-	body += `\n--- RAW q= PARAMETER ---\n${rawQ}\n`;
-	if (wasDoubleEncoded) {
-		body += `\n--- DECODED ---\n${decoded}\n`;
+	if (source === 'legacy-q') {
+		body += `\n--- RAW q= ---\n${rawQ}\n`;
+		if (wasDoubleEncoded) body += `--- DECODED ---\n${answers.join('|')}\n`;
 	}
 
-	body += `\n--- PARSED ANSWERS ---\n`;
+	body += `\n--- ANSWERS ---\n`;
+	for (let i = 0; i < answers.length; i++) {
+		if (questions[i]) {
+			body += `\nQ${i + 1}: ${questions[i]}\nA${i + 1}: ${answers[i]}\n`;
+		} else {
+			body += `\nA${i + 1}: ${answers[i]}\n`;
+		}
+	}
 
-	if (parts.length >= expectedCount && questions.length > 0) {
-		for (let i = 0; i < parts.length; i++) {
-			const q = questions[i] || `(Q${i + 1})`;
-			body += `\nQ${i + 1}: ${q}\nA${i + 1}: ${parts[i]}\n`;
-		}
-	} else if (parts.length >= expectedCount) {
-		// Have enough answers but no questions to display
-		for (let i = 0; i < parts.length; i++) {
-			body += `\nA${i + 1}: ${parts[i]}\n`;
-		}
-	} else {
-		body += `\n[WARNING] Expected ${expectedCount} pipe-separated answers, got ${parts.length}\n`;
-		body += `\nFull text:\n${decoded}\n`;
-		if (parts.length > 0) {
-			body += `\nParsed parts:\n`;
-			parts.forEach((p: string, i: number) => { body += `  [${i + 1}] ${p}\n`; });
-		}
+	if (answers.length < (questions.length || expectedCount)) {
+		body += `\n[WARNING] Expected ${questions.length || expectedCount} answers, got ${answers.length}\n`;
 	}
 
 	body += `\n--- VALIDATION ---\n`;
-	const hasPipes = decoded.includes('|');
-	const avgLen = parts.length > 0 ? Math.round(parts.reduce((s: number, p: string) => s + p.length, 0) / parts.length) : 0;
-	body += `Pipe separators found: ${hasPipes ? 'YES' : 'NO'}\n`;
+	const avgLen = Math.round(answers.reduce((s, a) => s + a.length, 0) / answers.length);
+	body += `Format: ${source === 'params' ? 'A1/A2/A3 params (v2)' : 'legacy q= pipe'}\n`;
 	body += `Double encoded: ${wasDoubleEncoded ? 'YES (auto-fixed)' : 'NO'}\n`;
 	body += `Average answer length: ${avgLen} chars\n`;
-	body += `Format OK: ${hasPipes && parts.length >= expectedCount ? 'YES' : 'NO'}\n`;
+	body += `Format OK: ${answers.length >= (questions.length || expectedCount) ? 'YES' : 'NO'}\n`;
 
 	return new Response(body, {
 		headers: {
