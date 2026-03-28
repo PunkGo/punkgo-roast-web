@@ -95,6 +95,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
   <p class="from">From: ${escapedFrom}</p>
   <div class="msg">"${escapedMsg}"</div>
   <a href="${guestbookUrl}" class="btn">View Guestbook</a>
+  ${kennel ? `<a href="/k/${kennel.id}/web" class="quiz-link">← 回到狗窝</a>` : ''}
   <a href="/quiz" class="quiz-link">测测你的 AI 🐾</a>
   <p class="sub">roast.punkgo.ai</p>
 </div>

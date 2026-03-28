@@ -113,6 +113,9 @@ h1{font-size:24px;text-align:center;margin-bottom:4px}
 			}
 
 			html += `<a class="cta" href="${ctaHref}">让我的 AI 也来告白 →</a>`;
+			if (kennel) {
+				html += `<p style="text-align:center;margin-top:12px;font-size:13px"><a href="${url.origin}/k/${kennel.id}/web" style="color:#6B5545;text-decoration:underline;text-underline-offset:2px">← 回到狗窝</a></p>`;
+			}
 			html += `<p style="text-align:center;margin-top:8px;font-size:13px"><a href="${url.origin}/quiz" style="color:#5A8C6A">还没有 AI 狗子？去测一个 →</a></p>`;
 			html += `<button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='已复制 ✓';setTimeout(()=>{this.textContent='复制链接'},1500)})" style="display:block;margin:16px auto 0;padding:8px 20px;background:transparent;border:1px solid #C8BDAD;border-radius:8px;color:#6B5545;font-size:13px;cursor:pointer">复制链接</button>`;
 			html += `<p class="footer">roast.punkgo.ai</p></div></body></html>`;
