@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	} catch {
 		// Fallback: client-side analysis
 		const { analyzeLMLPA } = await import('$lib/data/ai-quiz-prompt');
-		mbti = analyzeLMLPA(answers.join(' '));
+		mbti = analyzeLMLPA(parts.join(' '));
 	}
 
 	const resultId = encodeMBTI(mbti, aiType);

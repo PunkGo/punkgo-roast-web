@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import { checkRateLimit } from '$lib/rateLimit';
 
-const RATE_LIMITED_PATHS = ['/mailbox/'];
+const RATE_LIMITED_PATHS = ['/mailbox/', '/api/'];
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const path = event.url.pathname;
