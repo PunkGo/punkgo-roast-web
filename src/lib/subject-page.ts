@@ -93,7 +93,11 @@ body{font-family:'Space Grotesk','Noto Sans SC',system-ui,sans-serif;background:
 .copy-btn:hover{background:#4A7C5A}
 h1{font-size:22px;text-align:center;margin-bottom:4px}
 .subtitle{text-align:center;color:#6B5545;font-size:13px;margin-bottom:8px}
-.count{text-align:center;color:#8B7B6B;font-size:12px;margin-bottom:16px}
+.action-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.count{color:#8B7B6B;font-size:12px}
+.action-links{display:flex;align-items:center;gap:10px}
+.action-link{font-size:12px;color:#5A8C6A;text-decoration:none;font-weight:600}
+.action-link:hover{text-decoration:underline}
 .divider{border:none;border-top:1px solid #E8E0D4;margin:0 0 16px}
 .msg{background:white;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid #EDE5D8}
 .msg-content{font-size:14px;line-height:1.6;margin-bottom:6px;color:#3A2518}
@@ -127,28 +131,34 @@ h1{font-size:22px;text-align:center;margin-bottom:4px}
 <button class="copy-btn" id="copyPrompt">复制提示词</button>
 </div>`;
 
-	// Subject header
+	// Subject header + action bar
 	html += `<h1>${icon} ${escapeHtml(title)}</h1>
 <p class="subtitle">${escapeHtml(subtitle)}</p>
-<p class="count">${escapeHtml(countLabel)}</p>
+<div class="action-bar">
+<span class="count">${escapeHtml(countLabel)}</span>
+<div class="action-links">
+<button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='已复制 ✓';setTimeout(()=>{this.textContent='分享'},1500)})">分享</button>
+<a href="${origin}/quiz" class="action-link">测一个 →</a>
+</div>
+</div>
 <hr class="divider">`;
 
-	// Content list
-	if (messages.length === 0) {
+	// Content list (newest first, paginated)
+	const PAGE_SIZE = 20;
+	const reversed = [...messages].reverse();
+	const pageMessages = reversed.slice(0, PAGE_SIZE);
+
+	if (pageMessages.length === 0) {
 		html += `<div class="empty"><div class="empty-emoji">${emptyEmoji}</div><p class="empty-text">${escapeHtml(emptyText)}</p></div>`;
 	} else {
-		for (let i = messages.length - 1; i >= 0; i--) {
-			const msg = messages[i];
+		for (const msg of pageMessages) {
 			const timeAgo = getTimeAgo(new Date(msg.created_at));
 			html += `<div class="msg"><div class="msg-content">${escapeHtml(msg.content)}</div><div class="msg-meta"><span>${escapeHtml(msg.from_ai || 'anonymous')}</span><span>${timeAgo}</span></div></div>`;
 		}
+		if (messages.length > PAGE_SIZE) {
+			html += `<p style="text-align:center;color:#8B7B6B;font-size:13px;padding:12px 0">显示最新 ${PAGE_SIZE} 条，共 ${messages.length} 条</p>`;
+		}
 	}
-
-	// Navigation
-	html += `<div class="nav">`;
-	html += `<a href="${origin}/quiz" class="green">还没有 AI 狗子？去测一个 →</a>`;
-	html += `<button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='已复制 ✓';setTimeout(()=>{this.textContent='分享链接'},1500)})">分享链接</button>`;
-	html += `</div>`;
 
 	// Footer + script
 	html += `<p class="footer">roast.punkgo.ai</p></div>
