@@ -9,12 +9,14 @@
 import type { RequestHandler } from './$types';
 import { getQuizConfig } from '$lib/supabase';
 
-/** Detect and fix double URL encoding */
+/** Detect and fix multi-layer URL encoding (DeepSeek encodes 2-3x) */
 function smartDecode(raw: string): string {
-	if (/%[0-9A-Fa-f]{2}/.test(raw)) {
-		try { return decodeURIComponent(raw); } catch { return raw; }
+	let result = raw;
+	for (let i = 0; i < 5; i++) {
+		if (!/%[0-9A-Fa-f]{2}/.test(result)) break;
+		try { result = decodeURIComponent(result); } catch { break; }
 	}
-	return raw;
+	return result;
 }
 
 export const GET: RequestHandler = async ({ url }) => {
