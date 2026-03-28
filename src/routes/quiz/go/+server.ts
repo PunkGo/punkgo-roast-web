@@ -11,7 +11,7 @@
 
 import type { RequestHandler } from './$types';
 import { generatePersonalityFromAnswers } from '$lib/llm/deepseek';
-import { getDogByMBTI, encodeMBTI } from '$lib/data/dogs';
+import { encodeMBTI } from '$lib/data/dogs';
 import { getQuizConfig } from '$lib/supabase';
 import { redirect } from '@sveltejs/kit';
 
@@ -46,13 +46,6 @@ export const GET: RequestHandler = async ({ url }) => {
 		// Fallback: client-side analysis
 		const { analyzeLMLPA } = await import('$lib/data/ai-quiz-prompt');
 		mbti = analyzeLMLPA(parts.join(' '));
-	}
-
-	const kennelId = url.searchParams.get('kennel');
-	if (kennelId) {
-		// Retest flow — redirect back to kennel page with new test data
-		const dog = getDogByMBTI(mbti);
-		throw redirect(302, `/k/${kennelId}?retest=1&mbti=${mbti}&ai=${aiType}&dog=${dog.id}`);
 	}
 
 	const resultId = encodeMBTI(mbti, aiType);

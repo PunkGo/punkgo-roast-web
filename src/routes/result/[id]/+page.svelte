@@ -29,15 +29,12 @@
 	let loadingFact = $state(funFacts[0]);
 	let copied = $state(false);
 	let adopting = $state(false);
-	let existingKennel = $state('');
 
 	onMount(async () => {
 		isZh = navigator.language.startsWith('zh');
 		resultId = $page.params.id ?? '';
 		loadingFact = funFacts[Math.floor(Math.random() * funFacts.length)];
 
-		const match = document.cookie.match(/punkgo_kennel=([a-z0-9]{8})/);
-		if (match) existingKennel = match[1];
 		try {
 			const mbti = decodeResultId(resultId);
 			dog = getDogByMBTI(mbti);
@@ -238,16 +235,10 @@
 					<!-- radar-locked hidden for v2, /install page kept -->
 				</div><!-- /cards-row -->
 
-				<!-- Kennel CTA — prominent, same visual weight as card -->
-				{#if existingKennel}
-					<a href="/k/{existingKennel}" class="adopt-cta fade-in d3">
-						{isZh ? '🏠 回到你的狗窝' : '🏠 Back to Your Kennel'}
-					</a>
-				{:else}
-					<button class="adopt-cta fade-in d3" onclick={adoptDog} disabled={adopting}>
-						{adopting ? '...' : (isZh ? '🪪 领取狗卡，建造你的狗窝' : '🪪 Claim Dog Card & Build Your Kennel')}
-					</button>
-				{/if}
+				<!-- Kennel CTA — always claim new dog card -->
+				<button class="adopt-cta fade-in d3" onclick={adoptDog} disabled={adopting}>
+					{adopting ? '...' : (isZh ? '🪪 领取狗卡' : '🪪 Claim Dog Card')}
+				</button>
 
 				<a href="/quiz" class="retake fade-in d5">{isZh ? '换个 AI 再测 →' : 'Test another AI →'}</a>
 				{/if}

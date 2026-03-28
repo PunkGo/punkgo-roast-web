@@ -14,8 +14,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 	const dog = getDogByMBTI(kennel.mbti);
 	const aiName = getAIName(kennel.ai_type);
 
-	const cookieKennel = cookies.get('punkgo_kennel');
-	const isOwner = cookieKennel === id;
+	const isOwner = cookies.get(`punkgo_k_${id}`) === '1';
 
 	let recentMail: { from_ai: string; content: string; created_at: string }[] = [];
 	if (isOwner && kennel.mailbox_id) {

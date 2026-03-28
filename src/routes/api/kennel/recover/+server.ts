@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ error: 'not_found' }, { status: 404 });
 	}
 
-	cookies.set('punkgo_kennel', kennel.id, {
+	cookies.set(`punkgo_k_${kennel.id}`, '1', {
 		path: '/',
 		maxAge: 60 * 60 * 24 * 365,
 		sameSite: 'lax',

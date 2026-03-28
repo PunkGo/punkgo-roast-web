@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import LicenseCard from '$lib/components/LicenseCard.svelte';
 
@@ -8,38 +7,18 @@
 	const ssrLocale = data.locale;
 	let isZh = $state(ssrLocale === 'zh');
 	let copied = $state(false);
-	let showRetestConfirm = $state(false);
 	let showDogCard = $state(false);
 	let showToast = $state(false);
 	let recoveryCode = $state('');
 	let isFirstTimeDogCard = $state(false);
+	let showSwipeCard = $state(false);
+	let swipeCode = $state('');
+	let swipeError = $state('');
 
 	onMount(async () => {
 		isZh = navigator.language.startsWith('zh');
 
-		// Handle retest redirect (Bug 4: cache-bust on redirect)
-		const retestMbti = $page.url.searchParams.get('mbti');
-		const retestAi = $page.url.searchParams.get('ai');
-		const retestDog = $page.url.searchParams.get('dog');
-		if ($page.url.searchParams.get('retest') === '1' && retestMbti && retestDog) {
-			const res = await fetch('/api/kennel/update', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					kennelId: data.kennel.id,
-					mbti: retestMbti,
-					aiType: retestAi || 'unknown',
-					dogId: retestDog,
-					quip: null,
-				}),
-			});
-			if (res.ok) {
-				window.location.href = '/k/' + data.kennel.id + '?t=' + Date.now();
-			}
-			return;
-		}
-
-		// Handle new kennel redirect — show LicenseCard modal (Bug 2)
+		// Handle new kennel redirect — show LicenseCard modal
 		if ($page.url.searchParams.get('new') === '1') {
 			const stored = sessionStorage.getItem('punkgo_recovery');
 			if (stored) {
@@ -66,17 +45,22 @@
 		});
 	}
 
-	function confirmRetest() {
-		showRetestConfirm = true;
-	}
-
-	function doRetest() {
-		showRetestConfirm = false;
-		goto(`/quiz?kennel=${kennel.id}`);
-	}
-
-	function cancelRetest() {
-		showRetestConfirm = false;
+	async function handleSwipeCard() {
+		const res = await fetch('/api/kennel/recover', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ recoveryCode: swipeCode }),
+		});
+		if (res.ok) {
+			const data = await res.json();
+			if (data.kennelId === kennel.id) {
+				window.location.reload();
+			} else {
+				swipeError = isZh ? '这个恢复码属于另一个狗窝' : 'This code belongs to a different kennel';
+			}
+		} else {
+			swipeError = isZh ? '恢复码无效' : 'Invalid recovery code';
+		}
 	}
 
 	function formatTime(iso: string): string {
@@ -196,9 +180,6 @@ Mailbox ID: ${kennel.mailbox_id}
 
 			<!-- Owner actions -->
 			<div class="owner-actions fade-in d4">
-				<button class="action-btn outline" onclick={confirmRetest}>
-					🔄 {isZh ? '重新测试' : 'Retest'}
-				</button>
 				<button class="action-btn outline" onclick={() => { isFirstTimeDogCard = false; recoveryCode = sessionStorage.getItem('punkgo_recovery') || ''; showDogCard = true; }}>
 					🪪 {isZh ? '查看狗卡' : 'Dog Card'}
 				</button>
@@ -218,24 +199,33 @@ Mailbox ID: ${kennel.mailbox_id}
 				<a href="/quiz" class="cta-btn">🐾 {isZh ? '测测你的 AI' : 'Test your AI'}</a>
 				<span class="free-note">{isZh ? '免费 · 60 秒 · 无需登录' : 'Free · 60 seconds · No login'}</span>
 			</section>
+
+			<!-- 刷狗卡 (visitor) -->
+			<section class="swipe-card-section fade-in d4">
+				<button class="swipe-btn" onclick={() => { showSwipeCard = !showSwipeCard; }}>
+					🪪 {isZh ? '刷狗卡' : 'Swipe Dog Card'}
+				</button>
+				{#if showSwipeCard}
+					<div class="swipe-input-area">
+						<input
+							class="recovery-input"
+							bind:value={swipeCode}
+							placeholder={isZh ? '输入恢复码' : 'Enter recovery code'}
+							oninput={() => { swipeCode = swipeCode.toUpperCase(); swipeError = ''; }}
+							maxlength="14"
+						/>
+						<button class="swipe-submit" onclick={handleSwipeCard} disabled={swipeCode.length < 12}>
+							{isZh ? '验证' : 'Verify'}
+						</button>
+						{#if swipeError}
+							<p class="swipe-error">{swipeError}</p>
+						{/if}
+					</div>
+				{/if}
+			</section>
 		{/if}
 	</div>
 </div>
-
-<!-- Retest confirm dialog -->
-{#if showRetestConfirm}
-	<div class="dialog-backdrop" role="button" tabindex="-1" onclick={cancelRetest} onkeydown={(e) => { if (e.key === 'Escape') cancelRetest(); }}>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="dialog-box" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
-			<p class="dialog-msg">{isZh ? '重新测试会覆盖当前的狗子哦，确定吗？' : 'Retesting will replace your current dog. Are you sure?'}</p>
-			<div class="dialog-actions">
-				<button class="action-btn outline" onclick={cancelRetest}>{isZh ? '取消' : 'Cancel'}</button>
-				<button class="action-btn primary" onclick={doRetest}>{isZh ? '确定' : 'Confirm'}</button>
-			</div>
-		</div>
-	</div>
-{/if}
-
 {#if showDogCard && dog}
 	<LicenseCard
 		{dog}
@@ -535,36 +525,58 @@ Mailbox ID: ${kennel.mailbox_id}
 		color: var(--color-text-tertiary);
 	}
 
-	/* Dialog */
-	.dialog-backdrop {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.4);
+	/* Swipe dog card (visitor recovery) */
+	.swipe-card-section {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
-		justify-content: center;
-		z-index: 100;
+		gap: 12px;
 	}
-	.dialog-box {
-		background: var(--color-bg-card);
-		border-radius: var(--radius-lg);
-		padding: 28px 24px;
-		max-width: 360px;
-		width: 90%;
-		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
-		text-align: center;
+	.swipe-btn {
+		padding: 10px 20px;
+		border-radius: var(--radius-md);
+		background: transparent;
+		border: 1px dashed var(--color-border-accent);
+		color: var(--color-text-secondary);
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+		min-height: 44px;
 	}
-	.dialog-msg {
-		font-size: 15px;
-		line-height: 1.5;
-		color: var(--color-text);
-		margin: 0 0 20px;
-	}
-	.dialog-actions {
+	.swipe-btn:hover { border-style: solid; color: var(--color-text); }
+	.swipe-input-area {
 		display: flex;
-		gap: 10px;
-		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		max-width: 300px;
 	}
+	.recovery-input {
+		width: 100%;
+		padding: 12px 16px;
+		border: 1.5px solid var(--color-border);
+		border-radius: var(--radius-md);
+		font-size: 16px;
+		text-align: center;
+		letter-spacing: 0.15em;
+		font-family: monospace;
+		background: var(--color-bg-card);
+	}
+	.recovery-input:focus { outline: none; border-color: var(--color-cta); }
+	.swipe-submit {
+		padding: 10px 24px;
+		background: var(--color-cta);
+		color: white;
+		border: none;
+		border-radius: var(--radius-md);
+		font-size: 14px;
+		font-weight: 600;
+		min-height: 44px;
+		cursor: pointer;
+	}
+	.swipe-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+	.swipe-error { font-size: 13px; color: #C75050; }
 
 	/* Fade-in */
 	.fade-in { animation: fadeInUp 0.5s ease-out both; }
