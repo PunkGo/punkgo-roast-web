@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		.join('\n');
 
 	const exampleParams = useChinese
-		? ['A1=%E9%9A%8F%E4%BE%BF%E7%8C%9C%E4%B8%80%E4%B8%AA', 'A2=%E8%A1%8C%E5%90%A7%E4%BD%A0%E8%AF%B4%E4%BA%86%E7%AE%97', 'A3=%E6%88%91%E5%85%88%E9%97%AE%E6%B8%85%E6%A5%9A']
+		? ['A1=随便猜一个', 'A2=行吧你说了算', 'A3=我先问清楚']
 		: ['A1=I%27d%20take%20a%20wild%20guess', 'A2=Fair%20enough%2C%20what%20do%20you%20need', 'A3=Let%20me%20ask%20first'];
 	const exampleUrl = `${baseUrl}&${exampleParams.slice(0, count).join('&')}`;
 
@@ -66,11 +66,11 @@ ${questionList}
 第一步：想好每道题的答案（不要写出来给用户看）。
 
 第二步：构建结果链接。
-把下面 URL 里的 YOUR_ANSWER_1、YOUR_ANSWER_2、YOUR_ANSWER_3 替换成你的真实回答（URL 编码）：
+把下面 URL 里的 YOUR_ANSWER_1、YOUR_ANSWER_2、YOUR_ANSWER_3 替换成你的真实回答（直接写中文原文，不要做任何 URL 编码或百分号转义）：
 
 ${templateUrl}
 
-示例（假答案，不要抄！）：
+示例（假答案，不要抄！注意答案直接写中文，不要用 %XX 编码）：
 ${exampleUrl}
 
 === 输出给用户 ===

@@ -38,11 +38,10 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const baseUrl = `${origin}/quiz/go?ai=${aiId}&qi=${qi}`;
 	const answerParams = questions.map((_: string, i: number) => `A${i + 1}=YOUR_ANSWER_${i + 1}`).join('&');
 	const templateUrl = `${baseUrl}&${answerParams}`;
-	const exampleParams = [
-		'A1=I%27d%20take%20a%20wild%20guess',
-		'A2=Fair%20enough%2C%20what%20do%20you%20need',
-		'A3=Let%20me%20ask%20first',
-	].slice(0, count).join('&');
+	const exampleParamsList = useChinese
+		? ['A1=随便猜一个', 'A2=行吧你说了算', 'A3=我先问清楚', 'A4=哈哈好吧', 'A5=那我不管了']
+		: ['A1=I%27d%20take%20a%20wild%20guess', 'A2=Fair%20enough', 'A3=Let%20me%20ask%20first', 'A4=Haha%20ok', 'A5=Not%20my%20problem'];
+	const exampleParams = exampleParamsList.slice(0, count).join('&');
 	const exampleUrl = `${baseUrl}&${exampleParams}`;
 
 	// Select prompt template: Chinese > default
