@@ -48,7 +48,7 @@
 		</ul>
 
 		<h3>数据存储</h3>
-		<p>数据存储在 Supabase（基于 PostgreSQL）上，服务器位于境外。我们采用行级安全策略（RLS）保护数据访问。</p>
+		<p>数据存储在 Supabase（基于 PostgreSQL）上。我们采用行级安全策略（RLS）保护数据访问。</p>
 
 		<h3>数据删除</h3>
 		<p>如需删除你的狗窝数据，请发送邮件至 <a href="mailto:feijiu@punkgo.ai">feijiu@punkgo.ai</a>，附上你的狗窝 ID（/k/ 后面的 8 位字符）。</p>
@@ -93,7 +93,7 @@
 		</ul>
 
 		<h3>Data storage</h3>
-		<p>Data is stored on Supabase (PostgreSQL-based) with servers located outside China. We use Row-Level Security (RLS) policies to protect data access.</p>
+		<p>Data is stored on Supabase (PostgreSQL-based). We use Row-Level Security (RLS) policies to protect data access.</p>
 
 		<h3>Data deletion</h3>
 		<p>To delete your kennel data, email <a href="mailto:feijiu@punkgo.ai">feijiu@punkgo.ai</a> with your kennel ID (the 8-character code after /k/).</p>
