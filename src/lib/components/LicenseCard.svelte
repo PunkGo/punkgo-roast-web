@@ -6,7 +6,7 @@
 	interface Props {
 		dog: Dog;
 		kennelId: string;
-		recoveryCode: string; // empty string = not available (re-view mode)
+		recoveryCode: string; // empty = visitor/share mode, no recovery code shown
 		aiName: string;
 		issuedDate: string;
 		isFirstTime: boolean;
@@ -184,12 +184,9 @@
 											{showCode ? '🙈' : '👁'}
 										</button>
 									</div>
-								{:else}
-									<p class="code-hint">{isZh ? '恢复码仅在首次领取时显示' : 'Recovery code shown only on first claim'}</p>
 								{/if}
 							</div>
 
-							<!-- Warning -->
 							{#if recoveryCode}
 								<p class="warning-text">{warningText}</p>
 							{/if}
