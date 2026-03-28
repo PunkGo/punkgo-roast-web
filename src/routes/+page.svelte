@@ -34,7 +34,7 @@
 			<div class="dog-dot more">+11</div>
 		</div>
 		<a href="/quiz" class="cta-btn">
-			{isZh ? '开始测试 🐾' : 'Start the Test 🐾'}
+			{isZh ? '来，测一个 🐾' : 'Let\'s Find Out 🐾'}
 		</a>
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
 		<p class="methodology">
