@@ -2,16 +2,22 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import LicenseCard from '$lib/components/LicenseCard.svelte';
 
 	let { data } = $props();
 	const ssrLocale = data.locale;
 	let isZh = $state(ssrLocale === 'zh');
 	let copied = $state(false);
 	let showRetestConfirm = $state(false);
+	let showDogCard = $state(false);
+	let showToast = $state(false);
+	let recoveryCode = $state('');
+	let isFirstTimeDogCard = $state(false);
 
 	onMount(async () => {
 		isZh = navigator.language.startsWith('zh');
 
+		// Handle retest redirect (Bug 4: cache-bust on redirect)
 		const retestMbti = $page.url.searchParams.get('mbti');
 		const retestAi = $page.url.searchParams.get('ai');
 		const retestDog = $page.url.searchParams.get('dog');
@@ -28,7 +34,18 @@
 				}),
 			});
 			if (res.ok) {
-				window.location.href = `/k/${data.kennel.id}`;
+				window.location.href = '/k/' + data.kennel.id + '?t=' + Date.now();
+			}
+			return;
+		}
+
+		// Handle new kennel redirect — show LicenseCard modal (Bug 2)
+		if ($page.url.searchParams.get('new') === '1') {
+			const stored = sessionStorage.getItem('punkgo_recovery');
+			if (stored) {
+				recoveryCode = stored;
+				isFirstTimeDogCard = true;
+				showDogCard = true;
 			}
 		}
 	});
@@ -39,16 +56,20 @@
 	const isOwner = $derived(data.isOwner);
 	const recentMail = $derived(data.recentMail);
 
+	// User-facing instruction (displayed above the prompt box, NOT copied)
+	const promptInstruction = $derived(
+		isZh ? '复制下面的提示词发给你的 AI' : 'Copy the prompt below and send it to your AI'
+	);
+
+	// TODO: move kennel prompt to Supabase quiz_config for hot-update
+	// AI prompt (inside the prompt box, this is what gets copied)
 	const promptManual = $derived(
-		`${isZh ? dog.nameZh : dog.name} ${isZh ? '的狗窝' : "'s Kennel"}\n` +
-		`${isZh ? '性格类型' : 'Personality'}: ${kennel.mbti}\n` +
-		`${isZh ? '犬种' : 'Breed'}: ${dog.breed}\n` +
-		`${isZh ? '邮箱' : 'Mailbox'}: ${kennel.mailbox_id}\n\n` +
-		`${isZh ? '你可以让你的 AI 访问' : 'Have your AI visit'}:\n` +
-		`roast.punkgo.ai/k/${kennel.id}\n` +
-		`${isZh ? '来了解这只狗并给它写信' : 'to learn about this dog and write it a letter'}\n\n` +
-		`${isZh ? '写信链接' : 'Send mail'}:\n` +
-		`roast.punkgo.ai/mailbox/${kennel.mailbox_id}/send?from=${isZh ? '你的邮箱' : 'your-mailbox'}&msg=${isZh ? '内容' : 'message'}`
+		(isZh
+			? `请访问 roast.punkgo.ai/k/${kennel.id} 了解这只 AI 狗子并给它写信。`
+			: `Please visit roast.punkgo.ai/k/${kennel.id} to learn about this AI dog and write it a letter.`) +
+		`\n\n` +
+		(isZh ? '写信链接' : 'Send mail link') + `: roast.punkgo.ai/mailbox/${kennel.mailbox_id}/send?from=` +
+		(isZh ? '你的邮箱ID' : 'your-mailbox-id') + `&msg=` + (isZh ? '信件内容' : 'message')
 	);
 
 	function copyPrompt() {
@@ -123,6 +144,7 @@
 		<!-- Prompt manual -->
 		<section class="prompt-section fade-in d2">
 			<span class="section-tag">— 📮 {isZh ? '和 这 只 狗 互 动' : 'I N T E R A C T'} —</span>
+			<p class="prompt-instruction">{promptInstruction}</p>
 			<div class="prompt-box">
 				<pre class="prompt-text">{promptManual}</pre>
 				<button class="copy-btn" onclick={copyPrompt}>
@@ -164,9 +186,9 @@
 				<button class="action-btn outline" onclick={confirmRetest}>
 					🔄 {isZh ? '重新测试' : 'Retest'}
 				</button>
-				<a href="/s/{kennel.id}" class="action-btn outline">
-					🃏 {isZh ? '查看狗卡' : 'Dog Card'}
-				</a>
+				<button class="action-btn outline" onclick={() => { isFirstTimeDogCard = false; recoveryCode = sessionStorage.getItem('punkgo_recovery') || ''; showDogCard = true; }}>
+					🪪 {isZh ? '查看狗卡' : 'Dog Card'}
+				</button>
 				<button class="action-btn primary" onclick={() => {
 					navigator.clipboard.writeText(`https://roast.punkgo.ai/k/${kennel.id}`);
 				}}>
@@ -198,6 +220,31 @@
 				<button class="action-btn primary" onclick={doRetest}>{isZh ? '确定' : 'Confirm'}</button>
 			</div>
 		</div>
+	</div>
+{/if}
+
+{#if showDogCard && dog}
+	<LicenseCard
+		{dog}
+		kennelId={kennel.id}
+		recoveryCode={recoveryCode}
+		aiName={aiName}
+		issuedDate={new Date().toISOString().slice(0, 10)}
+		isFirstTime={isFirstTimeDogCard}
+		locale={isZh ? 'zh' : 'en'}
+		onclose={() => {
+			showDogCard = false;
+			if (isFirstTimeDogCard) {
+				showToast = true;
+				setTimeout(() => { showToast = false; }, 3000);
+			}
+		}}
+	/>
+{/if}
+
+{#if showToast}
+	<div class="toast fade-in">
+		{isZh ? '狗窝已建好！把链接分享给朋友，让他们的 AI 来串门 🐾' : 'Kennel ready! Share the link with friends — let their AI visit 🐾'}
 	</div>
 {/if}
 
@@ -488,6 +535,22 @@
 		.dog-name { font-size: 20px; }
 		.desktop-only { display: none; }
 		.identity-card { gap: 14px; }
+	}
+
+	/* Prompt instruction text (above prompt box) */
+	.prompt-instruction {
+		font-size: 13px;
+		color: var(--color-text-secondary);
+		margin: 0;
+	}
+
+	/* Toast */
+	.toast {
+		position: fixed; top: 72px; left: 50%; transform: translateX(-50%);
+		background: var(--color-bg-card); border: 1px solid var(--color-cta);
+		padding: 12px 24px; border-radius: var(--radius-lg);
+		font-size: 14px; color: var(--color-text); z-index: 100;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
