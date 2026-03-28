@@ -12,9 +12,8 @@
 </script>
 
 <svelte:head>
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet" />
+	<link rel="preconnect" href="https://fonts.loli.net" crossorigin="anonymous" />
+	<link href="https://fonts.loli.net/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet" />
 	<meta property="og:site_name" content="PunkGo Roast" />
 	<meta name="description" content="Sixteen breeds. Which one is your AI? Discover your AI's personality vibe 🐾" />
 	<meta name="theme-color" content="#F5F0E8" />
