@@ -76,19 +76,32 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
-		// html-to-image doesn't handle 3D transforms — temporarily flatten
+		// html-to-image doesn't handle 3D transforms or backface-visibility
+		// Temporarily flatten everything for a clean screenshot
 		const flipInner = cardRef.closest('.flip-inner') as HTMLElement | null;
-		const origTransform = flipInner?.style.transform || '';
-		const origCardTransform = cardRef.style.transform || '';
-		if (flipInner) flipInner.style.transform = 'none';
+		const saved = {
+			innerTransform: flipInner?.style.transform || '',
+			innerTransformStyle: flipInner?.style.transformStyle || '',
+			cardTransform: cardRef.style.transform || '',
+			cardBackface: cardRef.style.backfaceVisibility || '',
+		};
+		if (flipInner) {
+			flipInner.style.transform = 'none';
+			flipInner.style.transformStyle = 'flat';
+		}
 		cardRef.style.transform = 'none';
+		cardRef.style.backfaceVisibility = 'visible';
 
 		const { toPng } = await import('html-to-image');
 		const url = await toPng(cardRef, { pixelRatio: 2 });
 
-		// Restore transforms
-		if (flipInner) flipInner.style.transform = origTransform;
-		cardRef.style.transform = origCardTransform;
+		// Restore
+		if (flipInner) {
+			flipInner.style.transform = saved.innerTransform;
+			flipInner.style.transformStyle = saved.innerTransformStyle;
+		}
+		cardRef.style.transform = saved.cardTransform;
+		cardRef.style.backfaceVisibility = saved.cardBackface;
 
 		const link = document.createElement('a');
 		link.download = `punkgo-dog-card-${kennelId}.png`;
