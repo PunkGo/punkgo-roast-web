@@ -15,7 +15,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 	// Strict cookie check — must have per-kennel cookie
 	const cookieValue = cookies.get(`punkgo_k_${kennelId}`);
-	if (cookieValue !== '1') {
+	if (!cookieValue) {
 		return json({ error: 'Unauthorized' }, { status: 403 });
 	}
 

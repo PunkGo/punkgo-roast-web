@@ -4,17 +4,30 @@
 
 	const allDogs = ['philosopher','architect','intern','commander','rereader','caretaker','perfectionist','mentor','vampire','drifter','goldfish','helper','brute','ghost','speedrunner','googler'];
 	let previewDogs = $state(allDogs.slice(0, 5));
-	let kennelIds: string[] = $state([]);
+	let myKennels: { id: string; dogId: string }[] = $state([]);
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
 		const shuffled = [...allDogs].sort(() => Math.random() - 0.5);
 		previewDogs = shuffled.slice(0, 5);
 
-		const matches = document.cookie.match(/punkgo_k_([a-z0-9]{8})=1/g);
-		if (matches) {
-			kennelIds = matches.map(m => m.match(/punkgo_k_([a-z0-9]{8})/)?.[1] || '').filter(Boolean);
+		// Parse punkgo_k_{id}={dogId} cookies
+		const cookies = document.cookie.split(';').map(c => c.trim());
+		const kennels: { id: string; dogId: string }[] = [];
+		for (const c of cookies) {
+			const m = c.match(/^punkgo_k_([a-z0-9]{8})=(.+)$/);
+			if (m && m[2] !== '') {
+				const dogId = m[2];
+				// Skip legacy cookies with value '1' (no dog info)
+				if (dogId !== '1' && allDogs.includes(dogId)) {
+					kennels.push({ id: m[1], dogId });
+				} else {
+					// Legacy cookie — show generic paw instead of broken image
+					kennels.push({ id: m[1], dogId: '' });
+				}
+			}
 		}
+		myKennels = kennels;
 	});
 </script>
 
@@ -43,12 +56,18 @@
 			{isZh ? '来，测一个 🐾' : 'Let\'s Find Out 🐾'}
 		</a>
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
-		{#if kennelIds.length > 0}
+		{#if myKennels.length > 0}
 			<div class="my-kennels">
 				<p class="my-kennels-label">{isZh ? '🏠 我的狗窝' : '🏠 My Kennels'}</p>
 				<div class="kennel-links">
-					{#each kennelIds as kid}
-						<a href="/k/{kid}/web" class="kennel-chip">{kid}</a>
+					{#each myKennels as k}
+						<a href="/k/{k.id}/web" class="kennel-chip" title={k.id}>
+							{#if k.dogId}
+								<img src="/dogs/felt-{k.dogId}-nobg.png" alt={k.dogId} class="kennel-chip-img" />
+							{:else}
+								<span class="kennel-chip-paw">🐾</span>
+							{/if}
+						</a>
 					{/each}
 				</div>
 			</div>
@@ -158,12 +177,14 @@
 	}
 	.kennel-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 	.kennel-chip {
-		padding: 6px 14px; border-radius: var(--radius-full);
-		background: var(--color-bg-muted); border: 1px solid var(--color-border);
-		font-size: 12px; font-family: monospace; color: var(--color-text-secondary);
-		transition: all 150ms ease;
+		width: 52px; height: 52px; border-radius: var(--radius-full);
+		background: var(--color-bg-muted); border: 2px solid var(--color-border);
+		display: flex; align-items: center; justify-content: center;
+		overflow: hidden; transition: all 150ms ease;
 	}
-	.kennel-chip:hover { border-color: var(--color-cta); color: var(--color-cta); }
+	.kennel-chip:hover { border-color: var(--color-cta); transform: translateY(-2px); }
+	.kennel-chip-img { width: 40px; height: 40px; object-fit: contain; }
+	.kennel-chip-paw { font-size: 24px; }
 
 	@media (max-width: 639px) {
 		h1 { font-size: 36px; }

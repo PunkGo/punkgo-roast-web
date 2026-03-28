@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		}
 	}
 
-	cookies.set(`punkgo_k_${kennelId}`, '1', {
+	cookies.set(`punkgo_k_${kennelId}`, dogId || '1', {
 		path: '/',
 		maxAge: 60 * 60 * 24 * 365,
 		sameSite: 'lax',
