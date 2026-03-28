@@ -158,7 +158,22 @@
 
 			<!-- Owner actions -->
 			<div class="owner-actions fade-in d4">
-				<button class="action-btn outline" onclick={() => { isFirstTimeDogCard = false; recoveryCode = sessionStorage.getItem('punkgo_recovery') || ''; showDogCard = true; }}>
+				<button class="action-btn outline" onclick={async () => {
+					isFirstTimeDogCard = false;
+					// Try sessionStorage first (available right after create), then API
+					let code = sessionStorage.getItem('punkgo_recovery') || '';
+					if (!code) {
+						try {
+							const res = await fetch(`/api/kennel/code?id=${kennel.id}`);
+							if (res.ok) {
+								const d = await res.json();
+								code = d.recoveryCode || '';
+							}
+						} catch {}
+					}
+					recoveryCode = code;
+					showDogCard = true;
+				}}>
 					🪪 {isZh ? '查看狗卡' : 'Dog Card'}
 				</button>
 				<button class="action-btn primary" onclick={() => {

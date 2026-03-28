@@ -76,10 +76,22 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
+		// html-to-image doesn't handle 3D transforms — temporarily flatten
+		const flipInner = cardRef.closest('.flip-inner') as HTMLElement | null;
+		const origTransform = flipInner?.style.transform || '';
+		const origCardTransform = cardRef.style.transform || '';
+		if (flipInner) flipInner.style.transform = 'none';
+		cardRef.style.transform = 'none';
+
 		const { toPng } = await import('html-to-image');
 		const url = await toPng(cardRef, { pixelRatio: 2 });
+
+		// Restore transforms
+		if (flipInner) flipInner.style.transform = origTransform;
+		cardRef.style.transform = origCardTransform;
+
 		const link = document.createElement('a');
-		link.download = `punkgo-kennel-${kennelId}.png`;
+		link.download = `punkgo-dog-card-${kennelId}.png`;
 		link.href = url;
 		link.click();
 	}
@@ -195,7 +207,7 @@
 			{#if phase === 'flipped'}
 				{#if isFirstTime && recoveryCode}
 					<p class="first-time-hint">
-						⚠️ {warningText}
+						⚠️ {isZh ? '这张狗卡是你进入狗窝的唯一凭证，请下载保存或截图！' : 'This dog card is your only key to the kennel. Download or screenshot it!'}
 					</p>
 				{/if}
 				<div class="actions">
