@@ -23,16 +23,19 @@ export const GET: RequestHandler = async ({ url }) => {
 	const aiType = url.searchParams.get('ai') || 'unknown';
 	const qiParam = url.searchParams.get('qi') || '';
 
+	const zhAIs = new Set(['doubao', 'kimi', 'deepseek', 'tongyi', 'wenxin', 'zhipu', 'baichuan']);
+	const useChinese = zhAIs.has(aiType.toLowerCase());
+
 	const config = await getQuizConfig();
 	const pool = config.question_pool || [];
 	const expectedCount = config.question_count || 3;
 
-	// Restore questions from qi= indices
+	// Restore questions from qi= indices, matching language
 	let questions: string[] = [];
 	if (qiParam && pool.length > 0) {
 		questions = qiParam.split(',').map(Number).map((idx: number) => {
 			const item = pool[idx] as { zh: string; en: string } | undefined;
-			return item ? item.en : `(index ${idx} not found)`;
+			return item ? (useChinese ? item.zh : item.en) : `(index ${idx} not found)`;
 		});
 	}
 
