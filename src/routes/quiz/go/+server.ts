@@ -79,14 +79,6 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	console.log('[quiz/go]', JSON.stringify({ ai: aiType, qi: qiParam, parts, qaText }));
 
-	// Debug mode: show qaText without calling DeepSeek
-	if (url.searchParams.has('debug')) {
-		return new Response(
-			`=== QUIZ/GO DEBUG ===\nAI: ${aiType}\nqi: ${qiParam}\n\n--- qaText (sent to DeepSeek) ---\n${qaText}\n\n--- raw parts ---\n${parts.map((p, i) => `[${i}] ${p}`).join('\n')}`,
-			{ headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
-		);
-	}
-
 	let mbti: string;
 	try {
 		mbti = await generatePersonalityFromAnswers(qaText);
