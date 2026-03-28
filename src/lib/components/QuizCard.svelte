@@ -60,10 +60,11 @@
 
 <style>
 	.card-shell {
-		width: 340px; min-height: 453px;
+		width: min(340px, 80vw); min-height: 400px;
 		background: #F5F0E8;
 		border-radius: 20px;
 		overflow: hidden;
+		-webkit-mask-image: -webkit-radial-gradient(white, black); /* force clip on iOS/WeChat */
 		display: flex; flex-direction: column;
 		box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 		position: relative;
@@ -109,8 +110,12 @@
 		overflow: hidden;
 		display: flex; align-items: center; justify-content: center;
 		background: linear-gradient(135deg, #EDE5D8 0%, #F5F0E8 50%, #E8E0D4 100%);
+		border-radius: 20px 20px 0 0;
 	}
 	.qc-img { max-width: 85%; max-height: 90%; object-fit: contain; display: block; }
+	@media (max-width: 639px) {
+		.card-shell { width: min(280px, 75vw); min-height: 360px; }
+	}
 	@media (prefers-reduced-motion: reduce) {
 		.card-holo { transition: none; }
 	}
