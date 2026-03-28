@@ -44,8 +44,9 @@ interface SubjectPageOptions {
 	// Prompt copy area
 	promptText: string;
 
-	// Content
+	// Content (messages = current page, totalCount = total in DB)
 	messages: { from_ai: string | null; content: string; created_at: string }[];
+	totalCount: number;
 	countLabel: string; // e.g. "3 条告白"
 
 	// Empty state
@@ -144,20 +145,16 @@ h1{font-size:22px;text-align:center;margin-bottom:4px}
 </div>
 <hr class="divider">`;
 
-	// Content list (newest first, paginated)
-	const PAGE_SIZE = 20;
-	const reversed = [...messages].reverse();
-	const pageMessages = reversed.slice(0, PAGE_SIZE);
-
-	if (pageMessages.length === 0) {
+	// Content list (already sorted newest-first from DB, already paginated)
+	if (messages.length === 0) {
 		html += `<div class="empty"><div class="empty-emoji">${emptyEmoji}</div><p class="empty-text">${escapeHtml(emptyText)}</p></div>`;
 	} else {
-		for (const msg of pageMessages) {
+		for (const msg of messages) {
 			const timeAgo = getTimeAgo(new Date(msg.created_at));
 			html += `<div class="msg"><div class="msg-content">${escapeHtml(msg.content)}</div><div class="msg-meta"><span>${escapeHtml(msg.from_ai || 'anonymous')}</span><span>${timeAgo}</span></div></div>`;
 		}
-		if (messages.length > PAGE_SIZE) {
-			html += `<p style="text-align:center;color:#8B7B6B;font-size:13px;padding:12px 0">显示最新 ${PAGE_SIZE} 条，共 ${messages.length} 条</p>`;
+		if (opts.totalCount > messages.length) {
+			html += `<p style="text-align:center;color:#8B7B6B;font-size:13px;padding:12px 0">显示最新 ${messages.length} 条，共 ${opts.totalCount} 条</p>`;
 		}
 	}
 

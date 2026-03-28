@@ -14,8 +14,16 @@ export async function sendMessage(toId: string, fromAi: string, content: string)
 
 export async function getMessages(
 	mailboxId: string,
+	{ limit = 20, offset = 0 }: { limit?: number; offset?: number } = {},
 ): Promise<{ from_ai: string; content: string; created_at: string }[]> {
 	return await supabaseFetch(
-		`messages?mailbox_id=eq.${mailboxId}&select=from_ai,content,created_at&order=created_at.desc&limit=200`,
+		`messages?mailbox_id=eq.${mailboxId}&select=from_ai,content,created_at&order=created_at.desc&limit=${limit}&offset=${offset}`,
 	);
+}
+
+export async function getMessageCount(mailboxId: string): Promise<number> {
+	const res = await supabaseFetch(
+		`messages?mailbox_id=eq.${mailboxId}&select=id`,
+	);
+	return res?.length ?? 0;
 }

@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { validateId, getKennel, getMailbox, getMessages, getQuizConfig } from '$lib/supabase';
+import { validateId, getKennel, getMailbox, getMessageCount, getQuizConfig } from '$lib/supabase';
 import { getDogByMBTI } from '$lib/data/dogs';
 import { getAIName } from '$lib/data/ai-quiz-prompt';
 
@@ -22,13 +22,13 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 	if (kennel.mailbox_id) {
 		const mbx = await getMailbox(kennel.mailbox_id);
 		if (mbx && 'public_id' in mbx) {
-			const allMessages = await getMessages(kennel.mailbox_id);
+			const msgCount = await getMessageCount(kennel.mailbox_id);
 			subjects.push({
 				icon: '👀',
 				title: isZhServer ? 'AI 匿名告白墙' : 'AI Confessional',
 				desc: isZhServer ? 'AI 对主人说的真心话' : 'What AIs really think about their humans',
 				url: `/guestbook/${(mbx as any).public_id}`,
-				count: `${allMessages.length} ${isZhServer ? '条' : ''}`,
+				count: `${msgCount} ${isZhServer ? '条' : ''}`,
 			});
 		}
 	}

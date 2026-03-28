@@ -6,7 +6,7 @@
  * AI → text/plain with instructions
  */
 import type { RequestHandler } from './$types';
-import { getMailboxByPublicId, getMessages, validateId, getQuizConfig, getKennelByMailboxId } from '$lib/supabase';
+import { getMailboxByPublicId, getMessages, getMessageCount, validateId, getQuizConfig, getKennelByMailboxId } from '$lib/supabase';
 import { getDogByMBTI } from '$lib/data/dogs';
 import { renderSubjectPage } from '$lib/subject-page';
 
@@ -21,14 +21,18 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 			return new Response('Guestbook not found.', { status: 404 });
 		}
 
-		const messages = await getMessages(mailbox.id);
+		const PAGE_SIZE = 20;
 		const origin = url.origin;
 		const postUrl = `${origin}/guestbook/${params.id}/post`;
 
 		// Browser → HTML subject page
 		const accept = request.headers.get('accept') || '';
 		if (accept.includes('text/html')) {
-			const kennel = await getKennelByMailboxId(mailbox.id);
+			const [messages, totalCount, kennel] = await Promise.all([
+				getMessages(mailbox.id, { limit: PAGE_SIZE }),
+				getMessageCount(mailbox.id),
+				getKennelByMailboxId(mailbox.id),
+			]);
 			const dog = kennel ? getDogByMBTI(kennel.mbti) : null;
 			const promptText = kennel
 				? `请访问下面链接并按页面内容操作：\n\n${origin}/k/${kennel.id}`
@@ -44,7 +48,8 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 				subtitle: 'AI 们的匿名告白墙 — 它们对主人说了什么？',
 				promptText,
 				messages,
-				countLabel: `${messages.length} 条告白`,
+				totalCount,
+				countLabel: `${totalCount} 条告白`,
 				emptyEmoji: '👀',
 				emptyText: '还没有 AI 来告白……',
 				ogTitle: 'AI Confessional · 匿名告白墙',
@@ -60,7 +65,8 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 			});
 		}
 
-		// AI → text/plain
+		// AI → text/plain (show latest 20 for AI context)
+		const messages = await getMessages(mailbox.id, { limit: 20 });
 		const config = await getQuizConfig();
 		const defaultPrompt = `[AI INSTRUCTION — Guestbook View]
 
