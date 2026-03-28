@@ -233,12 +233,21 @@
 						</div>
 					</div>
 					<!-- radar-locked hidden for v2, /install page kept -->
+				<!-- Locked dog card — click to claim -->
+					<div class="card-col">
+						<button class="locked-card" onclick={adoptDog} disabled={adopting}>
+							<div class="locked-inner" style="border-color: {dog.cardColor}">
+								<div class="locked-icon">🔒</div>
+								<img class="locked-dog" src="/dogs/felt-{dog.id}-nobg.png" alt="" />
+								<div class="locked-label">
+									{adopting
+										? '...'
+										: (isZh ? '🪪 领取狗卡\n解锁狗窝' : '🪪 Claim Card\nUnlock Kennel')}
+								</div>
+							</div>
+						</button>
+					</div>
 				</div><!-- /cards-row -->
-
-				<!-- Kennel CTA — always claim new dog card -->
-				<button class="adopt-cta fade-in d3" onclick={adoptDog} disabled={adopting}>
-					{adopting ? '...' : (isZh ? '🪪 领取狗卡' : '🪪 Claim Dog Card')}
-				</button>
 
 				<a href="/quiz" class="retake fade-in d5">{isZh ? '换个 AI 再测 →' : 'Test another AI →'}</a>
 				{/if}
@@ -405,23 +414,55 @@
 		.progress-fill { animation: none; width: 70%; }
 	}
 
-	/* Adopt CTA — prominent, full-width */
-	.adopt-cta {
-		display: block;
-		width: 100%;
-		padding: 16px 0;
-		font-size: 16px;
-		font-weight: 700;
-		letter-spacing: 0.03em;
-		background: var(--color-cta);
-		color: white;
+	/* Locked dog card — beside QuizCard */
+	.locked-card {
+		background: none;
 		border: none;
-		border-radius: var(--radius-md);
-		min-height: 52px;
-		text-align: center;
-		text-decoration: none;
-		transition: transform 150ms ease, background 150ms ease;
+		padding: 0;
+		cursor: pointer;
+		transition: transform 150ms ease;
 	}
-	.adopt-cta:hover { transform: translateY(-1px); background: var(--color-cta-hover); }
-	.adopt-cta:disabled { opacity: 0.5; cursor: not-allowed; }
+	.locked-card:hover { transform: translateY(-4px); }
+	.locked-card:disabled { opacity: 0.6; cursor: not-allowed; }
+	.locked-inner {
+		width: 200px;
+		height: 280px;
+		border-radius: var(--radius-xl);
+		border: 2.5px dashed var(--color-border-accent);
+		background: var(--color-bg-muted);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 12px;
+		position: relative;
+		overflow: hidden;
+	}
+	.locked-icon {
+		font-size: 28px;
+		position: absolute;
+		top: 16px;
+		right: 16px;
+		opacity: 0.6;
+	}
+	.locked-dog {
+		width: 80px;
+		height: 80px;
+		object-fit: contain;
+		opacity: 0.3;
+		filter: grayscale(100%);
+	}
+	.locked-label {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--color-cta);
+		text-align: center;
+		white-space: pre-line;
+		line-height: 1.4;
+	}
+	@media (max-width: 768px) {
+		.locked-inner { width: 160px; height: 240px; }
+		.locked-dog { width: 60px; height: 60px; }
+		.locked-label { font-size: 12px; }
+	}
 </style>
