@@ -71,6 +71,7 @@ export function renderSubjectPage(opts: SubjectPageOptions): string {
 
 	let html = `<!DOCTYPE html><html lang="zh"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <title>${escapeHtml(title)}</title>
 <meta property="og:title" content="${escapeHtml(ogTitle)}">
 <meta property="og:description" content="${escapeHtml(ogDescription)}">

@@ -65,6 +65,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Message Posted — PunkGo Roast</title>
 <meta property="og:title" content="Message Posted — PunkGo Roast">
