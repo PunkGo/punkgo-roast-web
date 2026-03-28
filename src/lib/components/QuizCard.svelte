@@ -10,6 +10,7 @@
 
 	let { dog, locale = 'en', aiName = 'AI', customQuip = null }: Props = $props();
 	let cardRef: HTMLElement | null = $state(null);
+	let savePreviewUrl: string | null = $state(null);
 
 	$effect(() => { void dog; void locale; });
 
@@ -34,12 +35,37 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
+		// Clone to offscreen — avoids 3D transform + cross-origin CSS issues
+		const wrapper = document.createElement('div');
+		wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;';
+		const clone = cardRef.cloneNode(true) as HTMLElement;
+		clone.className = '';
+		clone.style.cssText = `
+			width: ${cardRef.offsetWidth}px;
+			min-height: ${cardRef.offsetHeight}px;
+			background: #F5F0E8;
+			border-radius: 20px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+		`;
+		wrapper.appendChild(clone);
+		document.body.appendChild(wrapper);
+
 		const { toPng } = await import('html-to-image');
-		const url = await toPng(cardRef, { pixelRatio: 2 });
-		const link = document.createElement('a');
-		link.download = `punkgo-quiz-${dog.id}.png`;
-		link.href = url;
-		link.click();
+		const url = await toPng(clone, { pixelRatio: 2 });
+		document.body.removeChild(wrapper);
+
+		const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+		if (isMobile) {
+			savePreviewUrl = url;
+		} else {
+			const link = document.createElement('a');
+			link.download = `punkgo-quiz-${dog.id}.png`;
+			link.href = url;
+			link.click();
+		}
 	}
 </script>
 
@@ -58,7 +84,24 @@
 	</div>
 </div>
 
+{#if savePreviewUrl}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div class="save-overlay" onclick={() => savePreviewUrl = null}>
+		<p class="save-hint">{isZh ? '长按图片保存 · 点击任意处关闭' : 'Long-press to save · Tap to close'}</p>
+		<img src={savePreviewUrl} alt="card" class="save-preview-img" />
+	</div>
+{/if}
+
 <style>
+	.save-overlay {
+		position: fixed; inset: 0; z-index: 9999;
+		background: rgba(0,0,0,0.8);
+		display: flex; flex-direction: column; align-items: center; justify-content: center;
+		gap: 16px; padding: 20px;
+	}
+	.save-hint { color: white; font-size: 14px; text-align: center; }
+	.save-preview-img { max-width: 90vw; max-height: 80vh; border-radius: 12px; }
 	.card-shell {
 		width: min(340px, 80vw); min-height: 400px;
 		background: #F5F0E8;
