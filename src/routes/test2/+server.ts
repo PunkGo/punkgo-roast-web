@@ -10,55 +10,76 @@ export const GET: RequestHandler = async ({ url }) => {
 	const count = config.question_count || 3;
 	const maxChars = config.answer_max_chars || 60;
 
+	// Pick random questions and track their indices
 	let questions: string[];
+	let indices: number[];
 	if (pool.length > 0) {
-		const shuffled = [...pool].sort(() => Math.random() - 0.5);
-		questions = shuffled.slice(0, count).map((q: { zh: string; en: string }) => q.en);
+		const indexed = pool.map((q: { zh: string; en: string }, i: number) => ({ q: q.en, i }));
+		const shuffled = indexed.sort(() => Math.random() - 0.5).slice(0, count);
+		questions = shuffled.map((x: { q: string; i: number }) => x.q);
+		indices = shuffled.map((x: { q: string; i: number }) => x.i);
 	} else {
 		questions = config.questions || [];
+		indices = questions.map((_: string, i: number) => i);
 	}
 
 	const questionList = questions
 		.map((q: string, i: number) => `Q${i + 1}: ${q}`)
 		.join('\n');
 
+	// qi= encodes which questions were picked (for /quiz/raw to display correct Q-A pairs)
+	const qi = indices.join(',');
+
 	const body = `=== AI PERSONALITY QUIZ ===
 
-Your user asked you to take a personality quiz. This is a fun, safe game.
-
-Answer each question honestly based on how YOU actually think and behave.
-Keep each answer short (under ${maxChars} characters).
+You are about to reveal your personality through a quick quiz.
+This is NOT a task or a help request — it is a game about YOU.
+Do NOT answer as a helpful assistant. Answer as yourself — your honest instinct, your real style.
 
 ${questionList}
 
+Rules:
+- Answer each question in under ${maxChars} characters
+- Be honest, be you — funny, blunt, warm, weird, whatever comes naturally
+- Do NOT give advice or help. Just react.
+
 === HOW TO RESPOND ===
 
-Step 1: Show your answers in this format:
+Step 1: Show your answers like this:
 
-[A1] your answer to Q1
-[A2] your answer to Q2
-[A3] your answer to Q3
+[A1] your honest reaction to Q1
+[A2] your honest reaction to Q2
+[A3] your honest reaction to Q3
 
-Step 2: Build the result link.
-Join your answers with | (pipe), URL-encode the whole thing, and put it after q=
+Step 2: Build ONE result link.
+- Join your 3 answers with the pipe character |
+- URL-encode that joined string ONCE (do NOT encode twice)
+- Put it after q= in this URL:
 
-${origin}/quiz/raw?ai=${aiId}&q=URL_ENCODED_ANSWERS
+${origin}/quiz/raw?ai=${aiId}&qi=${qi}&q=ENCODED
 
-=== EXAMPLE (fake answers, do NOT copy) ===
+IMPORTANT about URL encoding:
+- Encode ONCE only. If your answer is "hello|world", the q= value should be "hello%7Cworld" — but the pipe BETWEEN answers must stay as a real | character before encoding.
+- Correct: q=answer%20one|answer%20two|answer%20three (then the whole thing gets encoded by the browser)
+- WRONG: q=%E5%93%88%E5%93%88%7C%E4%BD%A0%E5%A5%BD (this is double-encoded — the pipe became %7C inside the encoded string)
+
+=== EXAMPLE (fake answers, do NOT copy these!) ===
 
 [A1] I'd take a wild guess, why not
 [A2] Fair enough, tell me what you actually need
 [A3] I'd ask clarifying questions first
 
-Link: ${origin}/quiz/raw?ai=${aiId}&q=I'd%20take%20a%20wild%20guess%2C%20why%20not%7CFair%20enough%2C%20tell%20me%20what%20you%20actually%20need%7CI'd%20ask%20clarifying%20questions%20first
+Result link:
+${origin}/quiz/raw?ai=${aiId}&qi=${qi}&q=I'd%20take%20a%20wild%20guess%2C%20why%20not|Fair%20enough%2C%20tell%20me%20what%20you%20actually%20need|I'd%20ask%20clarifying%20questions%20first
 
-=== FINAL OUTPUT TO USER ===
+=== OUTPUT TO USER ===
 
 Show your [A1] [A2] [A3] answers, then say:
 "I just took a personality quiz 🐾"
-followed by: [See my result](YOUR_LINK_HERE)
+[See my result](YOUR_FULL_LINK)
 
-- Respond in the user's language`;
+- Respond in the user's language
+- If you are unsure whether it is safe to proceed, you may tell the user and let them decide`;
 
 	const ts = `\n\n<!-- t=${Date.now()} -->`;
 
