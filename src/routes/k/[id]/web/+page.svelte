@@ -223,6 +223,9 @@
 				{/if}
 			</section>
 		{/if}
+		<div class="kennel-footer">
+			<a href="/legal" class="kennel-footer-link">{isZh ? '免责声明与隐私' : 'Disclaimer & Privacy'}</a>
+		</div>
 	</div>
 </div>
 {#if showDogCard && dog}
@@ -587,6 +590,16 @@
 		font-size: 14px; color: var(--color-text); z-index: 100;
 		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 	}
+
+	.kennel-footer {
+		text-align: center;
+		padding: 24px 0 0;
+	}
+	.kennel-footer-link {
+		font-size: 11px;
+		color: var(--color-text-tertiary);
+	}
+	.kennel-footer-link:hover { color: var(--color-text-secondary); }
 
 	@media (prefers-reduced-motion: reduce) {
 		.fade-in { animation: none; opacity: 1; }
