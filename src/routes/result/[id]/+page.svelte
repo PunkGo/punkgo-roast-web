@@ -30,6 +30,7 @@
 	let loadingFact = $state(funFacts[0]);
 	let copied = $state(false);
 	let adopting = $state(false);
+	let adoptedKennelId = $state('');
 
 	onMount(async () => {
 		isZh = navigator.language.startsWith('zh');
@@ -40,6 +41,10 @@
 			const mbti = decodeResultId(resultId);
 			dog = getDogByMBTI(mbti);
 		} catch { dog = null; }
+
+		const existing = sessionStorage.getItem('punkgo_adopted_' + resultId);
+		if (existing) adoptedKennelId = existing;
+
 		initialized = true;
 
 		if (dog) {
@@ -94,6 +99,7 @@
 			const data = await res.json();
 			if (res.ok) {
 				sessionStorage.setItem('punkgo_recovery', data.recoveryCode);
+				sessionStorage.setItem('punkgo_adopted_' + resultId, data.kennelId);
 				window.location.href = '/k/' + data.kennelId + '/web?new=1';
 			}
 		} catch {} finally {
@@ -235,6 +241,19 @@
 					</div>
 					<!-- radar-locked hidden for v2, /install page kept -->
 				<!-- Locked dog card — click to claim -->
+				{#if adoptedKennelId}
+					<div class="card-col">
+						<a href="/k/{adoptedKennelId}/web" class="adopted-card">
+							<div class="adopted-inner" style="border-color: {dog.cardColor}">
+								<div class="adopted-icon">✅</div>
+								<img class="locked-dog" src="/dogs/felt-{dog.id}-nobg.png" alt="" />
+								<div class="adopted-label">
+									{isZh ? '🏠 进入狗窝' : '🏠 Enter Kennel'}
+								</div>
+							</div>
+						</a>
+					</div>
+				{:else}
 					<div class="card-col">
 						<button class="locked-card" onclick={adoptDog} disabled={adopting}>
 							<div class="locked-inner" style="border-color: {dog.cardColor}">
@@ -248,6 +267,7 @@
 							</div>
 						</button>
 					</div>
+				{/if}
 				</div><!-- /cards-row -->
 
 				<a href="/quiz" class="retake fade-in d5">{isZh ? '换个 AI 再测 →' : 'Test another AI →'}</a>
@@ -257,6 +277,14 @@
 	</div>
 </div>
 
+{#if adopting}
+	<div class="adopting-overlay">
+		<div class="adopting-content">
+			<span class="adopting-paw">🐾</span>
+			<p>{isZh ? '正在制作狗卡...' : 'Creating your dog card...'}</p>
+		</div>
+	</div>
+{/if}
 
 <style>
 	.result-page {
@@ -465,5 +493,43 @@
 		.locked-inner { width: 160px; height: 240px; }
 		.locked-dog { width: 60px; height: 60px; }
 		.locked-label { font-size: 12px; }
+	}
+
+	/* Adopting overlay */
+	.adopting-overlay {
+		position: fixed; inset: 0; z-index: 100;
+		background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+		display: flex; align-items: center; justify-content: center;
+	}
+	.adopting-content {
+		display: flex; flex-direction: column; align-items: center; gap: 16px;
+		color: white; text-align: center;
+	}
+	.adopting-paw {
+		font-size: 48px;
+		animation: gentle-pulse 2s ease-in-out infinite;
+	}
+	.adopting-content p { font-size: 16px; font-weight: 600; }
+
+	/* Adopted card */
+	.adopted-card { text-decoration: none; }
+	.adopted-inner {
+		width: 200px; height: 280px;
+		border-radius: var(--radius-xl);
+		border: 2.5px solid var(--color-border-accent);
+		background: var(--color-bg-card);
+		display: flex; flex-direction: column;
+		align-items: center; justify-content: center;
+		gap: 12px; position: relative; overflow: hidden;
+		transition: transform 150ms ease;
+	}
+	.adopted-inner:hover { transform: translateY(-4px); }
+	.adopted-icon { font-size: 28px; position: absolute; top: 16px; right: 16px; }
+	.adopted-label {
+		font-size: 14px; font-weight: 700;
+		color: var(--color-cta); text-align: center;
+	}
+	@media (max-width: 768px) {
+		.adopted-inner { width: 160px; height: 240px; }
 	}
 </style>

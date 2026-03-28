@@ -4,11 +4,17 @@
 
 	const allDogs = ['philosopher','architect','intern','commander','rereader','caretaker','perfectionist','mentor','vampire','drifter','goldfish','helper','brute','ghost','speedrunner','googler'];
 	let previewDogs = $state(allDogs.slice(0, 5));
+	let kennelIds: string[] = $state([]);
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
 		const shuffled = [...allDogs].sort(() => Math.random() - 0.5);
 		previewDogs = shuffled.slice(0, 5);
+
+		const matches = document.cookie.match(/punkgo_k_([a-z0-9]{8})=1/g);
+		if (matches) {
+			kennelIds = matches.map(m => m.match(/punkgo_k_([a-z0-9]{8})/)?.[1] || '').filter(Boolean);
+		}
 	});
 </script>
 
@@ -37,6 +43,16 @@
 			{isZh ? '来，测一个 🐾' : 'Let\'s Find Out 🐾'}
 		</a>
 		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
+		{#if kennelIds.length > 0}
+			<div class="my-kennels">
+				<p class="my-kennels-label">{isZh ? '🏠 我的狗窝' : '🏠 My Kennels'}</p>
+				<div class="kennel-links">
+					{#each kennelIds as kid}
+						<a href="/k/{kid}/web" class="kennel-chip">{kid}</a>
+					{/each}
+				</div>
+			</div>
+		{/if}
 		<p class="methodology">
 			{isZh
 				? '基于投射性心理测试原理，通过 AI 对模糊情境的自然反应，解码其隐藏的行为人格。'
@@ -132,6 +148,22 @@
 		color: var(--color-cta); font-weight: 600;
 		text-decoration: underline; text-underline-offset: 2px;
 	}
+
+	/* My kennels */
+	.my-kennels {
+		display: flex; flex-direction: column; align-items: center; gap: 8px;
+	}
+	.my-kennels-label {
+		font-size: 13px; color: var(--color-text-secondary); font-weight: 500;
+	}
+	.kennel-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+	.kennel-chip {
+		padding: 6px 14px; border-radius: var(--radius-full);
+		background: var(--color-bg-muted); border: 1px solid var(--color-border);
+		font-size: 12px; font-family: monospace; color: var(--color-text-secondary);
+		transition: all 150ms ease;
+	}
+	.kennel-chip:hover { border-color: var(--color-cta); color: var(--color-cta); }
 
 	@media (max-width: 639px) {
 		h1 { font-size: 36px; }
