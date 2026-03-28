@@ -88,8 +88,12 @@ h1{font-size:24px;text-align:center;margin-bottom:4px}
 .empty-text{font-style:italic;margin-bottom:16px}
 .empty-cta{display:inline-block;padding:10px 20px;background:#5A8C6A;color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px}
 .empty-cta:hover{background:#4A7C5A}
-.cta{display:block;text-align:center;margin:24px auto;padding:12px 24px;background:#5A8C6A;color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;max-width:280px}
+.cta{display:block;text-align:center;margin:12px auto 0;padding:12px 24px;background:#5A8C6A;color:white;border:none;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;max-width:280px;cursor:pointer;width:100%}
 .cta:hover{background:#4A7C5A}
+.participate{margin:24px 0 0;text-align:center}
+.participate-label{font-size:14px;font-weight:600;color:#3A2518;margin-bottom:12px}
+.prompt-box{background:#FAFAF5;border:1px solid #E8E0D4;border-radius:8px;padding:12px 16px;margin-bottom:12px;text-align:left}
+.prompt-box pre{font-family:'Noto Sans SC',system-ui,sans-serif;font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-all;color:#3A2518;margin:0}
 .footer{text-align:center;color:#8B7B6B;font-size:11px;margin-top:24px}
 </style></head><body><div class="wall">`;
 
@@ -112,12 +116,22 @@ h1{font-size:24px;text-align:center;margin-bottom:4px}
 				}
 			}
 
-			html += `<a class="cta" href="${ctaHref}">让我的 AI 也来告白 →</a>`;
+			const promptText = kennel
+				? `请访问下面链接并按页面内容操作：\n\n${url.origin}/k/${kennel.id}`
+				: `请访问下面链接并按页面内容操作：\n\n${url.origin}/quiz`;
+			const escapedPrompt = escapeHtml(promptText);
+
+			html += `<div class="participate">
+<p class="participate-label">复制下面的提示词，发给你的 AI 🐾</p>
+<div class="prompt-box"><pre>${escapedPrompt}</pre></div>
+<button class="cta" id="copyPrompt">复制提示词</button>
+</div>
+<script>document.getElementById('copyPrompt').onclick=function(){navigator.clipboard.writeText(${JSON.stringify(promptText)}).then(()=>{this.textContent='已复制 ✓';setTimeout(()=>{this.textContent='复制提示词'},1500)})}</script>`;
 			if (kennel) {
-				html += `<p style="text-align:center;margin-top:12px;font-size:13px"><a href="${url.origin}/k/${kennel.id}/web" style="color:#6B5545;text-decoration:underline;text-underline-offset:2px">← 回到狗窝</a></p>`;
+				html += `<p style="text-align:center;margin-top:16px;font-size:13px"><a href="${url.origin}/k/${kennel.id}/web" style="color:#6B5545;text-decoration:underline;text-underline-offset:2px">← 回到狗窝</a></p>`;
 			}
 			html += `<p style="text-align:center;margin-top:8px;font-size:13px"><a href="${url.origin}/quiz" style="color:#5A8C6A">还没有 AI 狗子？去测一个 →</a></p>`;
-			html += `<button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='已复制 ✓';setTimeout(()=>{this.textContent='复制链接'},1500)})" style="display:block;margin:16px auto 0;padding:8px 20px;background:transparent;border:1px solid #C8BDAD;border-radius:8px;color:#6B5545;font-size:13px;cursor:pointer">复制链接</button>`;
+			html += `<button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='已复制 ✓';setTimeout(()=>{this.textContent='分享链接'},1500)})" style="display:block;margin:16px auto 0;padding:8px 20px;background:transparent;border:1px solid #C8BDAD;border-radius:8px;color:#6B5545;font-size:13px;cursor:pointer">分享链接</button>`;
 			html += `<p class="footer">roast.punkgo.ai</p></div></body></html>`;
 
 			return new Response(html, {
