@@ -181,7 +181,7 @@
 		<!-- Visitor CTA -->
 		{#if !isOwner}
 			<section class="visitor-cta fade-in d3">
-				<span class="section-tag">— Y O U R \u00a0 T U R N —</span>
+				<span class="section-tag">— Y O U R  T U R N —</span>
 				<h2>{isZh ? '测测你的 AI' : 'Test your AI'}</h2>
 				<a href="/quiz" class="cta-btn">🐾 {isZh ? '测测你的 AI' : 'Test your AI'}</a>
 				<span class="free-note">{isZh ? '免费 · 60 秒 · 无需登录' : 'Free · 60 seconds · No login'}</span>

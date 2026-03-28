@@ -118,64 +118,55 @@
 			<div class="flip-container">
 				<div class="flip-inner" class:flipped={phase === 'flipped'}>
 					<!-- Card Back -->
-					<div class="card-face card-back">
-						<div class="back-content">
-							<span class="back-paw">&#128062;</span>
-							<span class="back-title">PUNKGO ROAST</span>
+					<div class="card-face card-back" style="--card-color: {dog.cardColor}">
+						<div class="back-pattern">
+							<div class="back-paws">
+								{#each Array(20) as _}
+									<span class="paw-dot">&#128062;</span>
+								{/each}
+							</div>
+						</div>
+						<div class="back-center">
+							<span class="back-paw-main">&#128062;</span>
+							<span class="back-title">{isZh ? '胖狗' : 'PUNKGO ROAST'}</span>
+							<span class="back-subtitle">AI DOG CARD</span>
 						</div>
 					</div>
 
 					<!-- Card Front -->
-					<div class="card-face card-front" bind:this={cardRef}>
-						<div class="front-content">
-							<!-- Header -->
-							<div class="card-header">
-								<span class="header-brand">PUNKGO ROAST</span>
-								<span class="header-type">AI DOG CARD</span>
-							</div>
-							<div class="header-divider"></div>
+					<div class="card-face card-front" bind:this={cardRef} style="--card-color: {dog.cardColor}">
+						<!-- Header -->
+						<div class="card-header">
+							<span class="header-brand">{isZh ? '胖狗' : 'PUNKGO ROAST'}</span>
+							<span class="header-type">AI DOG CARD</span>
+						</div>
+						<div class="header-divider"></div>
 
-							<!-- Dog Info Section -->
-							<div class="info-section">
-								<div class="dog-avatar">
-									<img
-										src="/dogs/felt-{dog.id}-nobg.png"
-										alt={isZh ? dog.nameZh : dog.name}
-										class="dog-img"
-									/>
-								</div>
-								<div class="info-fields">
-									<div class="field">
-										<span class="field-label">{isZh ? '名称' : 'Name'}</span>
-										<span class="field-value">{isZh ? dog.nameZh : dog.name}</span>
-									</div>
-									<div class="field">
-										<span class="field-label">{isZh ? '犬种' : 'Breed'}</span>
-										<span class="field-value">{dog.breed}</span>
-									</div>
-									<div class="field">
-										<span class="field-label">{isZh ? '类型' : 'Type'}</span>
-										<span class="field-value">{dog.mbti}</span>
-									</div>
-									<div class="field">
-										<span class="field-label">AI</span>
-										<span class="field-value">{aiName}</span>
-									</div>
-									<div class="field">
-										<span class="field-label">ID</span>
-										<span class="field-value field-id">k/{kennelId}</span>
-									</div>
-								</div>
+						<!-- Dog Info — centered -->
+						<div class="dog-info-center">
+							<div class="dog-avatar-large">
+								<img
+									src="/dogs/felt-{dog.id}-nobg.png"
+									alt={isZh ? dog.nameZh : dog.name}
+									class="dog-img-large"
+								/>
 							</div>
+							<h2 class="dog-card-name">{isZh ? dog.nameZh : dog.name}</h2>
+							<p class="dog-card-meta">{dog.mbti} &middot; {dog.breed}</p>
+							<p class="dog-card-ai">by {aiName}</p>
+						</div>
 
-							<!-- QR + Recovery Code Section -->
-							<div class="code-section">
+						<!-- QR + Recovery Code -->
+						<div class="card-bottom">
+							<div class="bottom-left">
 								{#if qrDataURL}
-									<img src={qrDataURL} alt="QR Code" class="qr-code" />
+									<img src={qrDataURL} alt="QR" class="qr-small" />
 								{/if}
+							</div>
+							<div class="bottom-right">
 								{#if recoveryCode}
-									<div class="code-area">
-										<span class="code-display">{displayCode}</span>
+									<div class="code-row">
+										<span class="code-text">{displayCode}</span>
 										{#if !isFirstTime}
 											<button
 												class="toggle-btn"
@@ -187,17 +178,14 @@
 										{/if}
 									</div>
 								{/if}
+								<span class="kennel-id">k/{kennelId}</span>
 							</div>
+						</div>
 
-							{#if recoveryCode}
-								<p class="warning-text">{warningText}</p>
-							{/if}
-
-							<!-- Footer -->
-							<div class="card-footer">
-								<span class="footer-date">{isZh ? '签发' : 'Issued'}: {formattedDate()}</span>
-								<span class="footer-url">roast.punkgo.ai</span>
-							</div>
+						<!-- Footer -->
+						<div class="card-footer">
+							<span>{formattedDate()}</span>
+							<span>roast.punkgo.ai</span>
 						</div>
 					</div>
 				</div>
@@ -205,9 +193,9 @@
 
 			<!-- Actions (fade in after flip) -->
 			{#if phase === 'flipped'}
-				{#if isFirstTime}
+				{#if isFirstTime && recoveryCode}
 					<p class="first-time-hint">
-						⚠️ {isZh ? '这张狗卡是你进入狗窝的唯一凭证，请务必下载保存！' : 'This dog card is your only key to the kennel. Download and save it!'}
+						⚠️ {warningText}
 					</p>
 				{/if}
 				<div class="actions">
@@ -229,12 +217,12 @@
 		position: fixed;
 		inset: 0;
 		z-index: 1000;
-		background: rgba(0, 0, 0, 0.6);
+		background: rgba(0, 0, 0, 0.65);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		padding: var(--space-md);
-		backdrop-filter: blur(4px);
+		backdrop-filter: blur(6px);
 	}
 
 	/* Loading */
@@ -250,15 +238,8 @@
 	}
 
 	@keyframes gentle-pulse {
-		0%,
-		100% {
-			transform: scale(1);
-			opacity: 0.7;
-		}
-		50% {
-			transform: scale(1.1);
-			opacity: 1;
-		}
+		0%, 100% { transform: scale(1); opacity: 0.7; }
+		50% { transform: scale(1.1); opacity: 1; }
 	}
 
 	/* Modal */
@@ -273,7 +254,7 @@
 	.flip-container {
 		perspective: 800px;
 		width: 340px;
-		height: 480px;
+		height: 460px;
 	}
 
 	.flip-inner {
@@ -297,53 +278,75 @@
 		overflow: hidden;
 	}
 
-	/* Card Back */
+	/* ==================== CARD BACK ==================== */
 	.card-back {
 		background: var(--color-bg-dark);
+		border: 3px solid var(--card-color, var(--color-border-accent));
 		box-shadow:
-			0 8px 32px rgba(0, 0, 0, 0.3),
-			inset 0 1px 0 rgba(255, 255, 255, 0.05);
+			0 20px 60px rgba(0, 0, 0, 0.3),
+			0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 	}
 
-	.back-content {
+	.back-pattern {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-wrap: wrap;
+		align-content: center;
+		justify-content: center;
+		gap: 24px;
+		padding: 32px;
+		opacity: 0.08;
+		pointer-events: none;
+	}
+
+	.paw-dot {
+		font-size: 22px;
+	}
+
+	.back-center {
+		position: relative;
 		width: 100%;
 		height: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--space-lg);
+		gap: 12px;
+		z-index: 1;
 	}
 
-	.back-paw {
-		font-size: 60px;
-		filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+	.back-paw-main {
+		font-size: 64px;
+		filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 	}
 
 	.back-title {
-		font-size: 18px;
+		font-size: 20px;
 		font-weight: 700;
 		color: var(--color-text-accent);
 		letter-spacing: 0.3em;
 		text-transform: uppercase;
 	}
 
-	/* Card Front */
+	.back-subtitle {
+		font-size: 10px;
+		font-weight: 600;
+		color: var(--color-text-tertiary);
+		letter-spacing: 0.4em;
+	}
+
+	/* ==================== CARD FRONT ==================== */
 	.card-front {
 		transform: rotateY(180deg);
 		background: var(--color-bg-card);
+		border: 3px solid var(--card-color, var(--color-border-accent));
 		box-shadow:
-			0 8px 32px rgba(0, 0, 0, 0.2),
-			0 1px 0 var(--color-border-accent);
-	}
-
-	.front-content {
-		width: 100%;
-		height: 100%;
+			0 20px 60px rgba(0, 0, 0, 0.3),
+			0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 		display: flex;
 		flex-direction: column;
-		padding: 20px;
-		gap: 10px;
+		padding: 20px 22px 16px;
 	}
 
 	/* Header */
@@ -351,10 +354,11 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin-bottom: 0;
 	}
 
 	.header-brand {
-		font-size: 11px;
+		font-size: 12px;
 		font-weight: 700;
 		color: var(--color-text-accent);
 		letter-spacing: 0.2em;
@@ -368,42 +372,93 @@
 	}
 
 	.header-divider {
-		height: 1px;
+		height: 1.5px;
+		margin: 10px 0 14px;
 		background: linear-gradient(
 			90deg,
 			transparent,
-			var(--color-border-accent),
+			var(--card-color, var(--color-border-accent)),
 			transparent
 		);
 	}
 
-	/* Info Section */
-	.info-section {
+	/* Dog info — centered layout */
+	.dog-info-center {
 		display: flex;
-		gap: 14px;
-		align-items: flex-start;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		flex: 1;
 	}
 
-	.dog-avatar {
-		width: 80px;
-		height: 80px;
-		border-radius: var(--radius-md);
+	.dog-avatar-large {
+		width: 140px;
+		height: 140px;
+		border-radius: var(--radius-lg);
 		overflow: hidden;
-		flex-shrink: 0;
-		background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-bg) 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border: 1.5px solid var(--color-border);
+		background: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--card-color, #c1e6df) 20%, var(--color-bg-card)) 0%,
+			color-mix(in srgb, var(--card-color, #c1e6df) 8%, var(--color-bg-card)) 100%
+		);
+		border: 1.5px solid color-mix(in srgb, var(--card-color, #c1e6df) 50%, transparent);
 	}
 
-	.dog-img {
+	.dog-img-large {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
 	}
 
-	.info-fields {
+	.dog-card-name {
+		font-size: 20px;
+		font-weight: 700;
+		color: var(--color-text);
+		text-align: center;
+		margin: 4px 0 0;
+		line-height: 1.2;
+	}
+
+	.dog-card-meta {
+		font-size: 12px;
+		color: var(--color-text-secondary);
+		text-align: center;
+		margin: 0;
+		letter-spacing: 0.05em;
+	}
+
+	.dog-card-ai {
+		font-size: 11px;
+		color: var(--color-text-tertiary);
+		text-align: center;
+		margin: 0;
+		font-style: italic;
+	}
+
+	/* Bottom — QR + recovery code row */
+	.card-bottom {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 12px 0 8px;
+		border-top: 1px dashed color-mix(in srgb, var(--card-color, var(--color-border)) 60%, var(--color-border));
+		margin-top: auto;
+	}
+
+	.bottom-left {
+		flex-shrink: 0;
+	}
+
+	.qr-small {
+		width: 56px;
+		height: 56px;
+		border-radius: var(--radius-sm);
+	}
+
+	.bottom-right {
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
@@ -411,101 +466,45 @@
 		min-width: 0;
 	}
 
-	.field {
+	.code-row {
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 		gap: 6px;
 	}
 
-	.field-label {
-		font-size: 10px;
-		font-weight: 600;
-		color: var(--color-text-tertiary);
-		letter-spacing: 0.05em;
-		min-width: 36px;
-		flex-shrink: 0;
-	}
-
-	.field-value {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--color-text);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.field-id {
+	.code-text {
 		font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
 		font-size: 12px;
-		color: var(--color-text-accent);
-	}
-
-	/* QR + Code Section */
-	.code-section {
-		display: flex;
-		align-items: center;
-		gap: 14px;
-		padding: 10px 0;
-		border-top: 1px dashed var(--color-border);
-		border-bottom: 1px dashed var(--color-border);
-	}
-
-	.qr-code {
-		width: 100px;
-		height: 100px;
-		border-radius: var(--radius-sm);
-		flex-shrink: 0;
-	}
-
-	.code-area {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		flex: 1;
-	}
-
-	.code-display {
-		font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-		font-size: 14px;
 		font-weight: 600;
 		color: var(--color-text);
-		letter-spacing: 0.1em;
-		word-break: break-all;
+		letter-spacing: 0.08em;
 	}
 
 	.toggle-btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 44px;
-		height: 44px;
+		width: 28px;
+		height: 28px;
 		background: var(--color-bg-muted);
-		border-radius: var(--radius-md);
-		font-size: 18px;
+		border-radius: var(--radius-sm);
+		font-size: 14px;
 		transition: background 150ms ease;
 		cursor: pointer;
 		border: 1px solid var(--color-border);
+		flex-shrink: 0;
+		padding: 0;
 	}
 
 	.toggle-btn:hover {
 		background: var(--color-border);
 	}
 
-	/* Warning */
-	.warning-text {
+	.kennel-id {
+		font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
 		font-size: 10px;
 		color: var(--color-text-tertiary);
-		text-align: center;
-		line-height: 1.5;
-		padding: 0 4px;
-	}
-	.code-hint {
-		font-size: 11px;
-		color: var(--color-text-tertiary);
-		font-style: italic;
-		text-align: center;
-		margin: 4px 0 0;
+		letter-spacing: 0.05em;
 	}
 
 	/* Footer */
@@ -513,21 +512,12 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-top: auto;
-	}
-
-	.footer-date {
+		padding-top: 6px;
 		font-size: 9px;
 		color: var(--color-text-tertiary);
 	}
 
-	.footer-url {
-		font-size: 9px;
-		color: var(--color-text-tertiary);
-		letter-spacing: 0.05em;
-	}
-
-	/* Actions */
+	/* ==================== ACTIONS ==================== */
 	.actions {
 		display: flex;
 		gap: var(--space-sm);
@@ -535,14 +525,8 @@
 	}
 
 	@keyframes fade-in {
-		from {
-			opacity: 0;
-			transform: translateY(8px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
+		from { opacity: 0; transform: translateY(8px); }
+		to { opacity: 1; transform: translateY(0); }
 	}
 
 	.action-btn {
@@ -563,6 +547,7 @@
 		padding: 0 16px;
 		line-height: 1.5;
 	}
+
 	.save-btn {
 		background: var(--color-bg-card);
 		color: var(--color-text);
