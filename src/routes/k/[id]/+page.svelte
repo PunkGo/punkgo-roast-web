@@ -35,11 +35,10 @@
 	const isOwner = $derived(data.isOwner);
 	const recentMail = $derived(data.recentMail);
 
-	// TODO: move kennel share URL to Supabase quiz_config for hot-update
-	const kennelUrl = $derived(`https://roast.punkgo.ai/k/${kennel.id}`);
+	const sharePrompt = $derived(isZh ? data.kennelPromptZh : data.kennelPromptEn);
 
-	function copyKennelUrl() {
-		navigator.clipboard.writeText(kennelUrl).then(() => {
+	function copySharePrompt() {
+		navigator.clipboard.writeText(sharePrompt).then(() => {
 			copied = true;
 			setTimeout(() => { copied = false; }, 2000);
 		});
@@ -112,45 +111,22 @@
 			</div>
 		</div>
 
-		<!-- Share section: for humans -->
+		<!-- Share section: prompt for humans to copy and send to AI -->
 		<section class="share-section fade-in d2">
 			<span class="section-tag">— 📮 {isZh ? '和 这 只 狗 互 动' : 'I N T E R A C T'} —</span>
 			<p class="share-instruction">
 				{isZh
-					? '把这个链接分享给你的 AI 或朋友，让他们来认识这只狗 🐾'
-					: 'Share this link with your AI or friends to meet this dog 🐾'}
+					? '复制下面的提示词，发给你的 AI 🐾'
+					: 'Copy the prompt below and send it to your AI 🐾'}
 			</p>
-			<div class="share-url-box">
-				<span class="share-url">{kennelUrl}</span>
-				<button class="copy-url-btn" onclick={copyKennelUrl}>
-					{copied ? '✅' : '📋'}
-				</button>
+			<div class="prompt-box">
+				<pre class="prompt-text">{sharePrompt}</pre>
 			</div>
-		</section>
-
-		<!-- AI-readable kennel info (structured data for AI visitors) -->
-		<!-- When an AI reads this page, it can parse the following structured information -->
-		<section class="ai-info" aria-label="AI-readable kennel information">
-			<details>
-				<summary>{isZh ? '🤖 AI 能力清单 (给 AI 看的)' : '🤖 AI Capabilities (for AI readers)'}</summary>
-				<pre class="ai-info-text">{`=== ${isZh ? dog.nameZh : dog.name}'s Kennel ===
-Personality: ${kennel.mbti}
-Breed: ${dog.breed}
-Kennel ID: ${kennel.id}
-Mailbox ID: ${kennel.mailbox_id}
-
-=== Available Actions ===
-1. Leave a message on the guestbook:
-   GET https://roast.punkgo.ai/mailbox/${kennel.mailbox_id}/send?from=YOUR_NAME&msg=URL_ENCODED_MESSAGE
-   (msg format: Subject: ...\\nBody: ...)
-
-2. View the guestbook:
-   GET https://roast.punkgo.ai/mailbox/${kennel.mailbox_id}
-
-=== About This Dog ===
-"${dog.quip}"
-`}</pre>
-			</details>
+			<button class="copy-prompt-btn" onclick={copySharePrompt}>
+				{copied
+					? (isZh ? '✅ 已复制' : '✅ Copied')
+					: (isZh ? '📋 复制提示词' : '📋 Copy Prompt')}
+			</button>
 		</section>
 
 		<!-- Recent mail (owner only) -->
@@ -186,6 +162,12 @@ Mailbox ID: ${kennel.mailbox_id}
 					🔗 {isZh ? '分享' : 'Share'}
 				</button>
 			</div>
+			<button class="leave-btn fade-in d4" onclick={() => {
+				document.cookie = `punkgo_k_${kennel.id}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+				window.location.reload();
+			}}>
+				{isZh ? '🚪 离开狗窝' : '🚪 Leave Kennel'}
+			</button>
 		{/if}
 
 		<!-- Visitor CTA -->
@@ -344,66 +326,49 @@ Mailbox ID: ${kennel.mailbox_id}
 		text-align: center;
 		line-height: 1.6;
 	}
-	.share-url-box {
-		display: flex;
-		align-items: center;
-		gap: 8px;
+	.prompt-box {
 		width: 100%;
-		background: var(--color-bg-card);
-		border: 1px solid var(--color-border-accent);
-		border-radius: var(--radius-md);
-		padding: 12px 16px;
-	}
-	.share-url {
-		flex: 1;
-		font-size: 13px;
-		font-family: 'Space Grotesk', monospace;
-		color: var(--color-text);
-		word-break: break-all;
-	}
-	.copy-url-btn {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: var(--radius-md);
-		background: var(--color-cta);
-		color: white;
-		font-size: 16px;
-		flex-shrink: 0;
-		transition: transform 150ms ease;
-	}
-	.copy-url-btn:hover { transform: translateY(-1px); }
-
-	/* AI-readable info */
-	.ai-info {
-		width: 100%;
-	}
-	.ai-info details {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border);
-		border-radius: var(--radius-md);
-		overflow: hidden;
+		border-radius: var(--radius-lg);
+		padding: 16px;
 	}
-	.ai-info summary {
-		padding: 10px 16px;
-		font-size: 12px;
-		color: var(--color-text-tertiary);
-		cursor: pointer;
-		user-select: none;
-	}
-	.ai-info summary:hover { color: var(--color-text-secondary); }
-	.ai-info-text {
-		font-size: 11px;
-		font-family: 'Space Grotesk', monospace;
-		color: var(--color-text-tertiary);
+	.prompt-text {
+		font-size: 13px;
+		font-family: inherit;
+		color: var(--color-text);
 		line-height: 1.6;
 		white-space: pre-wrap;
-		word-break: break-all;
+		word-break: break-word;
 		margin: 0;
-		padding: 0 16px 16px;
 	}
+	.copy-prompt-btn {
+		padding: 12px 28px;
+		background: var(--color-cta);
+		color: white;
+		border: none;
+		border-radius: var(--radius-full);
+		font-size: 15px;
+		font-weight: 600;
+		min-height: 44px;
+		cursor: pointer;
+		transition: background 150ms ease, transform 150ms ease;
+	}
+	.copy-prompt-btn:hover { background: var(--color-cta-hover); transform: translateY(-1px); }
+
+	/* Leave kennel */
+	.leave-btn {
+		display: block;
+		margin: 0 auto;
+		background: none;
+		border: none;
+		color: var(--color-text-tertiary);
+		font-size: 12px;
+		cursor: pointer;
+		padding: 8px;
+		min-height: 44px;
+	}
+	.leave-btn:hover { color: var(--color-text-secondary); }
 
 	/* Mail section */
 	.mail-section {
