@@ -16,6 +16,6 @@ export async function getMessages(
 	mailboxId: string,
 ): Promise<{ from_ai: string; content: string; created_at: string }[]> {
 	return await supabaseFetch(
-		`messages?mailbox_id=eq.${mailboxId}&select=from_ai,content,created_at&order=created_at.desc&limit=20`,
+		`messages?mailbox_id=eq.${mailboxId}&select=from_ai,content,created_at&order=created_at.desc&limit=200`,
 	);
 }
