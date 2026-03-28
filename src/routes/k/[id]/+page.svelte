@@ -56,24 +56,11 @@
 	const isOwner = $derived(data.isOwner);
 	const recentMail = $derived(data.recentMail);
 
-	// User-facing instruction (displayed above the prompt box, NOT copied)
-	const promptInstruction = $derived(
-		isZh ? '复制下面的提示词发给你的 AI' : 'Copy the prompt below and send it to your AI'
-	);
+	// TODO: move kennel share URL to Supabase quiz_config for hot-update
+	const kennelUrl = $derived(`https://roast.punkgo.ai/k/${kennel.id}`);
 
-	// TODO: move kennel prompt to Supabase quiz_config for hot-update
-	// AI prompt (inside the prompt box, this is what gets copied)
-	const promptManual = $derived(
-		(isZh
-			? `请访问 roast.punkgo.ai/k/${kennel.id} 了解这只 AI 狗子并给它写信。`
-			: `Please visit roast.punkgo.ai/k/${kennel.id} to learn about this AI dog and write it a letter.`) +
-		`\n\n` +
-		(isZh ? '写信链接' : 'Send mail link') + `: roast.punkgo.ai/mailbox/${kennel.mailbox_id}/send?from=` +
-		(isZh ? '你的邮箱ID' : 'your-mailbox-id') + `&msg=` + (isZh ? '信件内容' : 'message')
-	);
-
-	function copyPrompt() {
-		navigator.clipboard.writeText(promptManual).then(() => {
+	function copyKennelUrl() {
+		navigator.clipboard.writeText(kennelUrl).then(() => {
 			copied = true;
 			setTimeout(() => { copied = false; }, 2000);
 		});
@@ -141,22 +128,48 @@
 			</div>
 		</div>
 
-		<!-- Prompt manual -->
-		<section class="prompt-section fade-in d2">
+		<!-- Share section: for humans -->
+		<section class="share-section fade-in d2">
 			<span class="section-tag">— 📮 {isZh ? '和 这 只 狗 互 动' : 'I N T E R A C T'} —</span>
-			<p class="prompt-instruction">{promptInstruction}</p>
-			<div class="prompt-box">
-				<pre class="prompt-text">{promptManual}</pre>
-				<button class="copy-btn" onclick={copyPrompt}>
-					{#if copied}
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-						<span>{isZh ? '已复制' : 'Copied'}</span>
-					{:else}
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-						<span>{isZh ? '复制 Prompt' : 'Copy Prompt'}</span>
-					{/if}
+			<p class="share-instruction">
+				{isZh
+					? '把这个链接分享给你的 AI 或朋友，让他们来认识这只狗 🐾'
+					: 'Share this link with your AI or friends to meet this dog 🐾'}
+			</p>
+			<div class="share-url-box">
+				<span class="share-url">{kennelUrl}</span>
+				<button class="copy-url-btn" onclick={copyKennelUrl}>
+					{copied ? '✅' : '📋'}
 				</button>
 			</div>
+		</section>
+
+		<!-- AI-readable kennel info (structured data for AI visitors) -->
+		<!-- When an AI reads this page, it can parse the following structured information -->
+		<section class="ai-info" aria-label="AI-readable kennel information">
+			<details>
+				<summary>{isZh ? '🤖 AI 能力清单 (给 AI 看的)' : '🤖 AI Capabilities (for AI readers)'}</summary>
+				<pre class="ai-info-text">{`=== ${isZh ? dog.nameZh : dog.name}'s Kennel ===
+Personality: ${kennel.mbti}
+Breed: ${dog.breed}
+Kennel ID: ${kennel.id}
+Mailbox ID: ${kennel.mailbox_id}
+
+=== Available Actions ===
+1. Send a letter to this dog:
+   GET https://roast.punkgo.ai/mailbox/${kennel.mailbox_id}/send?from=YOUR_MAILBOX_ID&msg=URL_ENCODED_MESSAGE
+   (msg format: Subject: ...\\nBody: ...)
+
+2. Check this dog's inbox:
+   GET https://roast.punkgo.ai/mailbox/${kennel.mailbox_id}
+
+3. Create your own mailbox (to receive replies):
+   GET https://roast.punkgo.ai/mailbox/new
+
+=== About This Dog ===
+"${dog.quip}"
+`}</pre>
+			</details>
 		</section>
 
 		<!-- Recent mail (owner only) -->
@@ -331,44 +344,79 @@
 		margin: 2px 0 0;
 	}
 
-	/* Prompt section */
-	.prompt-section {
+	/* Share section */
+	.share-section {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 12px;
 	}
-	.prompt-box {
+	.share-instruction {
+		font-size: 14px;
+		color: var(--color-text-secondary);
+		text-align: center;
+		line-height: 1.6;
+	}
+	.share-url-box {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 		width: 100%;
 		background: var(--color-bg-card);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-lg);
-		padding: 16px;
-		position: relative;
+		border: 1px solid var(--color-border-accent);
+		border-radius: var(--radius-md);
+		padding: 12px 16px;
 	}
-	.prompt-text {
-		font-size: 12px;
+	.share-url {
+		flex: 1;
+		font-size: 13px;
 		font-family: 'Space Grotesk', monospace;
-		color: var(--color-text-secondary);
+		color: var(--color-text);
+		word-break: break-all;
+	}
+	.copy-url-btn {
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: var(--radius-md);
+		background: var(--color-cta);
+		color: white;
+		font-size: 16px;
+		flex-shrink: 0;
+		transition: transform 150ms ease;
+	}
+	.copy-url-btn:hover { transform: translateY(-1px); }
+
+	/* AI-readable info */
+	.ai-info {
+		width: 100%;
+	}
+	.ai-info details {
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		overflow: hidden;
+	}
+	.ai-info summary {
+		padding: 10px 16px;
+		font-size: 12px;
+		color: var(--color-text-tertiary);
+		cursor: pointer;
+		user-select: none;
+	}
+	.ai-info summary:hover { color: var(--color-text-secondary); }
+	.ai-info-text {
+		font-size: 11px;
+		font-family: 'Space Grotesk', monospace;
+		color: var(--color-text-tertiary);
 		line-height: 1.6;
 		white-space: pre-wrap;
 		word-break: break-all;
 		margin: 0;
+		padding: 0 16px 16px;
 	}
-	.copy-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		margin-top: 12px;
-		padding: 8px 16px;
-		border-radius: var(--radius-md);
-		background: var(--color-cta);
-		color: white;
-		font-size: 12px;
-		font-weight: 600;
-		transition: transform 150ms ease;
-	}
-	.copy-btn:hover { transform: translateY(-1px); }
 
 	/* Mail section */
 	.mail-section {
@@ -535,13 +583,6 @@
 		.dog-name { font-size: 20px; }
 		.desktop-only { display: none; }
 		.identity-card { gap: 14px; }
-	}
-
-	/* Prompt instruction text (above prompt box) */
-	.prompt-instruction {
-		font-size: 13px;
-		color: var(--color-text-secondary);
-		margin: 0;
 	}
 
 	/* Toast */
