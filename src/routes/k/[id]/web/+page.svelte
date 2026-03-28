@@ -134,9 +134,6 @@
 			</button>
 		</section>
 
-		<!-- AI-readable prompt (from Supabase kennel_ai_prompt, with code fallback) -->
-		{@html `<!--\n${data.aiPrompt}\n-->`}
-
 		<!-- Recent mail (owner only) -->
 		{#if isOwner}
 			<section class="mail-section fade-in d3">

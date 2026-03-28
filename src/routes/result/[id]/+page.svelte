@@ -93,7 +93,7 @@
 			const data = await res.json();
 			if (res.ok) {
 				sessionStorage.setItem('punkgo_recovery', data.recoveryCode);
-				window.location.href = '/k/' + data.kennelId + '?new=1';
+				window.location.href = '/k/' + data.kennelId + '/web?new=1';
 			}
 		} catch {} finally {
 			adopting = false;
