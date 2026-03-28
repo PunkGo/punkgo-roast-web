@@ -77,6 +77,8 @@ export const GET: RequestHandler = async ({ url }) => {
 			`\n\nAI's answers:\n${parts.join('\n')}`;
 	}
 
+	console.log('[quiz/go]', JSON.stringify({ ai: aiType, qi: qiParam, parts, qaText }));
+
 	let mbti: string;
 	try {
 		mbti = await generatePersonalityFromAnswers(qaText);
