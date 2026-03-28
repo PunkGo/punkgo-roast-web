@@ -5,6 +5,7 @@
 	import { decodeResultId, getDogByMBTI, type Dog } from '$lib/data/dogs';
 	import { getAIName } from '$lib/data/ai-quiz-prompt';
 	import QuizCard from '$lib/components/QuizCard.svelte';
+	import LicenseCard from '$lib/components/LicenseCard.svelte';
 
 	let isZh = $state(false);
 	let dog: Dog | null = $state(null);
@@ -28,11 +29,19 @@
 	let showActions = $state(false);
 	let loadingFact = $state(funFacts[0]);
 	let copied = $state(false);
+	let showDogCard = $state(false);
+	let kennelData: { kennelId: string; mailboxId: string; recoveryCode: string } | null = $state(null);
+	let adopting = $state(false);
+	let existingKennel = $state('');
+	let showToast = $state(false);
 
 	onMount(async () => {
 		isZh = navigator.language.startsWith('zh');
 		resultId = $page.params.id ?? '';
 		loadingFact = funFacts[Math.floor(Math.random() * funFacts.length)];
+
+		const match = document.cookie.match(/punkgo_kennel=([a-z0-9]{8})/);
+		if (match) existingKennel = match[1];
 		try {
 			const mbti = decodeResultId(resultId);
 			dog = getDogByMBTI(mbti);
@@ -67,9 +76,41 @@
 			typewriterQuip(quip || (isZh ? dog.quipZh : dog.quip));
 			setTimeout(() => { showActions = true; }, 1500);
 		}
+
+		// Check for ?new=1 param (redirected after kennel create)
+		if ($page.url.searchParams.get('new') === '1' && kennelData) {
+			showDogCard = true;
+		}
 	});
 
 	$effect(() => { resultId = $page.params.id ?? ''; });
+
+	async function adoptDog() {
+		if (adopting || !dog) return;
+		adopting = true;
+		try {
+			const res = await fetch('/api/kennel/create', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					resultId,
+					mbti: dog.mbti,
+					aiType: aiParam || 'unknown',
+					dogId: dog.id,
+					quip: llmQuip || (isZh ? dog.quipZh : dog.quip),
+					locale: isZh ? 'zh' : 'en',
+				}),
+			});
+			const data = await res.json();
+			if (res.ok) {
+				kennelData = data;
+				existingKennel = data.kennelId;
+				showDogCard = true;
+			}
+		} catch {} finally {
+			adopting = false;
+		}
+	}
 
 	function fireConfetti() {
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -207,11 +248,44 @@
 				</div><!-- /cards-row -->
 
 				<a href="/quiz" class="retake fade-in d5">{isZh ? '换个 AI 再测 →' : 'Test another AI →'}</a>
+
+				{#if existingKennel}
+					<a href="/k/{existingKennel}" class="kennel-cta fade-in d5">
+						{isZh ? '🏠 回到你的狗窝' : '🏠 Back to Your Kennel'}
+					</a>
+				{:else}
+					<button class="kennel-cta btn-primary fade-in d5" onclick={adoptDog} disabled={adopting}>
+						{adopting ? '...' : (isZh ? '领取狗卡 🪪' : 'Claim Your Dog Card 🪪')}
+					</button>
+				{/if}
 				{/if}
 			</div><!-- /phase-block -->
 		{/if}
 	</div>
 </div>
+
+{#if showDogCard && kennelData && dog}
+	<LicenseCard
+		{dog}
+		kennelId={kennelData.kennelId}
+		recoveryCode={kennelData.recoveryCode}
+		{aiName}
+		issuedDate={new Date().toISOString().slice(0, 10)}
+		isFirstTime={true}
+		locale={isZh ? 'zh' : 'en'}
+		onclose={() => {
+			showDogCard = false;
+			showToast = true;
+			setTimeout(() => { showToast = false; }, 3000);
+		}}
+	/>
+{/if}
+
+{#if showToast}
+	<div class="toast fade-in">
+		{isZh ? '狗窝已建好！把链接分享给朋友，让他们的 AI 来串门 🐾' : 'Kennel ready! Share the link with friends — let their AI visit 🐾'}
+	</div>
+{/if}
 
 <style>
 	.result-page {
@@ -368,5 +442,27 @@
 		.fade-in { animation: none; opacity: 1; }
 		.cursor { animation: none; }
 		.progress-fill { animation: none; width: 70%; }
+	}
+
+	/* Kennel CTA */
+	.kennel-cta {
+		display: inline-flex; align-items: center; justify-content: center;
+		padding: 14px 28px; border-radius: var(--radius-full);
+		font-size: 15px; font-weight: 600;
+		background: var(--color-bg-muted); color: var(--color-text);
+		border: 1.5px solid var(--color-border-accent);
+		transition: all 150ms ease; min-height: 44px;
+	}
+	.kennel-cta:hover { border-color: var(--color-cta); transform: translateY(-1px); }
+	.kennel-cta.btn-primary { background: var(--color-cta); color: white; border: none; }
+	.kennel-cta:disabled { opacity: 0.5; cursor: not-allowed; }
+
+	/* Toast */
+	.toast {
+		position: fixed; top: 72px; left: 50%; transform: translateX(-50%);
+		background: var(--color-bg-card); border: 1px solid var(--color-cta);
+		padding: 12px 24px; border-radius: var(--radius-lg);
+		font-size: 14px; color: var(--color-text); z-index: 100;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 	}
 </style>
