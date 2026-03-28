@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	].slice(0, count).join('&');
 	const exampleUrl = `${baseUrl}&${exampleParams}`;
 
-	// Replace template placeholders
+	// Select prompt template: Chinese > default
 	const template = (useChinese && config.prompt_template_zh) || config.prompt_template;
 	const body = template
 		.replace('{{questions}}', questionList)
