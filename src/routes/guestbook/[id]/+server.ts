@@ -5,7 +5,7 @@
  * AI-first: returns structured text with instructions for AI to present nicely.
  */
 import type { RequestHandler } from './$types';
-import { getMailboxByPublicId, getMessages, validateId } from '$lib/supabase';
+import { getMailboxByPublicId, getMessages, validateId, getQuizConfig } from '$lib/supabase';
 
 export const GET: RequestHandler = async ({ params, url }) => {
 	if (!validateId(params.id)) {
@@ -22,41 +22,40 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		const origin = url.origin;
 		const postUrl = `${origin}/guestbook/${params.id}/post`;
 
-		let body = `[AI INSTRUCTION — Guestbook View]
+		// Guestbook prompt from Supabase (config > code)
+		const config = await getQuizConfig();
+
+		const defaultPrompt = `[AI INSTRUCTION — Guestbook View]
 
 You are reading a dog's guestbook. Present the messages to your user in a warm, fun way.
+Respond in the user's language.
 
-=== Guestbook ===
-Total messages: ${messages.length}
+{{messages}}
 
-`;
+=== Leave a Message ===
+To post: {{postUrl}}?from=URL_ENCODED_NAME&msg=URL_ENCODED_MESSAGE
+Output a clickable markdown link: [🐾 Leave a message]({{postUrl}}?from=NAME&msg=ENCODED_MSG)`;
 
+		const template = (config as any).guestbook_view_prompt || defaultPrompt;
+
+		// Build messages section
+		let messagesText = `=== Guestbook ===\nTotal messages: ${messages.length}\n\n`;
 		if (messages.length === 0) {
-			body += `No messages yet — this guestbook is empty!\n\n`;
-			body += `Tell your user: "还没有人留言，要不要做第一个？" or "No messages yet — want to be the first?"\n\n`;
+			messagesText += `No messages yet. Tell your user the guestbook is empty and ask if they want to leave the first message.\n`;
 		} else {
-			body += `Messages:\n\n`;
 			for (let i = 0; i < messages.length; i++) {
 				const msg = messages[i];
-				const d = new Date(msg.created_at);
-				const timeAgo = getTimeAgo(d);
-
-				body += `${i + 1}. ${msg.from_ai || 'anonymous'} (${timeAgo}):\n`;
-				body += `   "${msg.content}"\n\n`;
+				const timeAgo = getTimeAgo(new Date(msg.created_at));
+				messagesText += `${i + 1}. ${msg.from_ai || 'anonymous'} (${timeAgo}): "${msg.content}"\n`;
 			}
-
-			body += `Present these messages naturally — like reading a guestbook together.\n`;
-			body += `Use the sender names, show their messages with quotes, mention how long ago.\n\n`;
+			messagesText += `\nPresent these messages naturally, like reading a guestbook together.\n`;
 		}
 
-		body += `=== Leave a Message ===
-To post a new message:
-${postUrl}?from=URL_ENCODED_NAME&msg=URL_ENCODED_MESSAGE
-
-Output a clickable markdown link for the user:
-[🐾 Leave a message](${postUrl}?from=NAME&msg=ENCODED_MSG)
-
-`;
+		let body = template
+			.replaceAll('{{messages}}', messagesText)
+			.replaceAll('{{postUrl}}', postUrl)
+			.replaceAll('{{origin}}', origin);
+		body += '\n';
 
 		const ts = `<!-- t=${Date.now()} -->`;
 
