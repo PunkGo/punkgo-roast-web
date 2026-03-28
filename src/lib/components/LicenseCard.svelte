@@ -176,13 +176,15 @@
 								{#if recoveryCode}
 									<div class="code-area">
 										<span class="code-display">{displayCode}</span>
-										<button
-											class="toggle-btn"
-											onclick={toggleCode}
-											aria-label={showCode ? 'Hide recovery code' : 'Show recovery code'}
-										>
-											{showCode ? '🙈' : '👁'}
-										</button>
+										{#if !isFirstTime}
+											<button
+												class="toggle-btn"
+												onclick={toggleCode}
+												aria-label={showCode ? 'Hide recovery code' : 'Show recovery code'}
+											>
+												{showCode ? '🙈' : '👁'}
+											</button>
+										{/if}
 									</div>
 								{/if}
 							</div>
@@ -203,9 +205,14 @@
 
 			<!-- Actions (fade in after flip) -->
 			{#if phase === 'flipped'}
+				{#if isFirstTime}
+					<p class="first-time-hint">
+						⚠️ {isZh ? '这张狗卡是你进入狗窝的唯一凭证，请务必下载保存！' : 'This dog card is your only key to the kennel. Download and save it!'}
+					</p>
+				{/if}
 				<div class="actions">
 					<button class="action-btn save-btn" onclick={saveAsPng}>
-						&#128248; {isZh ? '保存狗卡' : 'Save Card'}
+						&#128248; {isZh ? '下载保存狗卡' : 'Download Dog Card'}
 					</button>
 					<button class="action-btn close-btn" onclick={onclose}>
 						&#10005; {isZh ? '关闭' : 'Close'}
@@ -547,6 +554,15 @@
 		cursor: pointer;
 	}
 
+	.first-time-hint {
+		font-size: 14px;
+		font-weight: 600;
+		color: #C75050;
+		text-align: center;
+		margin: 0 0 8px;
+		padding: 0 16px;
+		line-height: 1.5;
+	}
 	.save-btn {
 		background: var(--color-bg-card);
 		color: var(--color-text);
