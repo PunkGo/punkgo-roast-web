@@ -90,7 +90,8 @@ Visual web page (for humans, AI can ignore): {{kennelUrl}}/web`;
 		.replaceAll('{{kennelUrl}}', `${origin}/k/${id}`)
 		.replaceAll('{{guestbookPost}}', guestbookPostUrl)
 		.replaceAll('{{guestbookView}}', guestbookViewUrl)
-		.replaceAll('{{guestbook}}', guestbookViewUrl);
+		.replaceAll('{{guestbook}}', guestbookViewUrl)
+		.replaceAll('{{origin}}', origin);
 
 	const ts = `\n\n<!-- t=${Date.now()} -->`;
 
