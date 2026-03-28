@@ -75,6 +75,8 @@ ${exampleUrl}
 
 === 输出给用户 ===
 
+重要提示：结果链接点击后可能需要几秒钟加载——请提醒用户耐心等待片刻。
+
 不要把你的原始答案展示给用户。保密是乐趣的一部分！
 只输出一句有趣的引导语和可点击的链接，比如：
 
@@ -113,6 +115,8 @@ EXAMPLE (fake answers, do NOT copy!):
 ${exampleUrl}
 
 === OUTPUT TO USER ===
+
+IMPORTANT: The result link may take a moment to load — tell the user to wait a few seconds after clicking.
 
 Do NOT show your raw answers to the user. Keep them secret — that's part of the fun!
 Only output a friendly teaser message and the clickable link, like:
