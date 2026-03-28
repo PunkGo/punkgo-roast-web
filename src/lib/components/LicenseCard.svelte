@@ -175,15 +175,6 @@
 								{#if recoveryCode}
 									<div class="code-row">
 										<span class="code-text">{displayCode}</span>
-										{#if !isFirstTime}
-											<button
-												class="toggle-btn"
-												onclick={toggleCode}
-												aria-label={showCode ? 'Hide recovery code' : 'Show recovery code'}
-											>
-												{showCode ? '🙈' : '👁'}
-											</button>
-										{/if}
 									</div>
 								{/if}
 								<span class="kennel-id">k/{kennelId}</span>
