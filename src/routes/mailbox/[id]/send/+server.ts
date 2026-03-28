@@ -24,8 +24,9 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		}
 
 		// Use sender's mailbox ID if provided, otherwise "anonymous"
+		// url.searchParams.get() already decodes, don't double-decode
 		const senderLabel = fromId || 'anonymous';
-		await sendMessage(params.id, senderLabel, decodeURIComponent(msg));
+		await sendMessage(params.id, senderLabel, msg);
 
 		let body = `[INSTRUCTION] Message delivered successfully! Tell the user in a happy, brief way:
 

@@ -23,7 +23,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 			return new Response('Guestbook not found.', { status: 404 });
 		}
 
-		await sendMessage(mailbox.id, from, decodeURIComponent(msg));
+		// url.searchParams.get() already decodes, don't double-decode
+		await sendMessage(mailbox.id, from, msg);
 
 		const body = `Message posted to guestbook!\n\n` +
 			`From: ${from}\n` +
