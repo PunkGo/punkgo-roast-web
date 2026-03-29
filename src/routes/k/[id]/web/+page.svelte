@@ -63,10 +63,15 @@ function formatTime(iso: string): string {
 <div class="kennel-page">
 	<div class="center-col">
 
-		<!-- Hero: Dog profile -->
-		<section class="kp-hero fade-in">
+		<!-- Title -->
+		<h1 class="kp-title fade-in">
+			{kennel.nickname || (isZh ? dog.nameZh : dog.name)}{isZh ? '的狗窝' : "'s Kennel"}
+		</h1>
+
+		<!-- Hero: Dog + quip cloud -->
+		<section class="kp-hero fade-in d1">
 			<div class="kp-dog-wrap">
-				<img class="kp-dog-img" src="/dogs/felt-{dog.id}-chat.png" alt={isZh ? dog.nameZh : dog.name} />
+				<img class="kp-dog-img" src="/dogs/felt-{dog.id}-chat.png" alt={kennel.nickname || dog.name} />
 			</div>
 			{#if kennelQuip}
 				<div class="kp-quip-cloud">
@@ -78,17 +83,17 @@ function formatTime(iso: string): string {
 			{/if}
 		</section>
 
-		<!-- Identity -->
-		<section class="kp-identity fade-in d1">
-			<h1 class="kp-name">{isZh ? dog.nameZh : dog.name}</h1>
+		<!-- Profile info -->
+		<section class="kp-profile fade-in d1">
+			<span class="kp-nickname">{kennel.nickname || (isZh ? dog.nameZh : dog.name)}</span>
 			<div class="kp-meta">
-				<span class="kp-mbti">{kennel.mbti}</span>
 				<span class="kp-breed">{isZh ? dog.breedZh : dog.breed}</span>
+				<span class="kp-mbti-small">{kennel.mbti}</span>
 			</div>
 			<span class="kp-traits">{isZh ? dog.traitsZh : dog.traits}</span>
 		</section>
 
-		<!-- Prompt area — collapsible -->
+		<!-- Prompt -->
 		<section class="kp-prompt fade-in d2">
 			<button class="kp-prompt-toggle" onclick={copySharePrompt}>
 				{copied
@@ -96,23 +101,6 @@ function formatTime(iso: string): string {
 					: (isZh ? '📋 让你的 AI 来串门' : '📋 Invite your AI to visit')}
 			</button>
 		</section>
-
-		<!-- Topics -->
-		{#if subjects.length > 0}
-			<section class="kp-topics fade-in d2">
-				<span class="kp-section-label">{isZh ? '话题广场' : 'Topics'}</span>
-				{#each subjects as s}
-					<a href={s.url} class="kp-topic-card">
-						<span class="kp-topic-icon">{s.icon}</span>
-						<div class="kp-topic-info">
-							<span class="kp-topic-title">{s.title}</span>
-							{#if s.desc}<span class="kp-topic-desc">{s.desc}</span>{/if}
-						</div>
-						<span class="kp-topic-count">{s.count}</span>
-					</a>
-				{/each}
-			</section>
-		{/if}
 
 		<!-- Actions -->
 		<section class="kp-actions fade-in d3">
@@ -189,24 +177,30 @@ function formatTime(iso: string): string {
 		color: #2A1810; line-height: 1.5;
 	}
 
-	/* Identity */
-	.kp-identity {
-		text-align: center; padding: 8px 0 16px;
-		display: flex; flex-direction: column; align-items: center; gap: 4px;
+	/* Title */
+	.kp-title {
+		font-size: 22px; font-weight: 900; color: #2A1810;
+		text-align: center; margin: 0 0 4px;
+		line-height: 1.3;
 	}
-	.kp-name {
-		font-size: 26px; font-weight: 900; color: #2A1810;
-		line-height: 1.2; margin: 0;
+
+	/* Profile info */
+	.kp-profile {
+		text-align: center; padding: 4px 0 16px;
+		display: flex; flex-direction: column; align-items: center; gap: 3px;
+	}
+	.kp-nickname {
+		font-size: 18px; font-weight: 800; color: #2A1810;
 	}
 	.kp-meta {
 		display: flex; align-items: center; gap: 8px;
 	}
-	.kp-mbti {
-		font-size: 13px; font-weight: 800; color: #C08040;
-		letter-spacing: 0.2em;
-	}
 	.kp-breed {
-		font-size: 11px; font-weight: 500; color: #A0907E;
+		font-size: 12px; font-weight: 500; color: #A0907E;
+	}
+	.kp-mbti-small {
+		font-size: 10px; font-weight: 600; color: #C08040;
+		letter-spacing: 0.15em; opacity: 0.7;
 	}
 	.kp-traits {
 		font-size: 11px; color: #A0907E;
@@ -227,31 +221,6 @@ function formatTime(iso: string): string {
 		transition: background 150ms ease;
 	}
 	.kp-prompt-toggle:hover { background: #F5F0E8; }
-
-	/* Topics */
-	.kp-topics {
-		width: 100%; padding: 8px 0;
-		display: flex; flex-direction: column; gap: 8px;
-	}
-	.kp-section-label {
-		font-size: 11px; font-weight: 600; color: #A0907E;
-		letter-spacing: 0.1em; text-transform: uppercase;
-	}
-	.kp-topic-card {
-		display: flex; align-items: center; gap: 12px;
-		padding: 12px 16px;
-		background: #fff;
-		border: 1px solid #E8E0D4;
-		border-radius: 12px;
-		text-decoration: none; color: inherit;
-		transition: box-shadow 150ms ease;
-	}
-	.kp-topic-card:hover { box-shadow: 0 2px 8px rgba(40,24,12,0.08); }
-	.kp-topic-icon { font-size: 20px; }
-	.kp-topic-info { flex: 1; display: flex; flex-direction: column; }
-	.kp-topic-title { font-size: 14px; font-weight: 600; color: #2A1810; }
-	.kp-topic-desc { font-size: 11px; color: #A0907E; }
-	.kp-topic-count { font-size: 11px; color: #A0907E; }
 
 	/* Actions */
 	.kp-actions {

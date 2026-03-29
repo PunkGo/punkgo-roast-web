@@ -34,6 +34,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 				aiType: aiType || 'unknown',
 				dogId,
 				quip: quip || null,
+				nickname: nickname || null,
 				locale: locale || 'en'
 			});
 			break;

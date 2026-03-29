@@ -9,6 +9,7 @@ export interface Kennel {
 	ai_type: string;
 	dog_id: string;
 	quip: string | null;
+	nickname: string | null;
 	locale: string;
 	test_count: number;
 	created_at: string;
@@ -23,6 +24,7 @@ export async function createKennel(data: {
 	aiType: string;
 	dogId: string;
 	quip: string | null;
+	nickname: string | null;
 	locale: string;
 }): Promise<void> {
 	await serviceRoleFetch('kennels', {
@@ -35,6 +37,7 @@ export async function createKennel(data: {
 			ai_type: data.aiType,
 			dog_id: data.dogId,
 			quip: data.quip,
+			nickname: data.nickname,
 			locale: data.locale,
 			test_count: 1,
 			created_at: new Date().toISOString(),
