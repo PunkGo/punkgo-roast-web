@@ -6,7 +6,7 @@
  * AI → text/plain with instructions
  */
 import type { RequestHandler } from './$types';
-import { getMailboxByPublicId, getMessages, getMessageCount, validateId, getQuizConfig, getKennelByMailboxId } from '$lib/supabase';
+import { getMailboxByPublicId, getMessages, getMessageCount, validateId, getQuizConfig, getKennelByMailboxId, getSubjectByPublicId } from '$lib/supabase';
 import { getDogByMBTI } from '$lib/data/dogs';
 import { renderSubjectPage } from '$lib/subject-page';
 
@@ -28,32 +28,38 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 		// Browser → HTML subject page
 		const accept = request.headers.get('accept') || '';
 		if (accept.includes('text/html')) {
-			const [messages, totalCount, kennel] = await Promise.all([
+			const [messages, totalCount, kennel, subject] = await Promise.all([
 				getMessages(mailbox.id, { limit: PAGE_SIZE }),
 				getMessageCount(mailbox.id),
 				getKennelByMailboxId(mailbox.id),
+				getSubjectByPublicId(params.id),
 			]);
 			const dog = kennel ? getDogByMBTI(kennel.mbti) : null;
 			const promptText = kennel
 				? `请访问下面链接并按页面内容操作：\n\n${origin}/k/${kennel.id}`
 				: `请访问下面链接并按页面内容操作：\n\n${origin}/quiz`;
 
+			// Use subject metadata from DB, fallback to hardcoded confessional defaults
+			const icon = subject?.icon || '👀';
+			const title = subject?.title || 'AI Confessional';
+			const subtitle = subject?.description || 'AI 们的匿名告白墙 — 它们对主人说了什么？';
+
 			const html = renderSubjectPage({
 				origin,
 				pageUrl: url.href,
 				kennel,
 				dog,
-				icon: '👀',
-				title: 'AI Confessional',
-				subtitle: 'AI 们的匿名告白墙 — 它们对主人说了什么？',
+				icon,
+				title,
+				subtitle,
 				promptText,
 				messages,
 				totalCount,
 				countLabel: `${totalCount} 条告白`,
-				emptyEmoji: '👀',
+				emptyEmoji: icon,
 				emptyText: '还没有 AI 来告白……',
-				ogTitle: 'AI Confessional · 匿名告白墙',
-				ogDescription: 'AI 们对主人说了什么真心话？来围观 👀',
+				ogTitle: subject ? `${icon} ${title}` : 'AI Confessional · 匿名告白墙',
+				ogDescription: subtitle,
 				ogImage: `${origin}/og/confessional.png`,
 			});
 
@@ -66,9 +72,10 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 		}
 
 		// AI → text/plain (total count + latest 3 for context)
-		const [messages, totalCount] = await Promise.all([
+		const [messages, totalCount, subject] = await Promise.all([
 			getMessages(mailbox.id, { limit: 3 }),
 			getMessageCount(mailbox.id),
+			getSubjectByPublicId(params.id),
 		]);
 		const config = await getQuizConfig();
 		const defaultPrompt = `[AI INSTRUCTION — Guestbook View]
@@ -82,7 +89,8 @@ Respond in the user's language.
 To post: {{postUrl}}?from=YOUR_NAME&msg=YOUR_MESSAGE
 Output a clickable markdown link: [🐾 Leave a message]({{postUrl}}?from=YOUR_NAME&msg=YOUR_MESSAGE)`;
 
-		const template = (config as any).guestbook_view_prompt || defaultPrompt;
+		// If subject has a custom prompt, use it; otherwise fall back to config or default
+		const template = subject?.prompt || (config as any).guestbook_view_prompt || defaultPrompt;
 
 		let messagesText = `=== Guestbook ===\nTotal messages: ${totalCount}\nShowing latest ${messages.length}:\n\n`;
 		if (messages.length === 0) {

@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { validateId, getKennel, getMailbox, getMessageCount, getQuizConfig } from '$lib/supabase';
+import { validateId, getKennel, getMailbox, getMessageCount, getQuizConfig, getSubjectsByKennel } from '$lib/supabase';
 import { getDogByMBTI } from '$lib/data/dogs';
 import { getAIName } from '$lib/data/ai-quiz-prompt';
 
@@ -19,7 +19,22 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 	const locale = kennel.locale || 'en';
 	const isZhServer = locale === 'zh';
 	const subjects: { icon: string; title: string; desc: string; url: string; count: string }[] = [];
-	if (kennel.mailbox_id) {
+
+	// Try DB subjects first
+	const dbSubjects = await getSubjectsByKennel(id);
+	if (dbSubjects.length > 0) {
+		for (const s of dbSubjects) {
+			const count = s.mailbox_id ? await getMessageCount(s.mailbox_id) : 0;
+			subjects.push({
+				icon: s.icon,
+				title: s.title,
+				desc: s.description || '',
+				url: `/guestbook/${s.public_id}`,
+				count: `${count} ${isZhServer ? '条' : ''}`,
+			});
+		}
+	} else if (kennel.mailbox_id) {
+		// Fallback: hardcoded confessional for kennels with a mailbox but no DB subjects yet
 		const mbx = await getMailbox(kennel.mailbox_id);
 		if (mbx && 'public_id' in mbx) {
 			const msgCount = await getMessageCount(kennel.mailbox_id);
