@@ -177,7 +177,7 @@
 					🪪 {isZh ? '查看狗卡' : 'Dog Card'}
 				</button>
 				<button class="action-btn primary" onclick={() => {
-					copyToClipboard(`https://roast.punkgo.ai/k/${kennel.id}`);
+					copyToClipboard(`https://roast.punkgo.ai/k/${kennel.id}/web`);
 				}}>
 					🔗 {isZh ? '分享' : 'Share'}
 				</button>
