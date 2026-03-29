@@ -277,7 +277,7 @@
 		font-size: 13px; font-weight: 600;
 		background: var(--color-bg-card); border: 1px solid var(--color-border);
 		color: var(--color-text-secondary); cursor: pointer;
-		transition: all 150ms ease;
+		transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
 	}
 	.toggle-btn.active {
 		background: var(--color-cta); color: white; border-color: var(--color-cta);

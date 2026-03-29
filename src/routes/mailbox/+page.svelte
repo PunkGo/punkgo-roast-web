@@ -120,7 +120,7 @@
 	h1 { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin: var(--space-sm) 0; }
 	.subtitle { color: var(--color-text-secondary); font-size: 14px; margin-bottom: var(--space-lg); }
 	.tabs { display: flex; gap: 4px; background: var(--color-bg-muted); border-radius: var(--radius-lg); padding: 4px; margin-bottom: var(--space-lg); }
-	.tab { flex: 1; padding: 10px 8px; border: none; background: transparent; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary); transition: all 0.2s; }
+	.tab { flex: 1; padding: 10px 8px; border: none; background: transparent; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary); transition: background 0.2s, color 0.2s, box-shadow 0.2s; }
 	.tab.active { background: white; color: var(--color-text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 	.tab-content { text-align: left; margin-bottom: var(--space-lg); }
 	.tab-desc { font-size: 14px; color: var(--color-text-secondary); margin-bottom: var(--space-md); text-align: center; }

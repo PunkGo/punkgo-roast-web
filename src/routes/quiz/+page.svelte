@@ -184,7 +184,7 @@
 		color: var(--color-text-tertiary);
 		display: flex; align-items: center; justify-content: center;
 		font-size: 14px; font-weight: 600;
-		transition: all 0.3s;
+		transition: background 0.3s, color 0.3s;
 	}
 
 	.step-dot.active { background: var(--color-cta); color: white; }
@@ -227,7 +227,7 @@
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-lg);
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 		min-height: 44px;
 	}
 

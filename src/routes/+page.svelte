@@ -180,7 +180,7 @@
 		width: 52px; height: 52px; border-radius: var(--radius-full);
 		background: var(--color-bg-muted); border: 2px solid var(--color-border);
 		display: flex; align-items: center; justify-content: center;
-		overflow: hidden; transition: all 150ms ease;
+		overflow: hidden; transition: transform 150ms ease, border-color 150ms ease;
 	}
 	.kennel-chip:hover { border-color: var(--color-cta); transform: translateY(-2px); }
 	.kennel-chip-img { width: 40px; height: 40px; object-fit: contain; }

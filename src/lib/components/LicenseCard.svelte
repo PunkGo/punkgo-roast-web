@@ -611,7 +611,7 @@
 		border-radius: var(--radius-full);
 		font-size: 14px;
 		font-weight: 600;
-		transition: all 150ms ease;
+		transition: background 150ms ease, color 150ms ease;
 		cursor: pointer;
 	}
 

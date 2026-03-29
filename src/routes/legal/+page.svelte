@@ -125,7 +125,7 @@
 		color: var(--color-text-secondary);
 		font-size: 13px;
 		font-weight: 500;
-		transition: all 0.2s;
+		transition: background 0.2s, color 0.2s;
 	}
 	.lang-toggle button.active {
 		background: var(--color-cta);

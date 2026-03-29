@@ -117,7 +117,7 @@
 		display: flex; flex-direction: column; align-items: center; gap: 2px;
 		padding: 6px 8px; border-radius: 8px; background: var(--color-bg-card);
 		border: 2px solid transparent; cursor: pointer; min-height: 44px;
-		transition: all 150ms ease;
+		transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
 	}
 	.dog-btn:hover { background: var(--color-bg-muted); transform: translateY(-1px); }
 	.dog-btn.active { border-color: var(--color-cta); background: var(--color-bg-muted); }
