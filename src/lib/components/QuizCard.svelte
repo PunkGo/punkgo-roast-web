@@ -36,7 +36,6 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
-		// Clone to offscreen — avoids 3D transform + cross-origin CSS issues
 		const wrapper = document.createElement('div');
 		wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;';
 		const clone = cardRef.cloneNode(true) as HTMLElement;
@@ -44,13 +43,13 @@
 		clone.style.cssText = `
 			width: ${cardRef.offsetWidth}px;
 			min-height: ${cardRef.offsetHeight}px;
-			background: #F5F0E8;
-			border: 1.5px solid #D4C9B8;
+			background: linear-gradient(170deg, #F8F2E8 0%, #EDE0C8 100%);
 			border-radius: 20px;
 			overflow: hidden;
 			display: flex;
 			flex-direction: column;
-			box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+			box-shadow: 0 8px 32px rgba(40, 24, 12, 0.18);
+			position: relative;
 		`;
 		wrapper.appendChild(clone);
 		document.body.appendChild(wrapper);
@@ -74,17 +73,31 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="card-shell card-holo" bind:this={cardRef} onmousemove={handleTilt} onmouseleave={handleTiltReset}>
 	<div class="card-glow"></div>
-	<div class="qc-img-wrap">
-		<p class="card-ai-label">{isZh ? `这只 ${aiName} 是` : `This ${aiName} is`}</p>
-		<img src="/dogs/felt-{dog.id}-nobg.png" alt={isZh ? dog.nameZh : dog.name} class="qc-img" />
-		<span class="card-breed">{isZh ? dog.breedZh : dog.breed}</span>
+	<!-- Brand + Breed tags -->
+	<span class="tag-l">roast.punkgo.ai</span>
+	<span class="tag-r">{isZh ? dog.breedZh : dog.breed}</span>
+	<!-- Thought bubble -->
+	<div class="thought">
+		<div class="cloud">
+			<span class="cloud-label">{customIntro || (isZh ? '它这样介绍你' : 'About its owner')}</span>
+			"{customQuip || (isZh ? dog.quipZh : dog.quip)}"
+			<div class="dot1"></div>
+			<div class="dot2"></div>
+		</div>
 	</div>
-	<div class="card-body">
-		<span class="card-name">{dog.mbti}&ensp;{isZh ? dog.nameZh : dog.name}</span>
-		<p class="card-roast-intro">{customIntro || (isZh ? '别人看它:' : 'What others see:')}</p>
-		<p class="card-quip">"{customQuip || (isZh ? dog.quipZh : dog.quip)}"</p>
+	<!-- Dog -->
+	<div class="dog-area">
+		<img src="/dogs/felt-{dog.id}-chat.png" alt={isZh ? dog.nameZh : dog.name} />
 	</div>
-	<span class="card-water">roast.punkgo.ai</span>
+	<!-- Info bar -->
+	<div class="card-info">
+		<span class="ai-intro">{isZh ? `这只 ${aiName} 是` : `This ${aiName} is`}</span>
+		<div class="name-row">
+			<span class="info-mbti">{dog.mbti}</span>
+			<span class="info-name">{isZh ? dog.nameZh : dog.name}</span>
+		</div>
+		<span class="info-traits">{isZh ? dog.traitsZh || '' : dog.traits || ''}</span>
+	</div>
 </div>
 
 {#if savePreviewUrl}
@@ -105,23 +118,25 @@
 	}
 	.save-hint { color: white; font-size: 14px; text-align: center; }
 	.save-preview-img { max-width: 90vw; max-height: 80vh; border-radius: 12px; }
+
+	/* Card shell */
 	.card-shell {
-		width: min(340px, 80vw); min-height: 400px;
-		background: #F5F0E8;
-		border: 1.5px solid #D4C9B8;
+		width: min(300px, 80vw);
+		height: 420px;
 		border-radius: 20px;
 		overflow: hidden;
-		-webkit-mask-image: -webkit-radial-gradient(white, black); /* force clip on iOS/WeChat */
+		-webkit-mask-image: -webkit-radial-gradient(white, black);
 		display: flex; flex-direction: column;
-		box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+		box-shadow: 0 8px 32px rgba(40, 24, 12, 0.18);
 		position: relative;
+		background: linear-gradient(170deg, #F8F2E8 0%, #EDE0C8 100%);
 	}
 	.card-holo {
 		transition: transform 200ms ease, box-shadow 200ms ease;
 		will-change: transform;
 	}
 	.card-holo:hover {
-		box-shadow: 0 8px 40px rgba(0,0,0,0.12), 0 0 20px rgba(90,140,106,0.1);
+		box-shadow: 0 12px 48px rgba(40, 24, 12, 0.22), 0 0 20px rgba(90,140,106,0.08);
 	}
 	.card-glow {
 		position: absolute; inset: 0; z-index: 10;
@@ -131,60 +146,91 @@
 		opacity: 0; transition: opacity 200ms ease;
 	}
 	.card-holo:hover .card-glow { opacity: 1; }
-	.card-body {
-		display: flex; flex-direction: column; align-items: center;
-		gap: 0; padding: 6px 14px 16px;
+
+	/* Tags */
+	.tag-l {
+		position: absolute; top: 12px; left: 14px;
+		font-size: 8px; font-weight: 400; color: #A0907E;
+		z-index: 3; letter-spacing: 0.04em;
 	}
-	.card-ai-label {
-		position: absolute; top: 10px; left: 12px;
-		font-size: 10px;
-		font-weight: 500;
-		color: #6B5545;
-		letter-spacing: 0.05em;
-		margin: 0;
-		background: rgba(245, 240, 232, 0.85);
-		padding: 2px 8px; border-radius: 8px;
-		z-index: 1;
+	.tag-r {
+		position: absolute; top: 12px; right: 14px;
+		font-size: 9px; font-weight: 500; color: #7A6650;
+		background: rgba(255,255,255,0.72);
+		padding: 3px 10px; border-radius: 10px;
+		backdrop-filter: blur(6px); z-index: 3;
 	}
-	.card-name {
-		font-size: 17px; font-weight: 700; color: #3A2518;
-		white-space: nowrap;
-		margin-bottom: 2px;
+
+	/* Thought cloud */
+	.thought {
+		padding: 32px 20px 0;
+		display: flex; justify-content: center;
+	}
+	.cloud {
+		background: #fff;
+		border-radius: 20px;
+		padding: 14px 18px;
+		font-size: 13px; font-weight: 600; font-style: italic;
+		color: #2A1810; line-height: 1.55;
+		box-shadow: 0 2px 12px rgba(40, 24, 12, 0.06);
 		text-align: center;
-	}
-	.card-breed {
-		position: absolute; bottom: 8px; right: 12px;
-		font-size: 10px; font-weight: 500; color: #6B5545;
-		background: rgba(245, 240, 232, 0.85);
-		padding: 2px 8px; border-radius: 8px;
-		letter-spacing: 0.5px;
-	}
-	.card-roast-intro {
-		font-size: 10px; color: #8B7B6B; margin: 0;
-		letter-spacing: 0.03em;
-	}
-	.card-quip {
-		font-size: 12px; font-weight: 600; font-style: italic;
-		color: #3A2518; text-align: center; line-height: 1.4;
-		padding: 0 6px; margin: 0;
-		display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-	.card-water {
-		position: absolute; bottom: 5px; right: 10px;
-		font-size: 8px; color: #8B7B6B;
-	}
-	.qc-img-wrap {
-		width: 100%; flex: 1;
-		overflow: hidden;
-		display: flex; align-items: center; justify-content: center;
-		background: linear-gradient(135deg, #EDE5D8 0%, #F5F0E8 50%, #E8E0D4 100%);
-		border-radius: 20px 20px 0 0;
 		position: relative;
+		max-width: 88%;
 	}
-	.qc-img { max-width: 85%; max-height: 90%; object-fit: contain; display: block; }
+	.cloud-label {
+		font-size: 9px; font-weight: 500; color: #A0907E; font-style: normal;
+		display: block; margin-bottom: 4px;
+		letter-spacing: 0.06em;
+	}
+	.dot1 {
+		width: 11px; height: 11px; background: #fff; border-radius: 50%;
+		position: absolute; bottom: -9px; left: 50%; margin-left: 8px;
+		box-shadow: 0 1px 4px rgba(40, 24, 12, 0.06);
+	}
+	.dot2 {
+		width: 6px; height: 6px; background: #fff; border-radius: 50%;
+		position: absolute; bottom: -16px; left: 50%; margin-left: 14px;
+		box-shadow: 0 1px 3px rgba(40, 24, 12, 0.04);
+	}
+
+	/* Dog area */
+	.dog-area {
+		flex: 1; display: flex; align-items: flex-end; justify-content: center;
+		padding: 0 0 4px;
+	}
+	.dog-area img {
+		width: 52%; object-fit: contain;
+		filter: drop-shadow(0 6px 16px rgba(40, 24, 12, 0.12));
+	}
+
+	/* Info bar */
+	.card-info {
+		background: #F5F0E8;
+		padding: 14px 20px 20px;
+		display: flex; flex-direction: column; align-items: center;
+		gap: 3px;
+	}
+	.ai-intro {
+		font-size: 10px; font-weight: 500; color: #A0907E;
+		letter-spacing: 0.1em;
+	}
+	.name-row {
+		display: flex; align-items: baseline; gap: 10px; justify-content: center;
+	}
+	.info-mbti {
+		font-size: 13px; font-weight: 800; color: #C08040;
+		letter-spacing: 0.18em;
+	}
+	.info-name {
+		font-size: 22px; font-weight: 900; color: #2A1810; line-height: 1.2;
+	}
+	.info-traits {
+		font-size: 11px; font-weight: 400; color: #A0907E;
+		text-align: center; letter-spacing: 0.06em; margin-top: 2px;
+	}
+
 	@media (max-width: 639px) {
-		.card-shell { width: min(280px, 75vw); min-height: 360px; }
+		.card-shell { width: min(280px, 75vw); height: 390px; }
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.card-holo { transition: none; }

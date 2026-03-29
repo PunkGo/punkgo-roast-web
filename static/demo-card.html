@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PunkGo Card Design — H + B</title>
+<link href="https://fonts.loli.net/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a1a;
+  font-family: 'Noto Sans SC', -apple-system, sans-serif;
+  padding: 40px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 48px;
+}
+.row { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+.demo-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.demo-label { color: #666; font-size: 11px; letter-spacing: 0.1em; }
+h2 { color: #aaa; font-size: 13px; letter-spacing: 0.2em; }
+
+/* ============================================================
+   H — 人格卡（竖版，思考泡泡 + 居中狗）
+   ============================================================ */
+.card-h {
+  width: 300px; height: 420px;
+  border-radius: 20px; overflow: hidden;
+  position: relative; display: flex; flex-direction: column;
+  box-shadow: 0 8px 32px rgba(40, 24, 12, 0.18);
+  background: linear-gradient(170deg, #F8F2E8 0%, #EDE0C8 100%);
+}
+.card-h .tag-l {
+  position: absolute; top: 12px; left: 14px;
+  font-size: 8px; font-weight: 400; color: #A0907E;
+  z-index: 3; letter-spacing: 0.04em;
+}
+.card-h .tag-r {
+  position: absolute; top: 12px; right: 14px;
+  font-size: 9px; font-weight: 500; color: #7A6650;
+  background: rgba(255,255,255,0.72);
+  padding: 3px 10px; border-radius: 10px;
+  backdrop-filter: blur(6px); z-index: 3;
+}
+.card-h .thought {
+  padding: 32px 20px 0;
+  display: flex; justify-content: center;
+}
+.card-h .thought .cloud {
+  background: #fff;
+  border-radius: 20px;
+  padding: 14px 18px;
+  font-size: 13px; font-weight: 600; font-style: italic;
+  color: #2A1810; line-height: 1.55;
+  box-shadow: 0 2px 12px rgba(40, 24, 12, 0.06);
+  text-align: center;
+  position: relative;
+  max-width: 88%;
+}
+.card-h .thought .cloud-label {
+  font-size: 9px; font-weight: 500; color: #A0907E; font-style: normal;
+  display: block; margin-bottom: 4px;
+  letter-spacing: 0.06em;
+}
+.card-h .thought .dot1 {
+  width: 11px; height: 11px; background: #fff; border-radius: 50%;
+  position: absolute; bottom: -9px; left: 50%; margin-left: 8px;
+  box-shadow: 0 1px 4px rgba(40, 24, 12, 0.06);
+}
+.card-h .thought .dot2 {
+  width: 6px; height: 6px; background: #fff; border-radius: 50%;
+  position: absolute; bottom: -16px; left: 50%; margin-left: 14px;
+  box-shadow: 0 1px 3px rgba(40, 24, 12, 0.04);
+}
+.card-h .dog-area {
+  flex: 1; display: flex; align-items: flex-end; justify-content: center;
+  padding: 0 0 4px;
+}
+.card-h .dog-area img {
+  width: 52%; object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(40, 24, 12, 0.12));
+}
+.card-h .info {
+  background: #F5F0E8;
+  padding: 14px 20px 20px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; position: relative;
+}
+.card-h .info .ai-intro {
+  font-size: 10px; font-weight: 500; color: #A0907E;
+  letter-spacing: 0.1em;
+}
+.card-h .info .name-row {
+  display: flex; align-items: baseline; gap: 10px; justify-content: center;
+}
+.card-h .info .mbti {
+  font-size: 13px; font-weight: 800; color: #C08040;
+  letter-spacing: 0.18em;
+}
+.card-h .info .name {
+  font-size: 22px; font-weight: 900; color: #2A1810; line-height: 1.2;
+}
+.card-h .info .traits {
+  font-size: 11px; font-weight: 400; color: #A0907E;
+  text-align: center; letter-spacing: 0.06em; margin-top: 2px;
+}
+
+/* ============================================================
+   B — 狗卡身份证（横版）
+   固定布局：上半 55% 身份区，1px 分割线，下半 45% 凭证区
+   ============================================================ */
+.card-bp {
+  width: 380px; height: 190px;
+  border-radius: 16px; overflow: hidden;
+  display: flex; flex-direction: row;
+  box-shadow: 0 6px 24px rgba(40, 24, 12, 0.16);
+  position: relative;
+}
+/* 左区：狗子 */
+.bp-left {
+  width: 36%;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: linear-gradient(170deg, #F8F2E8 0%, #EDE0C8 100%);
+  padding: 0 0 4px 4px;
+  position: relative;
+}
+.bp-left img {
+  width: 90%; object-fit: contain;
+  filter: drop-shadow(0 3px 8px rgba(40, 24, 12, 0.1));
+}
+.bp-left .bp-site {
+  position: absolute; bottom: 4px; left: 0; right: 0;
+  text-align: center;
+  font-size: 6px; color: #B0A090; opacity: 0.5;
+}
+/* 右区：grid 固定比例 — 上 55% 线 1px 下 45% */
+.bp-right {
+  width: 64%;
+  display: grid;
+  grid-template-rows: 55fr 1px 45fr;
+  padding: 0;
+  background: linear-gradient(160deg, #F5F0E8 0%, #EDE5D8 100%);
+}
+/* 第一行：身份区 */
+.bp-top {
+  padding: 0 14px;
+  display: flex; flex-direction: column;
+}
+.bp-top-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 10px;
+  margin-bottom: auto;
+}
+.bp-brand {
+  font-size: 10px; font-weight: 700; color: #2A1810;
+  letter-spacing: 0.15em;
+}
+.bp-mbti {
+  font-size: 12px; font-weight: 800; color: #C08040;
+  letter-spacing: 0.2em;
+}
+.bp-name-block {
+  margin-bottom: 10px;
+}
+.bp-name {
+  font-size: 20px; font-weight: 900; color: #2A1810;
+  line-height: 1.1;
+  max-width: 200px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.bp-breed {
+  font-size: 9px; font-weight: 500; color: #A0907E;
+  margin-top: 3px; display: block;
+}
+/* 第二行：分割线 — grid 固定 1px */
+.bp-divider {
+  background: #E0D8CC;
+}
+/* 第三行：凭证区 — 垂直居中，左对齐 */
+.bp-bottom {
+  padding: 0 14px;
+  display: flex; align-items: center; gap: 10px;
+  justify-content: flex-start;
+}
+.bp-qr-box {
+  width: 44px; height: 44px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #E8E0D4;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.bp-qr-box::after {
+  content: 'QR'; font-size: 9px; font-weight: 700; color: #D4C9B8;
+}
+.bp-codes {
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 0;
+}
+.bp-code {
+  font-size: 11px; font-weight: 700; color: #2A1810;
+  letter-spacing: 0.08em;
+}
+.bp-url {
+  font-size: 7px; color: #A0907E;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<h2>H — 人格卡</h2>
+<div class="row">
+  <div class="card-h">
+    <span class="tag-l">roast.punkgo.ai</span>
+    <span class="tag-r">柴犬</span>
+    <div class="thought">
+      <div class="cloud">
+        <span class="cloud-label">它这样介绍你</span>
+        "同一个文件，读了47遍，还没看够。"
+        <div class="dot1"></div>
+        <div class="dot2"></div>
+      </div>
+    </div>
+    <div class="dog-area">
+      <img src="/dogs/felt-rereader-chat.png" alt="ISTJ 物流师 柴犬">
+    </div>
+    <div class="info">
+      <span class="ai-intro">这只 DeepSeek 是</span>
+      <div class="name-row"><span class="mbti">ISTJ</span><span class="name">物流师</span></div>
+      <span class="traits">守序 · 严谨 · 可靠</span>
+    </div>
+  </div>
+  <div class="card-h">
+    <span class="tag-l">roast.punkgo.ai</span>
+    <span class="tag-r">Labrador</span>
+    <div class="thought">
+      <div class="cloud">
+        <span class="cloud-label">About its owner</span>
+        "Teaches AI how to teach. Then teaches others."
+        <div class="dot1"></div>
+        <div class="dot2"></div>
+      </div>
+    </div>
+    <div class="dog-area">
+      <img src="/dogs/felt-mentor-chat.png" alt="ENFJ The Protagonist Labrador">
+    </div>
+    <div class="info">
+      <span class="ai-intro">This DeepSeek is</span>
+      <div class="name-row"><span class="mbti">ENFJ</span><span class="name">The Protagonist</span></div>
+      <span class="traits">Charismatic · Empathetic · Guiding</span>
+    </div>
+  </div>
+</div>
+
+<h2>B — 狗卡身份证</h2>
+<div class="row">
+  <div class="demo-col">
+    <span class="demo-label">短昵称</span>
+    <div class="card-bp">
+      <div class="bp-left">
+        <img src="/dogs/felt-rereader-chat.png" alt="ISTJ 柴犬">
+        <span class="bp-site">roast.punkgo.ai</span>
+      </div>
+      <div class="bp-right">
+        <div class="bp-top">
+          <div class="bp-top-header">
+            <span class="bp-brand">胖狗</span>
+            <span class="bp-mbti">ISTJ</span>
+          </div>
+          <div class="bp-name-block">
+            <span class="bp-name">小柴蛋蛋</span>
+            <span class="bp-breed">柴犬</span>
+          </div>
+        </div>
+        <div class="bp-divider"></div>
+        <div class="bp-bottom">
+          <div class="bp-qr-box"></div>
+          <div class="bp-codes">
+            <span class="bp-code">XRQN-B3V6-ZNHV</span>
+            <span class="bp-url">roast.punkgo.ai/k/e1b45bc5/web</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-col">
+    <span class="demo-label">English</span>
+    <div class="card-bp">
+      <div class="bp-left">
+        <img src="/dogs/felt-mentor-chat.png" alt="ENFJ Labrador">
+        <span class="bp-site">roast.punkgo.ai</span>
+      </div>
+      <div class="bp-right">
+        <div class="bp-top">
+          <div class="bp-top-header">
+            <span class="bp-brand">PUNKGO</span>
+            <span class="bp-mbti">ENFJ</span>
+          </div>
+          <div class="bp-name-block">
+            <span class="bp-name">Buddy</span>
+            <span class="bp-breed">Labrador</span>
+          </div>
+        </div>
+        <div class="bp-divider"></div>
+        <div class="bp-bottom">
+          <div class="bp-qr-box"></div>
+          <div class="bp-codes">
+            <span class="bp-code">PNGR-D4S8-PQR2</span>
+            <span class="bp-url">roast.punkgo.ai/k/57d498be/web</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-col">
+    <span class="demo-label">长昵称</span>
+    <div class="card-bp">
+      <div class="bp-left">
+        <img src="/dogs/felt-helper-chat.png" alt="ESFJ 柯基">
+        <span class="bp-site">roast.punkgo.ai</span>
+      </div>
+      <div class="bp-right">
+        <div class="bp-top">
+          <div class="bp-top-header">
+            <span class="bp-brand">胖狗</span>
+            <span class="bp-mbti">ESFJ</span>
+          </div>
+          <div class="bp-name-block">
+            <span class="bp-name">我家最可爱的小短腿</span>
+            <span class="bp-breed">柯基</span>
+          </div>
+        </div>
+        <div class="bp-divider"></div>
+        <div class="bp-bottom">
+          <div class="bp-qr-box"></div>
+          <div class="bp-codes">
+            <span class="bp-code">ABCD-EFGH-IJKL</span>
+            <span class="bp-url">roast.punkgo.ai/k/abcd1234/web</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
