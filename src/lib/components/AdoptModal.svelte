@@ -93,11 +93,35 @@
 		});
 	}
 
-	function handleComplete() {
-		if (kennelId) {
-			sessionStorage.setItem('punkgo_recovery', recoveryCode);
-			onComplete(nickname.trim(), kennelId, recoveryCode);
+	let revealCardRef: HTMLElement | null = $state(null);
+	const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
+	async function saveAndEnter() {
+		if (!kennelId) return;
+		sessionStorage.setItem('punkgo_recovery', recoveryCode);
+
+		if (!isMobile && revealCardRef) {
+			// Desktop: save PNG then enter kennel
+			try {
+				const html2canvas = (await import('html2canvas')).default;
+				const canvas = await html2canvas(revealCardRef, { scale: 2, useCORS: true, backgroundColor: null });
+				const url = canvas.toDataURL('image/png');
+				const link = document.createElement('a');
+				link.download = `punkgo-dogcard-${nickname || dog.id}.png`;
+				link.href = url;
+				link.click();
+				// Wait a moment for download to start
+				await tick(500);
+			} catch {}
 		}
+
+		onComplete(nickname.trim(), kennelId, recoveryCode);
+	}
+
+	function enterKennel() {
+		if (!kennelId) return;
+		sessionStorage.setItem('punkgo_recovery', recoveryCode);
+		onComplete(nickname.trim(), kennelId, recoveryCode);
 	}
 </script>
 
@@ -175,7 +199,7 @@
 			<!-- Phase 3: Reveal -->
 			<div class="reveal-phase">
 				<h3 class="reveal-title">{isZh ? '🎉 狗证制作完成！' : '🎉 Dog Card Ready!'}</h3>
-				<div class="reveal-card">
+				<div class="reveal-card" bind:this={revealCardRef}>
 					<div class="rc-left">
 						<img src="/dogs/felt-{dog.id}-chat.png" alt={nickname} />
 					</div>
@@ -191,12 +215,16 @@
 				</div>
 				<p class="reveal-warn">⚠️ {isZh ? '恢复码是你的狗证钥匙，请妥善保管！' : 'Recovery code is your card key — save it!'}</p>
 				<div class="reveal-actions">
-					<button class="action-btn primary" onclick={handleComplete}>
-						🏠 {isZh ? '进入狗窝' : 'Enter Kennel'}
-					</button>
-					<button class="action-btn outline" onclick={handleComplete}>
-						💾 {isZh ? '保存狗证' : 'Save Card'}
-					</button>
+					{#if isMobile}
+						<p class="mobile-hint">{isZh ? '📱 请截图保存狗证' : '📱 Please screenshot to save'}</p>
+						<button class="action-btn primary" onclick={enterKennel}>
+							🏠 {isZh ? '进入狗窝' : 'Enter Kennel'}
+						</button>
+					{:else}
+						<button class="action-btn primary" onclick={saveAndEnter}>
+							💾 {isZh ? '保存狗证并进入狗窝' : 'Save Card & Enter Kennel'}
+						</button>
+					{/if}
 				</div>
 			</div>
 		{/if}
@@ -389,7 +417,11 @@
 		text-align: center; width: 100%;
 	}
 	.reveal-actions {
-		display: flex; gap: 10px; width: 100%;
+		display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center;
+	}
+	.mobile-hint {
+		font-size: 13px; color: #C08040; font-weight: 600;
+		text-align: center; margin: 0;
 	}
 	.action-btn {
 		flex: 1; padding: 12px;
