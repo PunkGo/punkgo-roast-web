@@ -77,10 +77,10 @@
 	<div class="qc-img-wrap">
 		<p class="card-ai-label">{isZh ? `这只 ${aiName} 是` : `This ${aiName} is`}</p>
 		<img src="/dogs/felt-{dog.id}-nobg.png" alt={isZh ? dog.nameZh : dog.name} class="qc-img" />
-		<span class="card-breed">{dog.breed}</span>
+		<span class="card-breed">{isZh ? dog.breedZh : dog.breed}</span>
 	</div>
 	<div class="card-body">
-		<span class="card-name">{dog.mbti}<span class="card-name-sep">·</span>{isZh ? dog.nameZh : dog.name}</span>
+		<span class="card-name">{dog.mbti}&ensp;{isZh ? dog.nameZh : dog.name}</span>
 		<p class="card-roast-intro">{customIntro || (isZh ? '别人看它:' : 'What others see:')}</p>
 		<p class="card-quip">"{customQuip || (isZh ? dog.quipZh : dog.quip)}"</p>
 	</div>
@@ -148,12 +148,9 @@
 	}
 	.card-name {
 		font-size: 17px; font-weight: 700; color: #3A2518;
-		display: flex; align-items: baseline; gap: 0;
 		white-space: nowrap;
 		margin-bottom: 2px;
-	}
-	.card-name-sep {
-		margin: 0 5px; font-weight: 400; color: #6B5545; font-size: 13px;
+		text-align: center;
 	}
 	.card-breed {
 		position: absolute; bottom: 8px; right: 12px;

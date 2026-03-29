@@ -81,8 +81,8 @@
 		clone.className = '';
 		clone.style.cssText = `
 			width: ${cardRef.offsetWidth}px;
-			height: ${cardRef.offsetHeight}px;
-			background: var(--color-bg-card, #FAFAF5);
+			min-height: ${cardRef.offsetHeight}px;
+			background: #FAFAF5;
 			border: 3px solid ${dog.cardColor || '#D4B896'};
 			border-radius: 20px;
 			overflow: hidden;
@@ -92,6 +92,24 @@
 			box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 			position: relative;
 		`;
+		// Force inline styles on clone children to avoid CSS variable / scoped style loss
+		const inlineStyles: Record<string, string> = {
+			'card-header': 'display:flex;justify-content:space-between;align-items:center;margin-bottom:0;',
+			'header-brand': 'font-size:13px;font-weight:700;color:#3A2518;letter-spacing:0.15em;',
+			'header-type': 'font-size:10px;color:#6B5545;letter-spacing:0.1em;font-weight:500;',
+			'header-divider': 'height:1.5px;background:linear-gradient(90deg,transparent,#D4B896,transparent);margin:8px 0;',
+			'dog-info-center': 'display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;',
+			'dog-card-name': 'font-size:20px;font-weight:700;color:#3A2518;text-align:center;margin:4px 0 0;line-height:1.2;',
+			'dog-card-meta': 'font-size:12px;color:#6B5545;text-align:center;margin:0;letter-spacing:0.05em;',
+			'dog-card-roast-intro': 'font-size:9px;color:#8B7B6B;text-align:center;margin:0;',
+			'dog-card-quip': 'font-size:11px;font-weight:600;font-style:italic;color:#3A2518;text-align:center;line-height:1.4;margin:1px 0 0;padding:0 8px;',
+			'card-bottom': 'display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:8px;',
+			'card-footer': 'display:flex;justify-content:space-between;font-size:8px;color:#8B7B6B;margin-top:6px;',
+		};
+		for (const [cls, style] of Object.entries(inlineStyles)) {
+			const el = clone.querySelector(`.${cls}`) as HTMLElement;
+			if (el) el.style.cssText += style;
+		}
 		wrapper.appendChild(clone);
 		document.body.appendChild(wrapper);
 
@@ -180,8 +198,7 @@
 								/>
 							</div>
 							<h2 class="dog-card-name">{isZh ? dog.nameZh : dog.name}</h2>
-							<p class="dog-card-meta">{dog.mbti} &middot; {dog.breed}</p>
-							<p class="dog-card-ai">by {aiName}</p>
+							<p class="dog-card-meta">{dog.mbti} &middot; {isZh ? dog.breedZh : dog.breed}</p>
 							<p class="dog-card-roast-intro">{isZh ? '别人看它:' : 'What others see:'}</p>
 							<p class="dog-card-quip">"{isZh ? dog.quipZh : dog.quip}"</p>
 						</div>
