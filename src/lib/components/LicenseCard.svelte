@@ -8,6 +8,8 @@
 		kennelId: string;
 		recoveryCode: string; // empty = visitor/share mode, no recovery code shown
 		aiName: string;
+		customQuip?: string | null;
+		customIntro?: string | null;
 		issuedDate: string;
 		isFirstTime: boolean;
 		locale: string;
@@ -19,6 +21,8 @@
 		kennelId,
 		recoveryCode,
 		aiName,
+		customQuip = null,
+		customIntro = null,
 		issuedDate,
 		isFirstTime,
 		locale,
@@ -184,7 +188,7 @@
 						<!-- Header -->
 						<div class="card-header">
 							<span class="header-brand">{isZh ? '胖狗' : 'PUNKGO ROAST'}</span>
-							<span class="header-type">{isZh ? '这只 AI 是' : 'This AI is'}</span>
+							<span class="header-type">{isZh ? `这只 ${aiName} 是` : `This ${aiName} is`}</span>
 						</div>
 						<div class="header-divider"></div>
 
@@ -199,8 +203,8 @@
 							</div>
 							<h2 class="dog-card-name">{isZh ? dog.nameZh : dog.name}</h2>
 							<p class="dog-card-meta">{dog.mbti} &middot; {isZh ? dog.breedZh : dog.breed}</p>
-							<p class="dog-card-roast-intro">{isZh ? '别人看它:' : 'What others see:'}</p>
-							<p class="dog-card-quip">"{isZh ? dog.quipZh : dog.quip}"</p>
+							<p class="dog-card-roast-intro">{customIntro || (isZh ? '别人看它:' : 'What others see:')}</p>
+							<p class="dog-card-quip">"{customQuip || (isZh ? dog.quipZh : dog.quip)}"</p>
 						</div>
 
 						<!-- QR + Recovery Code -->

@@ -94,7 +94,7 @@
 					mbti: dog.mbti,
 					aiType: aiParam || 'unknown',
 					dogId: dog.id,
-					quip: llmQuip || (isZh ? dog.quipZh : dog.quip),
+					quip: llmIntro && llmQuip ? `${llmIntro}|${llmQuip}` : llmQuip || (isZh ? dog.quipZh : dog.quip),
 					locale: isZh ? 'zh' : 'en',
 				}),
 			});

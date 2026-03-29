@@ -224,11 +224,16 @@
 	</div>
 </div>
 {#if showDogCard && dog}
+	{@const kennelQuipParts = (kennel.quip || '').split('|')}
+	{@const kennelIntro = kennelQuipParts.length > 1 ? kennelQuipParts[0] : null}
+	{@const kennelQuip = kennelQuipParts.length > 1 ? kennelQuipParts.slice(1).join('|') : kennel.quip}
 	<LicenseCard
 		{dog}
 		kennelId={kennel.id}
 		recoveryCode={recoveryCode}
 		aiName={aiName}
+		customQuip={kennelQuip || null}
+		customIntro={kennelIntro}
 		issuedDate={new Date().toISOString().slice(0, 10)}
 		isFirstTime={isFirstTimeDogCard}
 		locale={isZh ? 'zh' : 'en'}
