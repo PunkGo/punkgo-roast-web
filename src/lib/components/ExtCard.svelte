@@ -87,7 +87,7 @@
 >
 	<div class="card-glow"></div>
 	<div class="ec-hero">
-		<img src="/dogs/felt-{dog.id}-nobg.png" alt="" class="ec-ghost-img" />
+		<img src="/dogs/thumb/felt-{dog.id}-nobg.png" alt="" class="ec-ghost-img" />
 		<div class="ec-hero-overlay">
 			<span class="ec-name">{displayName}</span>
 			<span class="ec-mbti">{dog.mbti}</span>

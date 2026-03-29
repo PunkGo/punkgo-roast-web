@@ -129,7 +129,7 @@ h1{font-size:22px;text-align:center;margin-bottom:4px}
 
 	// Owner banner
 	if (dog && kennel) {
-		html += `<div class="owner-banner"><img class="owner-avatar" src="/dogs/felt-${escapeHtml(dog.id)}-nobg.png" alt="${escapeHtml(dog.nameZh)}"/><span class="owner-name">${escapeHtml(dog.nameZh)}</span><span class="owner-mbti">${escapeHtml(kennel.mbti)}</span></div>`;
+		html += `<div class="owner-banner"><img class="owner-avatar" src="/dogs/thumb/felt-${escapeHtml(dog.id)}-nobg.png" alt="${escapeHtml(dog.nameZh)}"/><span class="owner-name">${escapeHtml(dog.nameZh)}</span><span class="owner-mbti">${escapeHtml(kennel.mbti)}</span></div>`;
 	}
 
 	// Prompt copy area (top)

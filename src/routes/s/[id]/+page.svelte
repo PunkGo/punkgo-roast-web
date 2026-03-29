@@ -49,7 +49,7 @@
 				<a href="/quiz" class="cta-btn">{isZh ? '来测测你的 AI 是什么性格' : 'Test your AI'}</a>
 				<div class="mini-dogs">
 					{#each previewDogs as dogId}
-						<img class="mini-avatar" src="/dogs/felt-{dogId}-nobg.png" alt={dogId} />
+						<img class="mini-avatar" src="/dogs/thumb/felt-{dogId}-nobg.png" alt={dogId} />
 					{/each}
 					<div class="mini-dot more">+11</div>
 				</div>

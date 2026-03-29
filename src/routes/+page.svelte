@@ -48,7 +48,7 @@
 		</p>
 		<div class="dog-preview">
 			{#each previewDogs as id}
-				<img class="dog-dot" src="/dogs/felt-{id}-nobg.png" alt={id} width="72" height="72" loading="lazy" />
+				<img class="dog-dot" src="/dogs/thumb/felt-{id}-nobg.png" alt={id} width="72" height="72" loading="lazy" />
 			{/each}
 			<div class="dog-dot more">+11</div>
 		</div>
@@ -63,7 +63,7 @@
 					{#each myKennels as k}
 						<a href="/k/{k.id}/web" class="kennel-chip" title={k.dogId || k.id}>
 							{#if k.dogId}
-								<img src="/dogs/felt-{k.dogId}-nobg.png" alt={k.dogId} class="kennel-chip-img" />
+								<img src="/dogs/thumb/felt-{k.dogId}-nobg.png" alt={k.dogId} class="kennel-chip-img" />
 							{:else}
 								<span class="kennel-chip-paw">🐾</span>
 							{/if}

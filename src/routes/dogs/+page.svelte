@@ -20,7 +20,7 @@
 	<div class="grid">
 		{#each dogList as dog}
 			<div class="dog-card">
-				<img class="dog-avatar" src="/dogs/felt-{dog.id}-nobg.png" alt={dog.name} width="44" height="44" loading="lazy" />
+				<img class="dog-avatar" src="/dogs/thumb/felt-{dog.id}-nobg.png" alt={dog.name} width="44" height="44" loading="lazy" />
 				<div class="dog-info">
 					<span class="dog-name">{isZh ? dog.nameZh : dog.name}</span>
 					<span class="dog-mbti" style="color:{dog.accentColor}">{dog.mbti}</span>
