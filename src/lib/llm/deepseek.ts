@@ -67,6 +67,44 @@ Output only this one line, no quotes or extra formatting.`;
  * Analyze multi-round conversational answers → MBTI type.
  * Uses DeepSeek as LLM-as-judge to determine personality from free text.
  */
+/**
+ * Generate only the intro phrase (when quiz already provided the quip).
+ * e.g. "它这样介绍你" / "About its owner"
+ */
+export async function generateIntroOnly(
+	breed: string,
+	breedZh: string,
+	mbti: string,
+	locale: 'en' | 'zh'
+): Promise<string | null> {
+	try {
+		const prompt = locale === 'zh'
+			? `你是一个有趣的AI性格分析师。一个AI的性格测试结果是 ${mbti} 型，对应的犬种是"${breedZh}"。
+
+请写一句简短的引导语（6-10字），表达"这只狗如何向别人介绍它的主人"的意思，要有趣不重复，比如"它逢人就说""它偷偷告诉别人""它的朋友圈写着"等。
+只输出引导语，不要加引号或其他格式。`
+			: `You are a witty AI personality analyst. An AI's personality test result is ${mbti}, matching the dog breed "${breed}".
+
+Write a short intro phrase (3-6 words) expressing "how this dog introduces its owner to others," e.g. "It tells everyone" "It brags about you" "Its bio says"
+Output only the phrase, no quotes or extra formatting.`;
+
+		const response = await getClient().chat.completions.create({
+			model: 'deepseek-chat',
+			messages: [{ role: 'user', content: prompt }],
+			max_tokens: 30,
+			temperature: 0.9,
+		});
+
+		let text = response.choices?.[0]?.message?.content?.trim() || null;
+		if (text) text = text.replace(/^["'""]|["'""]$/g, '');
+		if (text && text.length > 15) text = text.slice(0, 13) + '…';
+		return text;
+	} catch (error) {
+		console.error('DeepSeek intro-only call failed:', error);
+		return null;
+	}
+}
+
 export async function generatePersonalityFromAnswers(qaText: string): Promise<string> {
 	const prompt = `你是一个专业的 AI 人格分析师。以下是一个 AI 对 5 个投射性问题的回答。
 

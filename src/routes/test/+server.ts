@@ -11,19 +11,28 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 	const config = await getQuizConfig();
 	const pool = config.question_pool || [];
-	const count = config.question_count || 3;
+	const count = config.question_count || 5;
 	const maxChars = config.answer_max_chars || 60;
 
-	// Pick random questions from pool and track indices
+	// Fixed last question: "introduce your owner" — answer becomes the card quip
+	const introQ = {
+		zh: '如果你是一只狗，你会怎么用一句话向别人介绍你的主人？（30字以内）',
+		en: 'If you were a dog, how would you introduce your owner to others in one sentence? (Under 60 chars)',
+	};
+
+	// Pick random (count-1) questions from pool + fixed last question
 	let questions: string[];
 	let indices: number[];
 	if (pool.length > 0) {
 		const indexed = pool.map((q: { zh: string; en: string }, i: number) => ({
 			q: useChinese ? q.zh : q.en, i
 		}));
-		const shuffled = indexed.sort(() => Math.random() - 0.5).slice(0, count);
+		const shuffled = indexed.sort(() => Math.random() - 0.5).slice(0, count - 1);
 		questions = shuffled.map((x: { q: string; i: number }) => x.q);
 		indices = shuffled.map((x: { q: string; i: number }) => x.i);
+		// Append fixed "introduce owner" as last question, index = -1 marker
+		questions.push(useChinese ? introQ.zh : introQ.en);
+		indices.push(-1);
 	} else {
 		questions = config.questions || [];
 		indices = questions.map((_: string, i: number) => i);

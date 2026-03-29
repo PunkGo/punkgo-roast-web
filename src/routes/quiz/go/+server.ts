@@ -37,9 +37,12 @@ export const GET: RequestHandler = async ({ url }) => {
 	const pool = config.question_pool || [];
 
 	// Restore questions from qi= indices, matching language
+	// Index -1 = fixed "introduce owner" question (last one)
+	const qiIndices = qiParam ? qiParam.split(',').map(Number) : [];
 	let questions: string[];
-	if (qiParam && pool.length > 0) {
-		questions = qiParam.split(',').map(Number).map((idx: number) => {
+	if (qiIndices.length > 0 && pool.length > 0) {
+		questions = qiIndices.map((idx: number) => {
+			if (idx === -1) return useChinese ? '介绍主人题' : 'Introduce owner';
 			const item = pool[idx] as { zh: string; en: string } | undefined;
 			return item ? (useChinese ? item.zh : item.en) : `Question ${idx + 1}`;
 		});
@@ -69,7 +72,15 @@ export const GET: RequestHandler = async ({ url }) => {
 		return new Response('Missing answers. Please complete the quiz first.', { status: 400 });
 	}
 
-	// Build Q&A text for LLM judge
+	// Extract "introduce owner" answer (last answer if last qi index is -1)
+	let ownerQuip: string | null = null;
+	const lastQiIndex = qiIndices.length > 0 ? qiIndices[qiIndices.length - 1] : null;
+	if (lastQiIndex === -1 && parts.length > 0) {
+		ownerQuip = parts.pop() || null;
+		questions.pop(); // remove from Q&A for MBTI judging
+	}
+
+	// Build Q&A text for LLM judge (without the owner intro question)
 	let qaText: string;
 	if (parts.length >= questions.length) {
 		qaText = parts
@@ -80,17 +91,18 @@ export const GET: RequestHandler = async ({ url }) => {
 			`\n\nAI's answers:\n${parts.join('\n')}`;
 	}
 
-	console.log('[quiz/go]', JSON.stringify({ ai: aiType, qi: qiParam, parts, qaText }));
+	console.log('[quiz/go]', JSON.stringify({ ai: aiType, qi: qiParam, parts, ownerQuip, qaText }));
 
 	let mbti: string;
 	try {
 		mbti = await generatePersonalityFromAnswers(qaText);
 	} catch {
-		// Fallback: client-side analysis
 		const { analyzeLMLPA } = await import('$lib/data/ai-quiz-prompt');
 		mbti = analyzeLMLPA(parts.join(' '));
 	}
 
 	const resultId = encodeMBTI(mbti, aiType);
-	throw redirect(302, `/result/${resultId}?ai=${aiType}&from=quiz`);
+	// Pass ownerQuip via URL param so result page can use it
+	const quipParam = ownerQuip ? `&quip=${encodeURIComponent(ownerQuip)}` : '';
+	throw redirect(302, `/result/${resultId}?ai=${aiType}&from=quiz${quipParam}`);
 };

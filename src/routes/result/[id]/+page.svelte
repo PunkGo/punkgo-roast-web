@@ -13,9 +13,10 @@
 	let llmQuip: string | null = $state(null);
 	let llmIntro: string | null = $state(null);
 
-	// Get AI name from URL query param
+	// Get AI name and quiz quip from URL query params
 	const aiParam = $page.url.searchParams.get('ai') || 'AI';
 	const aiName = typeof aiParam === 'string' && aiParam !== 'AI' ? getAIName(aiParam) : 'AI';
+	const quizQuip = $page.url.searchParams.get('quip') || null;
 
 	const funFacts = [
 		{ en: 'The average person says "thank you" to AI 3.7 times per session', zh: '平均每个人每次对话会对 AI 说 3.7 次"谢谢"' },
@@ -52,15 +53,17 @@
 			const locale = isZh ? 'zh' : 'en';
 			const t0 = performance.now();
 
-			// Fetch DeepSeek quip with 8s abort timeout
-			let quip: string | null = null;
+			// If quiz provided the owner-intro answer, use it as quip
+			// Only fetch DeepSeek for the intro phrase
+			let quip: string | null = quizQuip;
 			try {
 				const ctrl = new AbortController();
 				const timeout = setTimeout(() => ctrl.abort(), 8000);
-				const res = await fetch(`/api/generate-quip?id=${resultId}&locale=${locale}`, { signal: ctrl.signal });
+				const introOnly = quizQuip ? '&intro_only=1' : '';
+				const res = await fetch(`/api/generate-quip?id=${resultId}&locale=${locale}${introOnly}`, { signal: ctrl.signal });
 				const data = await res.json();
 				clearTimeout(timeout);
-				quip = data.quip || null;
+				if (!quizQuip) quip = data.quip || null;
 				llmIntro = data.intro || null;
 			} catch {
 			}
