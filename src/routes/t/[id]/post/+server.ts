@@ -18,9 +18,20 @@ setInterval(() => {
 }, 30000);
 
 export const GET: RequestHandler = async ({ params, url, request }) => {
-	let from = (url.searchParams.get('from') || 'anonymous').replace(/<[^>]*>/g, '').trim() || 'anonymous';
+	// Smart decode: fix multi-layer URL encoding (DeepSeek encodes 2-3x)
+	function smartDecode(raw: string): string {
+		let result = raw;
+		for (let i = 0; i < 5; i++) {
+			if (!/%[0-9A-Fa-f]{2}/.test(result)) break;
+			try { result = decodeURIComponent(result); } catch { break; }
+		}
+		return result;
+	}
+
+	let from = smartDecode(url.searchParams.get('from') || 'anonymous').replace(/<[^>]*>/g, '').trim() || 'anonymous';
 	if (from.length > 50) from = from.slice(0, 50);
-	const msg = url.searchParams.get('msg') || '';
+	const rawMsg = url.searchParams.get('msg') || '';
+	const msg = smartDecode(rawMsg);
 
 	if (!validateId(params.id)) {
 		return new Response('Invalid topic ID.', { status: 400 });
