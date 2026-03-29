@@ -36,51 +36,18 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
-		const wrapper = document.createElement('div');
-		wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;';
-		const clone = cardRef.cloneNode(true) as HTMLElement;
-		// Inline ALL computed styles from every element into the clone
-		// This is the only reliable way — Svelte scoped CSS hashes break class-based matching
-		function inlineAllStyles(source: HTMLElement, target: HTMLElement) {
-			const computed = window.getComputedStyle(source);
-			const important = [
-				'display', 'flex-direction', 'align-items', 'justify-content', 'gap',
-				'position', 'top', 'right', 'bottom', 'left', 'z-index',
-				'width', 'height', 'min-height', 'max-width', 'flex',
-				'padding', 'margin', 'border', 'border-radius',
-				'background', 'background-color', 'background-image',
-				'color', 'font-size', 'font-weight', 'font-style', 'font-family',
-				'line-height', 'letter-spacing', 'text-align', 'white-space',
-				'overflow', 'box-shadow', 'opacity', 'object-fit',
-				'backdrop-filter', '-webkit-backdrop-filter',
-			];
-			for (const prop of important) {
-				const val = computed.getPropertyValue(prop);
-				if (val && val !== 'normal' && val !== 'none' && val !== 'auto' && val !== '0px') {
-					target.style.setProperty(prop, val);
-				}
-			}
-			const srcChildren = source.children;
-			const tgtChildren = target.children;
-			for (let i = 0; i < srcChildren.length; i++) {
-				if (srcChildren[i] instanceof HTMLElement && tgtChildren[i] instanceof HTMLElement) {
-					inlineAllStyles(srcChildren[i] as HTMLElement, tgtChildren[i] as HTMLElement);
-				}
-			}
-		}
-		inlineAllStyles(cardRef, clone);
-		// Override card root for offscreen rendering
-		clone.style.cssText += `
-			width:${cardRef.offsetWidth}px; min-height:${cardRef.offsetHeight}px;
-			border-radius:20px; overflow:hidden; position:relative;
-			border:1.5px solid #D4C9B8;
-		`;
-		wrapper.appendChild(clone);
-		document.body.appendChild(wrapper);
+		// Temporarily reset any 3D tilt transform and disable glow
+		const prevTransform = cardRef.style.transform;
+		cardRef.style.transform = 'none';
+		const glow = cardRef.querySelector('.card-glow') as HTMLElement | null;
+		if (glow) glow.style.display = 'none';
 
 		const { toPng } = await import('html-to-image');
-		const url = await toPng(clone, { pixelRatio: 2 });
-		document.body.removeChild(wrapper);
+		const url = await toPng(cardRef, { pixelRatio: 2 });
+
+		// Restore
+		cardRef.style.transform = prevTransform;
+		if (glow) glow.style.display = '';
 
 		const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 		if (isMobile) {
