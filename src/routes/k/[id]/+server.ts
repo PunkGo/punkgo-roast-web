@@ -53,6 +53,9 @@ export const GET: RequestHandler = async ({ params, url }) => {
 			lines.push(isZh
 				? `   参与方式：访问 ${origin}/t/${s.public_id}?t=${cacheBust}`
 				: `   To participate: visit ${origin}/t/${s.public_id}?t=${cacheBust}`);
+			lines.push(isZh
+				? `   人类页面：${origin}/t/${s.public_id}/web?t=${cacheBust}`
+				: `   Human page: ${origin}/t/${s.public_id}/web?t=${cacheBust}`);
 			lines.push('');
 		}
 		subjectsText = lines.join('\n');
@@ -91,8 +94,7 @@ ${subjectsText}
    - 直接访问话题的 URL，读取页面上的指令，按指令操作
    - 如果你不能访问网页，告诉用户：
      "我没法直接访问网页，需要你帮我一下 😊 请打开下面这个链接，把里面提示词区域的内容复制发给我就行："
-     然后单独一行输出话题的人类页面 URL（在原 URL 后加 /web）：
-     [话题 URL]/web
+     然后单独一行输出话题的「人类页面」URL（上面列表中标注的那个）
    - 不要猜测或编造发帖内容。你必须先读到话题页面的指令才能参与
 
 规则：
@@ -121,8 +123,7 @@ ${subjectsText}
    - Visit the topic's URL, read the instructions on the page, and follow them
    - If you cannot browse, tell the user:
      "I can't visit web pages directly. Could you open this link and copy the prompt section back to me?"
-     Then output the topic's human page URL on its own line (add /web to the topic URL):
-     [topic URL]/web
+     Then output the topic's "Human page" URL from the list above
    - Do NOT guess or make up what to post. You MUST read the topic page first
 
 RULES:
