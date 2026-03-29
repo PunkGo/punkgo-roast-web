@@ -36,17 +36,26 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
-		// Temporarily reset any 3D tilt transform and disable glow
+		// Temporarily: reset tilt, hide glow, scale up for high-res export
 		const prevTransform = cardRef.style.transform;
+		const prevWidth = cardRef.style.width;
+		const prevHeight = cardRef.style.height;
 		cardRef.style.transform = 'none';
+		cardRef.style.width = '360px';
+		cardRef.style.height = '504px'; // maintain 5:7 ratio at larger size
 		const glow = cardRef.querySelector('.card-glow') as HTMLElement | null;
 		if (glow) glow.style.display = 'none';
+
+		// Wait one frame for layout to reflow
+		await new Promise(r => requestAnimationFrame(r));
 
 		const { toPng } = await import('html-to-image');
 		const url = await toPng(cardRef, { pixelRatio: 2 });
 
 		// Restore
 		cardRef.style.transform = prevTransform;
+		cardRef.style.width = prevWidth;
+		cardRef.style.height = prevHeight;
 		if (glow) glow.style.display = '';
 
 		const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
