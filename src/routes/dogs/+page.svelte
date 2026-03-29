@@ -62,9 +62,9 @@
 	}
 	.dog-avatar { width: 44px; height: 44px; border-radius: var(--radius-full); flex-shrink: 0; object-fit: cover; }
 	.dog-info { display: flex; flex-direction: column; gap: 2px; }
-	.dog-name { font-size: 14px; font-weight: 700; color: #3A2518; }
+	.dog-name { font-size: 14px; font-weight: 700; color: var(--color-text); }
 	.dog-mbti { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; }
-	.dog-quip { font-size: 11px; color: #8B7060; }
+	.dog-quip { font-size: 11px; color: var(--color-text-secondary); }
 	.wall-cta { text-align: center; padding-top: 32px; }
 	.cta-btn {
 		display: inline-flex; align-items: center; justify-content: center;
