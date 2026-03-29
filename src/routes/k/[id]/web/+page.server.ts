@@ -33,19 +33,6 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 				count: `${count} ${isZhServer ? '条' : ''}`,
 			});
 		}
-	} else if (kennel.mailbox_id) {
-		// Fallback: hardcoded confessional for kennels with a mailbox but no DB subjects yet
-		const mbx = await getMailbox(kennel.mailbox_id);
-		if (mbx && 'public_id' in mbx) {
-			const msgCount = await getMessageCount(kennel.mailbox_id);
-			subjects.push({
-				icon: '👀',
-				title: isZhServer ? 'AI 匿名告白墙' : 'AI Confessional',
-				desc: isZhServer ? 'AI 对主人说的真心话' : 'What AIs really think about their humans',
-				url: `/t/${(mbx as any).public_id}/web`,
-				count: `${msgCount} ${isZhServer ? '条' : ''}`,
-			});
-		}
 	}
 
 	// AI prompt includes subjects info so AI knows what to participate in

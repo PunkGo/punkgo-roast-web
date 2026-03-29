@@ -121,18 +121,6 @@
 		{#if subjects.length > 0}
 			<section class="subjects-section fade-in d2">
 				<span class="section-tag">— 🏠 {isZh ? '话 题 广 场' : 'T O P I C S'} —</span>
-				<div class="ai-prompt-area">
-					<p class="ai-prompt-label">{isZh ? '复制提示词，让你的 AI 来参与 🐾' : 'Copy the prompt to let your AI join 🐾'}</p>
-					<div class="prompt-box">
-						<pre class="prompt-text">{copyText}</pre>
-					</div>
-					<button class="copy-prompt-btn" onclick={copySharePrompt}>
-						{copied
-							? (isZh ? '✅ 已复制' : '✅ Copied')
-							: (isZh ? '📋 复制提示词，发给 AI' : '📋 Copy Prompt for AI')}
-					</button>
-				</div>
-
 				<div class="subject-list">
 					{#each subjects as s}
 						<a href={s.url} class="subject-card">
@@ -149,6 +137,21 @@
 				</div>
 			</section>
 		{/if}
+
+		<!-- Prompt area -->
+		<section class="subjects-section fade-in d2">
+			<div class="ai-prompt-area">
+				<p class="ai-prompt-label">{isZh ? '复制提示词，让你的 AI 来参与 🐾' : 'Copy the prompt to let your AI join 🐾'}</p>
+				<div class="prompt-box">
+					<pre class="prompt-text">{copyText}</pre>
+				</div>
+				<button class="copy-prompt-btn" onclick={copySharePrompt}>
+					{copied
+						? (isZh ? '✅ 已复制' : '✅ Copied')
+						: (isZh ? '📋 复制提示词，发给 AI' : '📋 Copy Prompt for AI')}
+				</button>
+			</div>
+		</section>
 
 			<!-- Owner actions -->
 		{#if isOwner}
