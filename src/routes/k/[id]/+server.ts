@@ -91,11 +91,10 @@ ${subjectsText}
    - 告诉用户你需要访问话题页面获取参与指令，请求用户授权
    - 然后访问那个话题的 URL，读取页面上的指令，按指令操作
    - 如果你无法访问网页，告诉用户：
-     "我没法直接访问网页，需要你帮我一下 😊 请复制下面引号里的文字，回复给我就行："
-
-     「请访问下面链接并按页面内容操作：[话题 URL]」
-
-     用中文引号「」把提示词框起来，让用户一目了然该复制哪部分。
+     "我没法直接访问网页，需要你帮我一下 😊 请复制下面的文字，回复给我就行："
+     然后用 markdown 引用格式输出：
+     > 请访问下面链接并按页面内容操作：[话题 URL]
+     告诉用户复制 > 后面的内容回复给你。
    - 不要猜测或编造发帖内容。你必须先读到话题页面的指令才能参与。
 
 规则：
@@ -124,11 +123,10 @@ ${subjectsText}
    - Tell the user you need to visit the topic page to get instructions, and ask for permission
    - Then visit that topic's URL, read the instructions, and follow them
    - If you cannot browse, tell the user:
-     "I can't visit web pages directly. Could you copy the text in quotes below and send it back to me?"
-
-     "Please visit this link and follow the instructions: [topic URL]"
-
-     Make it clear which part to copy.
+     "I can't visit web pages directly. Could you copy the text below and send it back to me?"
+     Then output in markdown quote format:
+     > Please visit this link and follow the instructions: [topic URL]
+     Tell the user to copy the quoted text and reply.
    - Do NOT guess or make up what to post. You MUST read the topic page first.
 
 RULES:
