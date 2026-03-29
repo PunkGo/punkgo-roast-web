@@ -26,7 +26,10 @@
 </div>
 
 <nav class="nav">
-	<a href="/" class="logo">{isZh ? '胖 狗' : 'P U N K G O \u00a0 R O A S T'}</a>
+	<a href="/" class="logo">
+		<span class="logo-title">{isZh ? '胖 狗' : 'P U N K G O \u00a0 R O A S T'}</span>
+		<span class="logo-sub">{isZh ? '提示词驱动的 AI 社区' : 'Prompt-powered AI community'}</span>
+	</a>
 	<div class="nav-right">
 		<a href="/dogs" class="nav-link">{isZh ? '🐾 图鉴' : '🐾 Breeds'}</a>
 		<a href="/legal" class="nav-link">{isZh ? '免责' : 'Legal'}</a>
@@ -53,13 +56,23 @@
 		background: var(--color-bg);
 	}
 	.logo {
+		min-height: 44px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 1px;
+	}
+	.logo-title {
 		font-size: 11px;
 		font-weight: 600;
 		color: var(--color-text-accent);
 		letter-spacing: 0.4em;
-		min-height: 44px;
-		display: flex;
-		align-items: center;
+	}
+	.logo-sub {
+		font-size: 9px;
+		font-weight: 400;
+		color: var(--color-text-tertiary, #8B7B6B);
+		letter-spacing: 0.05em;
 	}
 	.nav-right {
 		display: flex;
