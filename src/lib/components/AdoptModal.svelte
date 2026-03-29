@@ -99,26 +99,43 @@
 	let revealCardRef: HTMLElement | null = $state(null);
 	const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
+	let savePreviewUrl = $state('');
+
 	async function saveAndEnter() {
 		if (!kennelId) return;
 		sessionStorage.setItem('punkgo_recovery', recoveryCode);
 
-		if (!isMobile && revealCardRef) {
-			// Desktop: save PNG then enter kennel
+		if (revealCardRef) {
 			try {
+				// Wait for QR to render
+				await tick(200);
 				const html2canvas = (await import('html2canvas')).default;
 				const canvas = await html2canvas(revealCardRef, { scale: 2, useCORS: true, backgroundColor: null });
-				const url = canvas.toDataURL('image/png');
-				const link = document.createElement('a');
-				link.download = `punkgo-dogcard-${nickname || dog.id}.png`;
-				link.href = url;
-				link.click();
-				// Wait a moment for download to start
-				await tick(500);
+				const dataUrl = canvas.toDataURL('image/png');
+
+				if (isMobile) {
+					// Mobile: show long-press save overlay, then enter kennel
+					savePreviewUrl = dataUrl;
+					return; // Don't auto-enter — user will tap overlay to dismiss
+				} else {
+					const link = document.createElement('a');
+					link.download = `punkgo-dogcard-${nickname || dog.id}.png`;
+					link.href = dataUrl;
+					link.click();
+					await tick(800);
+				}
 			} catch {}
 		}
 
 		onComplete(nickname.trim(), kennelId, recoveryCode);
+	}
+
+	function dismissSaveAndEnter() {
+		savePreviewUrl = '';
+		if (kennelId) {
+			sessionStorage.setItem('punkgo_recovery', recoveryCode);
+			onComplete(nickname.trim(), kennelId, recoveryCode);
+		}
 	}
 
 	function enterKennel() {
@@ -231,21 +248,23 @@
 				</div>
 				<p class="reveal-warn">⚠️ {isZh ? '恢复码是你的狗证钥匙，请妥善保管！' : 'Recovery code is your card key — save it!'}</p>
 				<div class="reveal-actions">
-					{#if isMobile}
-						<p class="mobile-hint">{isZh ? '📱 请截图保存狗证' : '📱 Please screenshot to save'}</p>
-						<button class="action-btn primary" onclick={enterKennel}>
-							🏠 {isZh ? '进入狗窝' : 'Enter Kennel'}
-						</button>
-					{:else}
-						<button class="action-btn primary" onclick={saveAndEnter}>
-							💾 {isZh ? '保存狗证并进入狗窝' : 'Save Card & Enter Kennel'}
-						</button>
-					{/if}
+					<button class="action-btn primary" onclick={saveAndEnter}>
+						💾 {isZh ? '保存狗证并进入狗窝' : 'Save Card & Enter Kennel'}
+					</button>
 				</div>
 			</div>
 		{/if}
 	</div>
 </div>
+
+{#if savePreviewUrl}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div class="save-overlay" onclick={dismissSaveAndEnter}>
+		<p class="save-hint">{isZh ? '长按图片保存 · 点击进入狗窝' : 'Long-press to save · Tap to enter kennel'}</p>
+		<img src={savePreviewUrl} alt="dog card" class="save-preview-img" />
+	</div>
+{/if}
 
 <style>
 	.modal-overlay {
@@ -467,10 +486,14 @@
 	.reveal-actions {
 		display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center;
 	}
-	.mobile-hint {
-		font-size: 13px; color: #C08040; font-weight: 600;
-		text-align: center; margin: 0;
+	.save-overlay {
+		position: fixed; inset: 0; z-index: 9999;
+		background: rgba(0,0,0,0.85);
+		display: flex; flex-direction: column; align-items: center; justify-content: center;
+		gap: 16px; padding: 20px;
 	}
+	.save-hint { color: white; font-size: 14px; text-align: center; }
+	.save-preview-img { max-width: 90vw; max-height: 70vh; border-radius: 12px; }
 	.action-btn {
 		flex: 1; padding: 12px;
 		border-radius: 12px;
