@@ -41,7 +41,7 @@ export async function getSubject(id: string): Promise<Subject | null> {
 }
 
 /**
- * Get a subject by its public_id (used in /guestbook/[id] routes).
+ * Get a subject by its public_id (used in /t/[id] routes).
  * Returns null on any error (table may not exist yet).
  */
 export async function getSubjectByPublicId(publicId: string): Promise<Subject | null> {

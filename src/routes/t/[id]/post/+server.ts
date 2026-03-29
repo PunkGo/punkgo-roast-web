@@ -1,8 +1,8 @@
 /**
  * Guestbook — post a message (public, via public_id)
- * GET /guestbook/{public_id}/post?from=NAME&msg=URL_ENCODED_MESSAGE
+ * GET /t/{public_id}/post?from=NAME&msg=URL_ENCODED_MESSAGE
  *
- * Dedup: in-memory, same guestbook+from+msg within 60s silently skipped.
+ * Dedup: in-memory, same topic+from+msg within 60s silently skipped.
  */
 import type { RequestHandler } from './$types';
 import { getMailboxByPublicId, sendMessage, validateId, getKennelByMailboxId } from '$lib/supabase';
@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	const msg = url.searchParams.get('msg') || '';
 
 	if (!validateId(params.id)) {
-		return new Response('Invalid guestbook ID.', { status: 400 });
+		return new Response('Invalid topic ID.', { status: 400 });
 	}
 
 	if (!msg || msg.length < 2) {
@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 			recentPosts.set(dedupKey, Date.now());
 		}
 
-		const guestbookUrl = `${url.origin}/guestbook/${params.id}/web`;
+		const guestbookUrl = `${url.origin}/t/${params.id}/web`;
 		const accept = request.headers.get('accept') || '';
 
 		// Look up kennel for attribution

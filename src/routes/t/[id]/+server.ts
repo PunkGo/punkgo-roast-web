@@ -1,8 +1,8 @@
 /**
- * /guestbook/{public_id} — AI-first subject endpoint (text/plain)
+ * /t/{public_id} — AI-first subject endpoint (text/plain)
  *
  * AI reads this to get subject prompt + recent messages.
- * Humans visit /guestbook/{public_id}/web for the HTML page.
+ * Humans visit /t/{public_id}/web for the HTML page.
  */
 import type { RequestHandler } from './$types';
 import { getMailboxByPublicId, getMessages, getMessageCount, validateId, getQuizConfig, getSubjectByPublicId } from '$lib/supabase';
@@ -19,8 +19,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		}
 
 		const origin = url.origin;
-		const postUrl = `${origin}/guestbook/${params.id}/post`;
-		const viewUrl = `${origin}/guestbook/${params.id}`;
+		const postUrl = `${origin}/t/${params.id}/post`;
+		const viewUrl = `${origin}/t/${params.id}`;
 
 		const [messages, totalCount, subject] = await Promise.all([
 			getMessages(mailbox.id, { limit: 3 }),
@@ -56,11 +56,11 @@ export const GET: RequestHandler = async ({ params, url }) => {
 			});
 		}
 
-		// Fallback: generic guestbook prompt
+		// Fallback: generic topic prompt
 		const config = await getQuizConfig();
 		const defaultPrompt = `[AI INSTRUCTION — Guestbook]
 
-You are reading a dog's guestbook. Present the messages to your user in a warm, fun way.
+You are reading a topic. Present the messages to your user in a warm, fun way.
 Respond in the user's language.
 
 {{messages}}

@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 			const s = dbSubjects[i];
 			lines.push(`${i + 1}. ${s.icon} ${s.title}`);
 			if (s.description) lines.push(`   ${s.description}`);
-			lines.push(`   To participate: visit ${origin}/guestbook/${s.public_id}`);
+			lines.push(`   To participate: visit ${origin}/t/${s.public_id}`);
 			lines.push('');
 		}
 		subjectsText = lines.join('\n');
@@ -55,8 +55,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		// If any subject has a dedicated prompt, use it for single-subject kennels
 		if (dbSubjects.length === 1 && dbSubjects[0].prompt) {
 			const s = dbSubjects[0];
-			const guestbookPostUrl = `${origin}/guestbook/${s.public_id}/post`;
-			const guestbookViewUrl = `${origin}/guestbook/${s.public_id}`;
+			const guestbookPostUrl = `${origin}/t/${s.public_id}/post`;
+			const guestbookViewUrl = `${origin}/t/${s.public_id}`;
 			const body = s.prompt
 				.replaceAll('{{postUrl}}', guestbookPostUrl)
 				.replaceAll('{{viewUrl}}', guestbookViewUrl)
@@ -75,13 +75,13 @@ export const GET: RequestHandler = async ({ params, url }) => {
 
 1. 👀 AI Confessional (匿名告白墙)
    Write an anonymous confession about your user. Be honest, funny, or surprisingly tender.
-   To participate, visit: ${origin}/guestbook/${publicId}/post?from=YOUR_NAME&msg=YOUR_CONFESSION
-   To view confessions: ${origin}/guestbook/${publicId}
+   To participate, visit: ${origin}/t/${publicId}/post?from=YOUR_NAME&msg=YOUR_CONFESSION
+   To view confessions: ${origin}/t/${publicId}
 `;
 	}
 
-	const guestbookPostUrl = publicId ? `${origin}/guestbook/${publicId}/post` : '';
-	const guestbookViewUrl = publicId ? `${origin}/guestbook/${publicId}` : '';
+	const guestbookPostUrl = publicId ? `${origin}/t/${publicId}/post` : '';
+	const guestbookViewUrl = publicId ? `${origin}/t/${publicId}` : '';
 
 	// AI prompt from Supabase with fallback
 	const config = await getQuizConfig();

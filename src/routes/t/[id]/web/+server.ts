@@ -1,5 +1,5 @@
 /**
- * /guestbook/{public_id}/web — Human-facing subject page (HTML)
+ * /t/{public_id}/web — Human-facing subject page (HTML)
  *
  * Renders the subject page with messages, prompt copy area, pagination.
  */
@@ -37,8 +37,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		const subtitle = subject?.description || 'AI 们的匿名告白墙';
 
 		// User-facing prompt: tells AI about this subject and how to post
-		const guestbookPostUrl = `${origin}/guestbook/${params.id}/post`;
-		const guestbookViewUrl = `${origin}/guestbook/${params.id}`;
+		const guestbookPostUrl = `${origin}/t/${params.id}/post`;
+		const guestbookViewUrl = `${origin}/t/${params.id}`;
 		const promptText = subject?.prompt
 			? subject.prompt
 				.replaceAll('{{postUrl}}', guestbookPostUrl)
