@@ -201,14 +201,14 @@
 
 	h1 {
 		font-family: var(--font-display);
-		font-size: 24px; font-weight: 600;
+		font-size: var(--font-size-xl); font-weight: 600;
 		color: var(--color-text);
 		margin: var(--space-sm) 0;
 	}
 
 	.subtitle {
 		color: var(--color-text-secondary);
-		font-size: 14px;
+		font-size: var(--font-size-sm);
 		margin-bottom: var(--space-lg);
 	}
 
@@ -237,7 +237,7 @@
 		box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 	}
 
-	.ai-name { font-size: 13px; font-weight: 500; color: var(--color-text); margin-top: 4px; }
+	.ai-name { font-size: var(--font-size-sm); font-weight: 500; color: var(--color-text); margin-top: 4px; }
 
 	.prompt-box {
 		background: var(--color-bg-card);
@@ -250,7 +250,7 @@
 
 	.prompt-box pre {
 		white-space: pre-wrap; word-break: break-all;
-		font-size: 13px; line-height: 1.6;
+		font-size: var(--font-size-sm); line-height: 1.6;
 		color: var(--color-text);
 		margin: 0; font-family: inherit;
 	}
@@ -270,17 +270,17 @@
 		text-align: center;
 	}
 
-	.copy-hint p { margin: 0; font-size: 13px; color: var(--color-text); }
+	.copy-hint p { margin: 0; font-size: var(--font-size-sm); color: var(--color-text); }
 
 	.copy-fallback { color: var(--color-text-accent); font-size: 12px; margin-top: var(--space-xs); }
 
-	.btn-main { width: 100%; font-size: 16px; padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-md); }
+	.btn-main { width: 100%; font-size: var(--font-size-base); padding: var(--space-md) var(--space-lg); margin-bottom: var(--space-md); }
 
 	.btn-primary {
 		padding: var(--space-sm) var(--space-lg);
 		background: var(--color-cta); color: white;
 		border: none; border-radius: var(--radius-full);
-		font-size: 15px; font-weight: 600;
+		font-size: var(--font-size-md); font-weight: 600;
 		cursor: pointer; transition: background 0.2s;
 		min-height: 44px;
 	}
@@ -302,7 +302,7 @@
 		margin: var(--space-lg) auto 0;
 		background: none; border: none;
 		color: var(--color-text-tertiary);
-		font-size: 13px; cursor: pointer;
+		font-size: var(--font-size-sm); cursor: pointer;
 	}
 
 	@media (max-width: 480px) {

@@ -112,20 +112,20 @@
 		background: var(--color-cta);
 	}
 	h1 {
-		font-size: 60px;
+		font-size: var(--font-size-hero);
 		font-weight: 700;
 		line-height: 1.05;
 		white-space: pre-line;
 		max-width: 700px;
 	}
 	.subtitle {
-		font-size: 16px;
+		font-size: var(--font-size-base);
 		color: var(--color-text-secondary);
 		line-height: 1.6;
 		white-space: pre-line;
 		max-width: 560px;
 	}
-	.dog-preview { display: flex; gap: 14px; padding: 8px 0; }
+	.dog-preview { display: flex; gap: 14px; padding: var(--space-sm) 0; }
 	.dog-dot { width: 72px; height: 72px; border-radius: var(--radius-xl); object-fit: cover; }
 	.dog-dot.more {
 		background: var(--color-bg-muted);
@@ -137,7 +137,7 @@
 		width: 240px; height: 52px;
 		border-radius: var(--radius-md);
 		background: var(--color-cta); color: white;
-		font-size: 15px; font-weight: 700; letter-spacing: 0.05em;
+		font-size: var(--font-size-md); font-weight: 700; letter-spacing: 0.05em;
 		transition: background 150ms ease, transform 150ms ease;
 	}
 	.cta-btn:hover { background: var(--color-cta-hover); transform: translateY(-1px); }
@@ -146,7 +146,7 @@
 		color: var(--color-text-secondary); letter-spacing: 0.05em;
 	}
 	.methodology {
-		font-size: 11px;
+		font-size: var(--font-size-xs);
 		color: var(--color-text-tertiary);
 		max-width: 600px;
 		text-align: center;

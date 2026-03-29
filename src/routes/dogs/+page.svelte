@@ -35,10 +35,10 @@
 </div>
 
 <style>
-	.wall { padding: 0 48px 64px; }
-	header { text-align: center; padding: 32px 0 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-	header h1 { font-size: 32px; font-weight: 700; }
-	header p { font-size: 15px; color: var(--color-text-secondary); }
+	.wall { padding: 0 var(--space-2xl) var(--space-3xl); }
+	header { text-align: center; padding: var(--space-xl) 0 var(--space-lg); display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
+	header h1 { font-size: var(--font-size-2xl); font-weight: 700; }
+	header p { font-size: var(--font-size-md); color: var(--color-text-secondary); }
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
@@ -46,7 +46,7 @@
 	}
 	.dog-card {
 		border-radius: var(--radius-lg);
-		padding: 16px;
+		padding: var(--space-md);
 		display: flex;
 		align-items: center;
 		gap: 14px;
@@ -64,16 +64,16 @@
 	.dog-info { display: flex; flex-direction: column; gap: 2px; }
 	.dog-name { font-size: 14px; font-weight: 700; color: var(--color-text); }
 	.dog-mbti { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; }
-	.dog-quip { font-size: 11px; color: var(--color-text-secondary); }
-	.wall-cta { text-align: center; padding-top: 32px; }
+	.dog-quip { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+	.wall-cta { text-align: center; padding-top: var(--space-xl); }
 	.cta-btn {
 		display: inline-flex; align-items: center; justify-content: center;
-		padding: 12px 32px;
+		padding: 12px var(--space-xl);
 		border-radius: var(--radius-md);
 		background: var(--color-cta); color: white;
-		font-size: 15px; font-weight: 700; letter-spacing: 0.05em;
+		font-size: var(--font-size-md); font-weight: 700; letter-spacing: 0.05em;
 	}
 
 	@media (max-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-	@media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); } .wall { padding: 0 16px 48px; } }
+	@media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); } .wall { padding: 0 var(--space-md) var(--space-2xl); } }
 </style>

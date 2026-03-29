@@ -63,15 +63,15 @@
 		gap: 1px;
 	}
 	.logo-title {
-		font-size: 11px;
+		font-size: var(--font-size-xs);
 		font-weight: 600;
 		color: var(--color-text-accent);
 		letter-spacing: 0.4em;
 	}
 	.logo-sub {
-		font-size: 9px;
+		font-size: var(--font-size-2xs);
 		font-weight: 400;
-		color: var(--color-text-tertiary, #8B7B6B);
+		color: var(--color-text-tertiary);
 		letter-spacing: 0.05em;
 	}
 	.nav-right {
@@ -80,7 +80,7 @@
 		align-items: center;
 	}
 	.nav-right a {
-		font-size: 13px;
+		font-size: var(--font-size-sm);
 		font-weight: 500;
 		color: var(--color-text-secondary);
 		min-height: 44px;
