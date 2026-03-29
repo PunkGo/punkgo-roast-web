@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 			recentPosts.set(dedupKey, Date.now());
 		}
 
-		const guestbookUrl = `${url.origin}/guestbook/${params.id}`;
+		const guestbookUrl = `${url.origin}/guestbook/${params.id}/web`;
 		const accept = request.headers.get('accept') || '';
 
 		// Look up kennel for attribution

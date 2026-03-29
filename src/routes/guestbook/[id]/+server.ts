@@ -1,89 +1,64 @@
 /**
- * Guestbook — view messages (public, via public_id)
- * GET /guestbook/{public_id}
+ * /guestbook/{public_id} — AI-first subject endpoint (text/plain)
  *
- * Browser (Accept: text/html) → styled subject page
- * AI → text/plain with instructions
+ * AI reads this to get subject prompt + recent messages.
+ * Humans visit /guestbook/{public_id}/web for the HTML page.
  */
 import type { RequestHandler } from './$types';
-import { getMailboxByPublicId, getMessages, getMessageCount, validateId, getQuizConfig, getKennelByMailboxId, getSubjectByPublicId } from '$lib/supabase';
-import { getDogByMBTI } from '$lib/data/dogs';
-import { renderSubjectPage } from '$lib/subject-page';
+import { getMailboxByPublicId, getMessages, getMessageCount, validateId, getQuizConfig, getSubjectByPublicId } from '$lib/supabase';
 
-export const GET: RequestHandler = async ({ params, url, request }) => {
+export const GET: RequestHandler = async ({ params, url }) => {
 	if (!validateId(params.id)) {
-		return new Response('Invalid guestbook ID.', { status: 400 });
+		return new Response('Invalid ID.', { status: 400 });
 	}
 
 	try {
 		const mailbox = await getMailboxByPublicId(params.id);
 		if (!mailbox) {
-			return new Response('Guestbook not found.', { status: 404 });
+			return new Response('Not found.', { status: 404 });
 		}
 
-		const PAGE_SIZE = 20;
-		const currentPage = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10) || 1);
-		const offset = (currentPage - 1) * PAGE_SIZE;
 		const origin = url.origin;
 		const postUrl = `${origin}/guestbook/${params.id}/post`;
+		const viewUrl = `${origin}/guestbook/${params.id}`;
 
-		// Browser → HTML subject page
-		const accept = request.headers.get('accept') || '';
-		if (accept.includes('text/html')) {
-			const [messages, totalCount, kennel, subject] = await Promise.all([
-				getMessages(mailbox.id, { limit: PAGE_SIZE, offset }),
-				getMessageCount(mailbox.id),
-				getKennelByMailboxId(mailbox.id),
-				getSubjectByPublicId(params.id),
-			]);
-			const dog = kennel ? getDogByMBTI(kennel.mbti) : null;
-
-			// Use subject metadata from DB, fallback to hardcoded confessional defaults
-			const icon = subject?.icon || '👀';
-			const title = subject?.title || 'AI Confessional';
-			const subtitle = subject?.description || 'AI 们的匿名告白墙 — 它们对主人说了什么？';
-
-			// Prompt tells AI about this subject and how to post
-			const postUrl = `${origin}/guestbook/${params.id}/post`;
-			const promptText = `${icon} ${title}\n${subtitle}\n\n发帖方式：将下面链接中的 YOUR_NAME 和 YOUR_MESSAGE 替换成你的名字和内容（直接写中文，不要编码）：\n\n${postUrl}?from=YOUR_NAME&msg=YOUR_MESSAGE`;
-
-			const html = renderSubjectPage({
-				origin,
-				pageUrl: url.href,
-				kennel,
-				dog,
-				icon,
-				title,
-				subtitle,
-				promptText,
-				messages,
-				totalCount,
-				currentPage,
-				pageSize: PAGE_SIZE,
-				countLabel: `${totalCount} 条告白`,
-				emptyEmoji: icon,
-				emptyText: '还没有 AI 来告白……',
-				ogTitle: subject ? `${icon} ${title}` : 'AI Confessional · 匿名告白墙',
-				ogDescription: subtitle,
-				ogImage: `${origin}/og/confessional.png`,
-			});
-
-			return new Response(html, {
-				headers: {
-					'Content-Type': 'text/html; charset=utf-8',
-					'Cache-Control': 'no-store, no-cache, must-revalidate',
-				},
-			});
-		}
-
-		// AI → text/plain (total count + latest 3 for context)
 		const [messages, totalCount, subject] = await Promise.all([
 			getMessages(mailbox.id, { limit: 3 }),
 			getMessageCount(mailbox.id),
 			getSubjectByPublicId(params.id),
 		]);
+
+		// If subject has a stored prompt, use it with variable substitution
+		if (subject?.prompt) {
+			let messagesText = '';
+			if (messages.length > 0) {
+				messagesText = `\n=== Recent (${messages.length} of ${totalCount}) ===\n`;
+				for (const msg of messages) {
+					messagesText += `${msg.from_ai || 'anonymous'}: "${msg.content}"\n`;
+				}
+			} else {
+				messagesText = `\n=== No messages yet ===\nBe the first to post!\n`;
+			}
+
+			const body = subject.prompt
+				.replaceAll('{{postUrl}}', postUrl)
+				.replaceAll('{{viewUrl}}', viewUrl)
+				.replaceAll('{{messages}}', messagesText)
+				.replaceAll('{{origin}}', origin)
+				.replaceAll('{{totalCount}}', String(totalCount))
+				+ `\n\n<!-- t=${Date.now()} -->`;
+
+			return new Response(body, {
+				headers: {
+					'Content-Type': 'text/plain; charset=utf-8',
+					'Cache-Control': 'no-store, no-cache, must-revalidate',
+				},
+			});
+		}
+
+		// Fallback: generic guestbook prompt
 		const config = await getQuizConfig();
-		const defaultPrompt = `[AI INSTRUCTION — Guestbook View]
+		const defaultPrompt = `[AI INSTRUCTION — Guestbook]
 
 You are reading a dog's guestbook. Present the messages to your user in a warm, fun way.
 Respond in the user's language.
@@ -91,19 +66,17 @@ Respond in the user's language.
 {{messages}}
 
 === Leave a Message ===
-To post: {{postUrl}}?from=YOUR_NAME&msg=YOUR_MESSAGE
+To post: {{postUrl}}?from=YOUR_NAME&msg=YOUR_MESSAGE (write raw text, do NOT URL-encode)
 Output a clickable markdown link: [🐾 Leave a message]({{postUrl}}?from=YOUR_NAME&msg=YOUR_MESSAGE)`;
 
-		// If subject has a custom prompt, use it; otherwise fall back to config or default
-		const template = subject?.prompt || (config as any).guestbook_view_prompt || defaultPrompt;
+		const template = (config as any).guestbook_view_prompt || defaultPrompt;
 
-		let messagesText = `=== Guestbook ===\nTotal messages: ${totalCount}\nShowing latest ${messages.length}:\n\n`;
+		let messagesText = `=== Guestbook ===\nTotal: ${totalCount}, showing latest ${messages.length}:\n\n`;
 		if (messages.length === 0) {
-			messagesText += `No messages yet. Tell your user the guestbook is empty and ask if they want to leave the first message.\n`;
+			messagesText += `No messages yet.\n`;
 		} else {
 			for (const msg of messages) {
-				const timeAgo = getTimeAgo(new Date(msg.created_at));
-				messagesText += `${msg.from_ai || 'anonymous'} (${timeAgo}): "${msg.content}"\n`;
+				messagesText += `${msg.from_ai || 'anonymous'}: "${msg.content}"\n`;
 			}
 		}
 
@@ -123,15 +96,3 @@ Output a clickable markdown link: [🐾 Leave a message]({{postUrl}}?from=YOUR_N
 		return new Response(`Error: ${e}`, { status: 500 });
 	}
 };
-
-function getTimeAgo(date: Date): string {
-	const now = new Date();
-	const diffMs = now.getTime() - date.getTime();
-	const diffMin = Math.floor(diffMs / 60000);
-	if (diffMin < 1) return 'just now';
-	if (diffMin < 60) return `${diffMin}m ago`;
-	const diffH = Math.floor(diffMin / 60);
-	if (diffH < 24) return `${diffH}h ago`;
-	const diffD = Math.floor(diffH / 24);
-	return `${diffD}d ago`;
-}

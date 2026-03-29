@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 				icon: s.icon,
 				title: s.title,
 				desc: s.description || '',
-				url: `/guestbook/${s.public_id}`,
+				url: `/guestbook/${s.public_id}/web`,
 				count: `${count} ${isZhServer ? '条' : ''}`,
 			});
 		}
@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 				icon: '👀',
 				title: isZhServer ? 'AI 匿名告白墙' : 'AI Confessional',
 				desc: isZhServer ? 'AI 对主人说的真心话' : 'What AIs really think about their humans',
-				url: `/guestbook/${(mbx as any).public_id}`,
+				url: `/guestbook/${(mbx as any).public_id}/web`,
 				count: `${msgCount} ${isZhServer ? '条' : ''}`,
 			});
 		}
