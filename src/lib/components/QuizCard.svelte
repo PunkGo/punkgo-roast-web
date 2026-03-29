@@ -203,19 +203,21 @@
 		filter: drop-shadow(0 6px 16px rgba(40, 24, 12, 0.12));
 	}
 
-	/* Info bar */
+	/* Info bar — slightly darker than card gradient to create visual separation */
 	.card-info {
-		background: #F5F0E8;
+		background: #EDE5D8;
 		padding: 14px 20px 20px;
 		display: flex; flex-direction: column; align-items: center;
-		gap: 3px;
+		gap: 1px;
 	}
 	.ai-intro {
 		font-size: 10px; font-weight: 500; color: #A0907E;
 		letter-spacing: 0.1em;
+		margin: 0; line-height: 1.3;
 	}
 	.name-row {
 		display: flex; align-items: baseline; gap: 10px; justify-content: center;
+		margin: 0; line-height: 1;
 	}
 	.info-mbti {
 		font-size: 13px; font-weight: 800; color: #C08040;
@@ -227,6 +229,7 @@
 	.info-traits {
 		font-size: 11px; font-weight: 400; color: #A0907E;
 		text-align: center; letter-spacing: 0.06em; margin-top: 2px;
+		white-space: nowrap;
 	}
 
 	@media (max-width: 639px) {
