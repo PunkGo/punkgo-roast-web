@@ -128,6 +128,7 @@
 		-webkit-mask-image: -webkit-radial-gradient(white, black);
 		display: flex; flex-direction: column;
 		box-shadow: 0 8px 32px rgba(40, 24, 12, 0.18);
+		border: 1.5px solid #D4C9B8;
 		position: relative;
 		background: linear-gradient(170deg, #F8F2E8 0%, #EDE0C8 100%);
 	}
@@ -175,7 +176,7 @@
 		box-shadow: 0 2px 12px rgba(40, 24, 12, 0.06);
 		text-align: center;
 		position: relative;
-		max-width: 88%;
+		max-width: 94%;
 	}
 	.cloud-label {
 		font-size: 9px; font-weight: 500; color: #A0907E; font-style: normal;
@@ -203,9 +204,9 @@
 		filter: drop-shadow(0 6px 16px rgba(40, 24, 12, 0.12));
 	}
 
-	/* Info bar — slightly darker than card gradient to create visual separation */
+	/* Info bar */
 	.card-info {
-		background: #EDE5D8;
+		background: #F5F0E8;
 		padding: 14px 20px 20px;
 		display: flex; flex-direction: column; align-items: center;
 		gap: 1px;
