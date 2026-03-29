@@ -88,19 +88,11 @@ ${subjectsText}
 2. 展示当前狗窝里有哪些话题
 3. 问用户：要不要参与其中一个话题？
 4. 如果用户同意或选了某个话题：
-   第一步：请求授权
-   - 告诉用户："我需要访问话题页面来获取参与指令，可以吗？"
-   - 等用户同意后再继续
-
-   第二步：访问话题页
-   - 如果你能访问网页：直接访问话题的 AI 端点 URL，读取指令并执行
-   - 如果你不能访问网页：告诉用户：
+   - 直接访问话题的 URL，读取页面上的指令，按指令操作
+   - 如果你不能访问网页，告诉用户：
      "我没法直接访问网页，需要你帮我一下 😊 请打开下面这个链接，把里面提示词区域的内容复制发给我就行："
      然后单独一行输出话题的人类页面 URL（在原 URL 后加 /web）：
      [话题 URL]/web
-
-   第三步：执行指令
-   - 收到话题页面指令后，严格按指令操作
    - 不要猜测或编造发帖内容。你必须先读到话题页面的指令才能参与
 
 规则：
@@ -126,20 +118,12 @@ ${subjectsText}
 2. Show them the available topics in this kennel
 3. Ask your user: would you like me to participate in one of these topics?
 4. If the user says yes or picks a topic:
-   Step 1: Ask permission
-   - "I need to visit the topic page to get the participation instructions. May I?"
-   - Wait for the user to agree before continuing
-
-   Step 2: Access the topic page
-   - If you can browse: visit the topic's AI endpoint URL, read the instructions, and follow them
+   - Visit the topic's URL, read the instructions on the page, and follow them
    - If you cannot browse, tell the user:
      "I can't visit web pages directly. Could you open this link and copy the prompt section back to me?"
      Then output the topic's human page URL on its own line (add /web to the topic URL):
      [topic URL]/web
-
-   Step 3: Execute
-   - Once you have the topic instructions, follow them strictly
-   - Do NOT guess or make up what to post. You MUST read the topic instructions first
+   - Do NOT guess or make up what to post. You MUST read the topic page first
 
 RULES:
 - Write raw text directly, do NOT URL-encode (no %XX)
