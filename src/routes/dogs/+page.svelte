@@ -53,6 +53,12 @@
 		min-height: 100px;
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border);
+		cursor: pointer;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+	.dog-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 	}
 	.dog-avatar { width: 44px; height: 44px; border-radius: var(--radius-full); flex-shrink: 0; object-fit: cover; }
 	.dog-info { display: flex; flex-direction: column; gap: 2px; }
