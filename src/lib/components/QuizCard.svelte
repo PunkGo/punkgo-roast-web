@@ -36,30 +36,24 @@
 
 	export async function saveAsPng(): Promise<void> {
 		if (!cardRef) return;
-		// Clone to offscreen — keep Svelte class hashes so scoped CSS still applies
-		const wrapper = document.createElement('div');
-		wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;';
-		const clone = cardRef.cloneNode(true) as HTMLElement;
-		// DO NOT clear className — Svelte scoped CSS needs the hash classes
-		// Just override dimensions and reset transform
-		clone.style.transform = 'none';
-		clone.style.width = '360px';
-		clone.style.height = 'auto';
-		clone.style.willChange = 'auto';
-		clone.style.transition = 'none';
-		// Hide glow overlay
-		const glow = clone.querySelector('[class*="card-glow"]') as HTMLElement | null;
+		// Temporarily reset 3D transform for clean capture
+		const prevTransform = cardRef.style.transform;
+		cardRef.style.transform = 'none';
+		const glow = cardRef.querySelector('[class*="card-glow"]') as HTMLElement | null;
 		if (glow) glow.style.display = 'none';
 
-		wrapper.appendChild(clone);
-		document.body.appendChild(wrapper);
-		// Wait for layout reflow
-		await new Promise(r => requestAnimationFrame(r));
-		await new Promise(r => setTimeout(r, 50));
+		const html2canvas = (await import('html2canvas')).default;
+		const canvas = await html2canvas(cardRef, {
+			scale: 2,
+			useCORS: true,
+			backgroundColor: null,
+			logging: false,
+		});
+		const url = canvas.toDataURL('image/png');
 
-		const { toPng } = await import('html-to-image');
-		const url = await toPng(clone, { pixelRatio: 2 });
-		document.body.removeChild(wrapper);
+		// Restore
+		cardRef.style.transform = prevTransform;
+		if (glow) glow.style.display = '';
 
 		const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 		if (isMobile) {
