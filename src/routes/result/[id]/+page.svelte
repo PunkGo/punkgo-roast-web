@@ -6,6 +6,7 @@
 	import { getAIName } from '$lib/data/ai-quiz-prompt';
 	import { copyToClipboard } from '$lib/utils/copy';
 	import QuizCard from '$lib/components/QuizCard.svelte';
+	import AdoptModal from '$lib/components/AdoptModal.svelte';
 
 	let isZh = $state(false);
 	let dog: Dog | null = $state(null);
@@ -33,6 +34,7 @@
 	let copied = $state(false);
 	let adopting = $state(false);
 	let adoptedKennelId = $state('');
+	let showAdoptModal = $state(false);
 
 	onMount(async () => {
 		isZh = navigator.language.startsWith('zh');
@@ -245,34 +247,18 @@
 						</div>
 					</div>
 					<!-- radar-locked hidden for v2, /install page kept -->
-				<!-- Locked dog card — click to claim -->
-				{#if adoptedKennelId}
-					<div class="card-col">
-						<a href="/k/{adoptedKennelId}/web" class="adopted-card">
-							<div class="adopted-inner" style="border-color: {dog.cardColor}">
-								<div class="adopted-icon">✅</div>
-								<img class="locked-dog" src="/dogs/felt-{dog.id}-nobg.png" alt="" />
-								<div class="adopted-label">
-									{isZh ? '🏠 进入狗窝' : '🏠 Enter Kennel'}
-								</div>
-							</div>
+				<!-- Adopt action -->
+				<div class="card-col">
+					{#if adoptedKennelId}
+						<a href="/k/{adoptedKennelId}/web" class="adopt-btn adopted">
+							🏠 {isZh ? '进入狗窝' : 'Enter Kennel'}
 						</a>
-					</div>
-				{:else}
-					<div class="card-col">
-						<button class="locked-card" onclick={adoptDog} disabled={adopting}>
-							<div class="locked-inner" style="border-color: {dog.cardColor}">
-								<div class="locked-icon">🔒</div>
-								<img class="locked-dog" src="/dogs/felt-{dog.id}-nobg.png" alt="" />
-								<div class="locked-label">
-									{adopting
-										? '...'
-										: (isZh ? '🪪 领取狗卡\n解锁狗窝' : '🪪 Claim Card\nUnlock Kennel')}
-								</div>
-							</div>
+					{:else}
+						<button class="adopt-btn" onclick={() => { showAdoptModal = true; }}>
+							🐾 {isZh ? '领养这只狗' : 'Adopt this dog'}
 						</button>
-					</div>
-				{/if}
+					{/if}
+				</div>
 				</div><!-- /cards-row -->
 
 				<a href="/quiz" class="retake fade-in d5">{isZh ? '换个 AI 再测 →' : 'Test another AI →'}</a>
@@ -282,8 +268,25 @@
 	</div>
 </div>
 
+{#if showAdoptModal && dog}
+	<AdoptModal
+		{dog}
+		locale={isZh ? 'zh' : 'en'}
+		{aiName}
+		quip={llmQuip || (isZh ? dog.quipZh : dog.quip)}
+		intro={llmIntro || (isZh ? '它这样介绍你' : 'About its owner')}
+		onComplete={(nick, kid, rc) => {
+			showAdoptModal = false;
+			adoptedKennelId = kid;
+			sessionStorage.setItem('punkgo_adopted_' + resultId, kid);
+			window.location.href = '/k/' + kid + '/web?new=1';
+		}}
+		onClose={() => { showAdoptModal = false; }}
+	/>
+{/if}
+
 {#if adopting}
-	<div class="adopting-overlay">
+	<div class="adopting-overlay" style="display:none">
 		<div class="adopting-content">
 			<span class="adopting-paw">🐾</span>
 			<p>{isZh ? '正在制作狗卡...' : 'Creating your dog card...'}</p>
@@ -517,6 +520,23 @@
 	.adopting-content p { font-size: 16px; font-weight: 600; }
 
 	/* Adopted card */
+	.adopt-btn {
+		display: flex; align-items: center; justify-content: center;
+		width: 100%; max-width: 300px;
+		padding: 16px 24px;
+		background: #C08040; color: #fff;
+		border: none; border-radius: 14px;
+		font-size: 16px; font-weight: 700;
+		cursor: pointer; font-family: inherit;
+		box-shadow: 0 4px 16px rgba(192, 128, 64, 0.3);
+		transition: background 200ms ease, transform 200ms ease;
+		text-decoration: none;
+	}
+	.adopt-btn:hover { background: #A06830; transform: translateY(-2px); }
+	.adopt-btn.adopted {
+		background: #5A8C6A; box-shadow: 0 4px 16px rgba(90, 140, 106, 0.3);
+	}
+	.adopt-btn.adopted:hover { background: #4A7A5A; }
 	.adopted-card { text-decoration: none; }
 	.adopted-inner {
 		width: 200px; height: 280px;

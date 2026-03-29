@@ -9,7 +9,7 @@ const MAX_RETRIES = 3;
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const body = await request.json();
-	const { resultId, mbti, aiType, dogId, quip, locale } = body;
+	const { resultId, mbti, aiType, dogId, quip, locale, nickname } = body;
 
 	// Validate
 	if (!mbti || !MBTI_RE.test(mbti)) {
