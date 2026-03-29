@@ -166,7 +166,7 @@
 						<!-- Header -->
 						<div class="card-header">
 							<span class="header-brand">{isZh ? '胖狗' : 'PUNKGO ROAST'}</span>
-							<span class="header-type">AI DOG CARD</span>
+							<span class="header-type">{isZh ? '这只 AI 是' : 'This AI is'}</span>
 						</div>
 						<div class="header-divider"></div>
 
@@ -182,6 +182,8 @@
 							<h2 class="dog-card-name">{isZh ? dog.nameZh : dog.name}</h2>
 							<p class="dog-card-meta">{dog.mbti} &middot; {dog.breed}</p>
 							<p class="dog-card-ai">by {aiName}</p>
+							<p class="dog-card-roast-intro">{isZh ? '别人看它:' : 'What others see:'}</p>
+							<p class="dog-card-quip">"{isZh ? dog.quipZh : dog.quip}"</p>
 						</div>
 
 						<!-- QR + Recovery Code -->
@@ -204,7 +206,7 @@
 						<!-- Footer -->
 						<div class="card-footer">
 							<span>{formattedDate()}</span>
-							<span>roast.punkgo.ai</span>
+							<span>https://roast.punkgo.ai/k/{kennelId}/web</span>
 						</div>
 					</div>
 				</div>
@@ -470,6 +472,26 @@
 		text-align: center;
 		margin: 0;
 		font-style: italic;
+	}
+	.dog-card-roast-intro {
+		font-size: 9px;
+		color: var(--color-text-tertiary);
+		text-align: center;
+		margin: 4px 0 0 0;
+	}
+	.dog-card-quip {
+		font-size: 11px;
+		font-weight: 600;
+		font-style: italic;
+		color: var(--color-text-primary);
+		text-align: center;
+		line-height: 1.4;
+		margin: 1px 0 0 0;
+		padding: 0 8px;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	/* Bottom — QR + recovery code row */
