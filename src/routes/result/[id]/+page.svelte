@@ -11,6 +11,7 @@
 	let dog: Dog | null = $state(null);
 	let resultId = $state('');
 	let llmQuip: string | null = $state(null);
+	let llmIntro: string | null = $state(null);
 
 	// Get AI name from URL query param
 	const aiParam = $page.url.searchParams.get('ai') || 'AI';
@@ -60,6 +61,7 @@
 				const data = await res.json();
 				clearTimeout(timeout);
 				quip = data.quip || null;
+				llmIntro = data.intro || null;
 			} catch {
 			}
 
@@ -214,7 +216,7 @@
 				{#if showActions}
 				<div class="cards-row fade-in d2">
 					<div class="card-col">
-						<QuizCard {dog} locale={isZh ? 'zh' : 'en'} {aiName} customQuip={llmQuip} bind:this={quizCardComponent} />
+						<QuizCard {dog} locale={isZh ? 'zh' : 'en'} {aiName} customQuip={llmQuip} customIntro={llmIntro} bind:this={quizCardComponent} />
 						<div class="card-actions">
 							<button class="btn-primary" onclick={saveCard} title={isZh ? '保存卡片' : 'Save Card'}>
 								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>

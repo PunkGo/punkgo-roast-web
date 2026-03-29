@@ -22,15 +22,15 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		// Generate new quip
 		const t0 = Date.now();
-		const quip = await generatePersonalityText(dog.breed, dog.nameZh, mbti, locale);
-		console.log(`[generate-quip] ${mbti} locale=${locale} latency=${Date.now() - t0}ms quip=${quip ? 'ok' : 'null'}`);
+		const result = await generatePersonalityText(dog.breed, dog.nameZh, mbti, locale);
+		console.log(`[generate-quip] ${mbti} locale=${locale} latency=${Date.now() - t0}ms quip=${result.quip ? 'ok' : 'null'}`);
 
 		// Persist for share page
-		if (quip) {
-			await saveResult(resultId, mbti, aiType, quip);
+		if (result.quip) {
+			await saveResult(resultId, mbti, aiType, result.quip);
 		}
 
-		return new Response(JSON.stringify({ quip: quip || null }), {
+		return new Response(JSON.stringify({ quip: result.quip || null, intro: result.intro || null }), {
 			headers: { 'Content-Type': 'application/json' },
 		});
 	} catch (e) {

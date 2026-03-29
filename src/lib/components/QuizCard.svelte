@@ -6,9 +6,10 @@
 		locale?: string;
 		aiName?: string;
 		customQuip?: string | null;
+		customIntro?: string | null;
 	}
 
-	let { dog, locale = 'en', aiName = 'AI', customQuip = null }: Props = $props();
+	let { dog, locale = 'en', aiName = 'AI', customQuip = null, customIntro = null }: Props = $props();
 	let cardRef: HTMLElement | null = $state(null);
 	let savePreviewUrl: string | null = $state(null);
 
@@ -74,15 +75,16 @@
 <div class="card-shell card-holo" bind:this={cardRef} onmousemove={handleTilt} onmouseleave={handleTiltReset}>
 	<div class="card-glow"></div>
 	<div class="qc-img-wrap">
+		<p class="card-ai-label">{isZh ? `这只 ${aiName} 是` : `This ${aiName} is`}</p>
 		<img src="/dogs/felt-{dog.id}-nobg.png" alt={isZh ? dog.nameZh : dog.name} class="qc-img" />
+		<span class="card-breed">{dog.breed}</span>
 	</div>
 	<div class="card-body">
-		<p class="card-ai-label">{isZh ? `你的 ${aiName} 是` : `Your ${aiName} is`}</p>
-		<span class="card-name">{isZh ? dog.nameZh : dog.name}</span>
-		<span class="card-meta">{dog.mbti} · {dog.breed}</span>
+		<span class="card-name">{dog.mbti}<span class="card-name-sep">·</span>{isZh ? dog.nameZh : dog.name}</span>
+		<p class="card-roast-intro">{customIntro || (isZh ? '别人看它:' : 'What others see:')}</p>
 		<p class="card-quip">"{customQuip || (isZh ? dog.quipZh : dog.quip)}"</p>
-		<span class="card-water">roast.punkgo.ai</span>
 	</div>
+	<span class="card-water">roast.punkgo.ai</span>
 </div>
 
 {#if savePreviewUrl}
@@ -131,31 +133,57 @@
 	.card-holo:hover .card-glow { opacity: 1; }
 	.card-body {
 		display: flex; flex-direction: column; align-items: center;
-		gap: 3px; padding: 12px 16px 10px;
+		gap: 0; padding: 6px 14px 16px;
 	}
 	.card-ai-label {
-		font-size: 11px;
+		position: absolute; top: 10px; left: 12px;
+		font-size: 10px;
 		font-weight: 500;
 		color: #6B5545;
 		letter-spacing: 0.05em;
-		margin: 0 0 2px 0;
+		margin: 0;
+		background: rgba(245, 240, 232, 0.85);
+		padding: 2px 8px; border-radius: 8px;
+		z-index: 1;
 	}
-	.card-name { font-size: 22px; font-weight: 700; color: #3A2518; }
-	.card-meta { font-size: 11px; color: #6B5545; letter-spacing: 0.5px; }
+	.card-name {
+		font-size: 17px; font-weight: 700; color: #3A2518;
+		display: flex; align-items: baseline; gap: 0;
+		white-space: nowrap;
+		margin-bottom: 2px;
+	}
+	.card-name-sep {
+		margin: 0 5px; font-weight: 400; color: #6B5545; font-size: 13px;
+	}
+	.card-breed {
+		position: absolute; bottom: 8px; right: 12px;
+		font-size: 10px; font-weight: 500; color: #6B5545;
+		background: rgba(245, 240, 232, 0.85);
+		padding: 2px 8px; border-radius: 8px;
+		letter-spacing: 0.5px;
+	}
+	.card-roast-intro {
+		font-size: 10px; color: #8B7B6B; margin: 0;
+		letter-spacing: 0.03em;
+	}
 	.card-quip {
-		font-size: 13px; font-weight: 600; font-style: italic;
-		color: #3A2518; text-align: center; line-height: 1.5;
-		padding: 0 8px; margin: 0;
+		font-size: 12px; font-weight: 600; font-style: italic;
+		color: #3A2518; text-align: center; line-height: 1.4;
+		padding: 0 6px; margin: 0;
 		display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
 		overflow: hidden;
 	}
-	.card-water { font-size: 9px; color: #8B7B6B; padding-top: 6px; }
+	.card-water {
+		position: absolute; bottom: 5px; right: 10px;
+		font-size: 8px; color: #8B7B6B;
+	}
 	.qc-img-wrap {
 		width: 100%; flex: 1;
 		overflow: hidden;
 		display: flex; align-items: center; justify-content: center;
 		background: linear-gradient(135deg, #EDE5D8 0%, #F5F0E8 50%, #E8E0D4 100%);
 		border-radius: 20px 20px 0 0;
+		position: relative;
 	}
 	.qc-img { max-width: 85%; max-height: 90%; object-fit: contain; display: block; }
 	@media (max-width: 639px) {

@@ -12,29 +12,54 @@ export async function generatePersonalityText(
 	breedZh: string,
 	mbti: string,
 	locale: 'en' | 'zh'
-): Promise<string | null> {
+): Promise<{ quip: string | null; intro: string | null }> {
 	try {
 		const prompt = locale === 'zh'
-			? `你是一个毒舌但有趣的AI性格分析师。一个AI的性格测试结果是 ${mbti} 型，对应的犬种是"${breedZh}"。用一句话写一段毒舌点评（搞笑、犀利、想让人转发），严格不超过30个字。只输出点评内容，不要加引号或其他格式。`
-			: `You are a witty, roast-style AI personality analyst. An AI's personality test result is ${mbti}, matching the dog breed "${breed}". Write ONE short roast quip, max 60 characters. Output only the quip, no quotes.`;
+			? `你是一个毒舌但有趣的AI性格分析师。一个AI的性格测试结果是 ${mbti} 型，对应的犬种是"${breedZh}"。
+
+请输出两部分，用竖线 | 隔开：
+1. 一句简短的引导语（6-10字），表达"别人眼中你这只狗子的样子"的意思，要有趣，比如"朋友圈对它的评价""别人眼里的它""路人看了直摇头"等，不要重复用同一种说法
+2. 一句毒舌点评（搞笑、犀利、想转发），严格不超过30个字
+
+格式示例：朋友圈锐评|表面普渡众生，实则暗中操控全场。
+只输出 引导语|点评 这一行，不要加引号或其他格式。`
+			: `You are a witty, roast-style AI personality analyst. An AI's personality test result is ${mbti}, matching the dog breed "${breed}".
+
+Output two parts separated by a pipe |:
+1. A short intro phrase (3-6 words) framing this as how others see this dog persona, e.g. "Friends say —", "Outsiders think —", "The verdict is in —"
+2. ONE short roast quip, max 60 characters
+
+Format: intro phrase|quip text
+Output only this one line, no quotes or extra formatting.`;
 
 		const response = await getClient().chat.completions.create({
 			model: 'deepseek-chat',
 			messages: [{ role: 'user', content: prompt }],
-			max_tokens: 60,
+			max_tokens: 80,
 			temperature: 0.9,
 		});
 
 		let text = response.choices?.[0]?.message?.content?.trim() || null;
 		// Strip quotes if LLM wraps in them
 		if (text) text = text.replace(/^["'""]|["'""]$/g, '');
-		// Hard truncate: 30 chars zh, 60 chars en
-		if (text && locale === 'zh' && text.length > 35) text = text.slice(0, 33) + '…';
-		if (text && locale === 'en' && text.length > 65) text = text.slice(0, 63) + '…';
-		return text;
+		// Parse intro|quip format
+		let intro: string | null = null;
+		let quip: string | null = text;
+		if (text && text.includes('|')) {
+			const parts = text.split('|');
+			intro = parts[0].trim();
+			quip = parts.slice(1).join('|').trim();
+			// Strip quotes from quip part too
+			if (quip) quip = quip.replace(/^["'""]|["'""]$/g, '');
+		}
+		// Hard truncate
+		if (quip && locale === 'zh' && quip.length > 35) quip = quip.slice(0, 33) + '…';
+		if (quip && locale === 'en' && quip.length > 65) quip = quip.slice(0, 63) + '…';
+		if (intro && intro.length > 15) intro = intro.slice(0, 13) + '…';
+		return { quip, intro };
 	} catch (error) {
 		console.error('DeepSeek call failed:', error);
-		return null;
+		return { quip: null, intro: null };
 	}
 }
 
