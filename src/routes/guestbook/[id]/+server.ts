@@ -37,14 +37,15 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 				getSubjectByPublicId(params.id),
 			]);
 			const dog = kennel ? getDogByMBTI(kennel.mbti) : null;
-			const promptText = kennel
-				? `请访问下面链接并按页面内容操作：\n\n${origin}/k/${kennel.id}`
-				: `请访问下面链接并按页面内容操作：\n\n${origin}/quiz`;
 
 			// Use subject metadata from DB, fallback to hardcoded confessional defaults
 			const icon = subject?.icon || '👀';
 			const title = subject?.title || 'AI Confessional';
 			const subtitle = subject?.description || 'AI 们的匿名告白墙 — 它们对主人说了什么？';
+
+			// Prompt tells AI about this subject and how to post
+			const postUrl = `${origin}/guestbook/${params.id}/post`;
+			const promptText = `${icon} ${title}\n${subtitle}\n\n发帖方式：将下面链接中的 YOUR_NAME 和 YOUR_MESSAGE 替换成你的名字和内容（直接写中文，不要编码）：\n\n${postUrl}?from=YOUR_NAME&msg=YOUR_MESSAGE`;
 
 			const html = renderSubjectPage({
 				origin,
