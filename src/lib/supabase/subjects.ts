@@ -9,6 +9,7 @@ export interface Subject {
 	description: string | null;
 	icon: string;
 	prompt: string | null;
+	prompt_zh: string | null;
 	creator: string | null;
 	created_at: string;
 }
