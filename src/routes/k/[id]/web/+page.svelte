@@ -8,6 +8,7 @@
 	const ssrLocale = data.locale;
 	let isZh = $state(ssrLocale === 'zh');
 	let copied = $state(false);
+	let shareCopied = $state(false);
 	let showDogCard = $state(false);
 	let qrDataURL = $state('');
 	let dcCardRef: HTMLElement | null = $state(null);
@@ -19,15 +20,24 @@
 		}
 	}
 
+	let savePreviewUrl = $state('');
+	const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
 	async function saveDogCard() {
 		if (!dcCardRef) return;
 		const html2canvas = (await import('html2canvas')).default;
 		const canvas = await html2canvas(dcCardRef, { scale: 2, useCORS: true, backgroundColor: null });
 		const url = canvas.toDataURL('image/png');
-		const link = document.createElement('a');
-		link.download = `punkgo-dogcard-${kennel.nickname || kennel.id}.png`;
-		link.href = url;
-		link.click();
+
+		if (isMobile) {
+			// Mobile: show image for long-press save
+			savePreviewUrl = url;
+		} else {
+			const link = document.createElement('a');
+			link.download = `punkgo-dogcard-${kennel.nickname || kennel.id}.png`;
+			link.href = url;
+			link.click();
+		}
 	}
 
 	onMount(() => {
@@ -130,10 +140,14 @@ function formatTime(iso: string): string {
 				<button class="kp-btn secondary" onclick={openDogCard}>
 					🪪 {isZh ? '查看狗证' : 'Dog Card'}
 				</button>
-				<button class="kp-btn primary" onclick={() => {
-					copyToClipboard(`https://roast.punkgo.ai/k/${kennel.id}/web`);
+				<button class="kp-btn primary" onclick={async () => {
+					await copyToClipboard(`https://roast.punkgo.ai/k/${kennel.id}/web`);
+					shareCopied = true;
+					setTimeout(() => { shareCopied = false; }, 2000);
 				}}>
-					🔗 {isZh ? '分享狗窝' : 'Share Kennel'}
+					{shareCopied
+						? (isZh ? '✅ 链接已复制' : '✅ Link Copied')
+						: (isZh ? '🔗 分享狗窝' : '🔗 Share Kennel')}
 				</button>
 				<button class="kp-btn outline" onclick={() => {
 					document.cookie = `punkgo_k_${kennel.id}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -196,6 +210,15 @@ function formatTime(iso: string): string {
 				</button>
 			</div>
 		</div>
+	</div>
+{/if}
+
+{#if savePreviewUrl}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div class="save-overlay" onclick={() => savePreviewUrl = ''}>
+		<p class="save-hint">{isZh ? '长按图片保存 · 点击任意处关闭' : 'Long-press to save · Tap to close'}</p>
+		<img src={savePreviewUrl} alt="dog card" class="save-preview-img" />
 	</div>
 {/if}
 
@@ -401,6 +424,16 @@ function formatTime(iso: string): string {
 		font-size: 13px; font-weight: 600; color: #2A1810;
 		cursor: pointer; font-family: inherit;
 	}
+
+	/* Save overlay (mobile long-press) */
+	.save-overlay {
+		position: fixed; inset: 0; z-index: 9999;
+		background: rgba(0,0,0,0.8);
+		display: flex; flex-direction: column; align-items: center; justify-content: center;
+		gap: 16px; padding: 20px;
+	}
+	.save-hint { color: white; font-size: 14px; text-align: center; }
+	.save-preview-img { max-width: 90vw; max-height: 80vh; border-radius: 12px; }
 
 	/* Footer */
 	.kp-footer {
