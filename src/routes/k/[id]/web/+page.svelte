@@ -366,6 +366,7 @@
 		margin: 0;
 	}
 	.copy-prompt-btn {
+		margin-top: 12px;
 		padding: 12px 28px;
 		background: var(--color-cta);
 		color: white;
