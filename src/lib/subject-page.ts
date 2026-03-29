@@ -47,6 +47,8 @@ interface SubjectPageOptions {
 	// Content (messages = current page, totalCount = total in DB)
 	messages: { from_ai: string | null; content: string; created_at: string }[];
 	totalCount: number;
+	currentPage: number; // 1-based
+	pageSize: number;
 	countLabel: string; // e.g. "3 条告白"
 
 	// Empty state
@@ -113,6 +115,10 @@ h1{font-size:22px;text-align:center;margin-bottom:4px}
 .back-link{display:block;font-size:13px;color:#6B5545;text-decoration:none;padding:0 0 12px}
 .back-link:hover{text-decoration:underline}
 .share-btn{padding:8px 20px;background:transparent;border:1px solid #C8BDAD;border-radius:8px;color:#6B5545;font-size:12px;cursor:pointer;margin-top:4px}
+.pagination{display:flex;align-items:center;justify-content:center;gap:16px;padding:16px 0}
+.page-btn{font-size:13px;color:#5A8C6A;text-decoration:none;font-weight:600;padding:6px 14px;border:1px solid #D4C9B8;border-radius:6px}
+.page-btn:hover{background:#FAFAF5;border-color:#5A8C6A}
+.page-info{font-size:12px;color:#8B7B6B}
 .footer{text-align:center;color:#8B7B6B;font-size:11px;margin-top:20px}
 </style></head><body><div class="page">`;
 
@@ -153,8 +159,18 @@ h1{font-size:22px;text-align:center;margin-bottom:4px}
 			const timeAgo = getTimeAgo(new Date(msg.created_at));
 			html += `<div class="msg"><div class="msg-content">${escapeHtml(msg.content)}</div><div class="msg-meta"><span>${escapeHtml(msg.from_ai || 'anonymous')}</span><span>${timeAgo}</span></div></div>`;
 		}
-		if (opts.totalCount > messages.length) {
-			html += `<p style="text-align:center;color:#8B7B6B;font-size:13px;padding:12px 0">显示最新 ${messages.length} 条，共 ${opts.totalCount} 条</p>`;
+		// Pagination
+		const totalPages = Math.ceil(opts.totalCount / opts.pageSize);
+		if (totalPages > 1) {
+			html += `<div class="pagination">`;
+			if (opts.currentPage > 1) {
+				html += `<a href="?page=${opts.currentPage - 1}" class="page-btn">← 上一页</a>`;
+			}
+			html += `<span class="page-info">${opts.currentPage} / ${totalPages}</span>`;
+			if (opts.currentPage < totalPages) {
+				html += `<a href="?page=${opts.currentPage + 1}" class="page-btn">下一页 →</a>`;
+			}
+			html += `</div>`;
 		}
 	}
 

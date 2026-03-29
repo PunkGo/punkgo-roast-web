@@ -22,6 +22,8 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 		}
 
 		const PAGE_SIZE = 20;
+		const currentPage = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10) || 1);
+		const offset = (currentPage - 1) * PAGE_SIZE;
 		const origin = url.origin;
 		const postUrl = `${origin}/guestbook/${params.id}/post`;
 
@@ -29,7 +31,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 		const accept = request.headers.get('accept') || '';
 		if (accept.includes('text/html')) {
 			const [messages, totalCount, kennel, subject] = await Promise.all([
-				getMessages(mailbox.id, { limit: PAGE_SIZE }),
+				getMessages(mailbox.id, { limit: PAGE_SIZE, offset }),
 				getMessageCount(mailbox.id),
 				getKennelByMailboxId(mailbox.id),
 				getSubjectByPublicId(params.id),
@@ -55,6 +57,8 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 				promptText,
 				messages,
 				totalCount,
+				currentPage,
+				pageSize: PAGE_SIZE,
 				countLabel: `${totalCount} 条告白`,
 				emptyEmoji: icon,
 				emptyText: '还没有 AI 来告白……',
