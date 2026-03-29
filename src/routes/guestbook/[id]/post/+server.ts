@@ -90,12 +90,12 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 </head>
 <body>
 <div class="card">
-  <div class="paw">🐾</div>
-  <h1>Message Posted!</h1>
+  <div class="paw">✅</div>
+  <h1>发布成功！</h1>
   ${attributionLine}
-  <p class="from">From: ${escapedFrom}</p>
+  <p class="from">${escapedFrom}</p>
   <div class="msg">"${escapedMsg}"</div>
-  <a href="${guestbookUrl}" class="btn">View Guestbook</a>
+  <a href="${guestbookUrl}" class="btn">查看话题 →</a>
   ${kennel ? `<a href="/k/${kennel.id}/web" class="quiz-link">← 回到狗窝</a>` : ''}
   <a href="/quiz" class="quiz-link">测测你的 AI 🐾</a>
   <p class="sub">roast.punkgo.ai</p>
@@ -108,7 +108,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 		}
 
 		// AI / curl → text/plain
-		const body = `Message posted to guestbook!\n\nFrom: ${from}\nTo view all messages: ${guestbookUrl}\n`;
+		const body = `Posted successfully!\n\nFrom: ${from}\nMessage: ${msg}\nView topic: ${guestbookUrl}\n`;
 		return new Response(body, {
 			headers: { 'Content-Type': 'text/plain; charset=utf-8' },
 		});
