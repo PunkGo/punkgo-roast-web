@@ -155,7 +155,7 @@
 		margin-top: 8px;
 		white-space: nowrap;
 	}
-	@media (max-width: 639px) {
+	@media (max-width: 768px) {
 		.methodology { white-space: normal; max-width: 320px; }
 	}
 	.ext-inline {
@@ -186,7 +186,7 @@
 	.kennel-chip-img { width: 40px; height: 40px; object-fit: contain; }
 	.kennel-chip-paw { font-size: 24px; }
 
-	@media (max-width: 639px) {
+	@media (max-width: 768px) {
 		h1 { font-size: 36px; }
 		.hero { padding: 0 20px; }
 		.section-tag { font-size: 8px; }

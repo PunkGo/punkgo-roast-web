@@ -230,7 +230,7 @@
 		white-space: nowrap;
 	}
 
-	@media (max-width: 639px) {
+	@media (max-width: 768px) {
 		.card-shell { width: min(280px, 75vw); height: 390px; }
 	}
 	@media (prefers-reduced-motion: reduce) {

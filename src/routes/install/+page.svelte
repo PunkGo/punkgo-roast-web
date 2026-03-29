@@ -391,7 +391,7 @@
 	}
 	.back-link { font-size: 13px; color: var(--color-text-secondary); }
 
-	@media (max-width: 639px) {
+	@media (max-width: 768px) {
 		.compare { flex-direction: column; }
 		.platform-grid { flex-wrap: wrap; }
 		.privacy-grid { grid-template-columns: 1fr; }

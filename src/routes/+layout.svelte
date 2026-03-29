@@ -107,9 +107,9 @@
 	.top-banner {
 		background: var(--color-bg-dark);
 		color: var(--color-text-on-dark);
-		font-size: 12px;
+		font-size: var(--font-size-sm);
 		text-align: center;
-		padding: 6px 16px;
+		padding: var(--space-sm) var(--space-md);
 		letter-spacing: 0.02em;
 	}
 
@@ -124,7 +124,7 @@
 	@media (prefers-reduced-motion: reduce) {
 		.nav-right a.ext-btn { animation: none; }
 	}
-	@media (max-width: 639px) {
+	@media (max-width: 768px) {
 		.nav { padding: 0 16px; }
 		.nav-right { gap: 8px; }
 	}
