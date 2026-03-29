@@ -7,6 +7,7 @@
 	const ssrLocale = data.locale;
 	let isZh = $state(ssrLocale === 'zh');
 	let copied = $state(false);
+	let showDogCard = $state(false);
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
@@ -105,6 +106,9 @@ function formatTime(iso: string): string {
 		<!-- Actions -->
 		<section class="kp-actions fade-in d3">
 			{#if isOwner}
+				<button class="kp-btn secondary" onclick={() => { showDogCard = true; }}>
+					🪪 {isZh ? '查看狗证' : 'Dog Card'}
+				</button>
 				<button class="kp-btn primary" onclick={() => {
 					copyToClipboard(`https://roast.punkgo.ai/k/${kennel.id}/web`);
 				}}>
@@ -129,6 +133,41 @@ function formatTime(iso: string): string {
 		</div>
 	</div>
 </div>
+
+{#if showDogCard && dog}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div class="dc-overlay" onclick={() => { showDogCard = false; }}>
+		<div class="dc-modal" onclick={(e) => e.stopPropagation()}>
+			<div class="dc-card">
+				<div class="dc-left">
+					<img src="/dogs/felt-{dog.id}-chat.png" alt={kennel.nickname || dog.name} />
+				</div>
+				<div class="dc-right">
+					<div class="dc-top">
+						<div class="dc-header">
+							<span class="dc-brand">{isZh ? '胖狗' : 'PUNKGO'}</span>
+							<span class="dc-mbti">{kennel.mbti}</span>
+						</div>
+						<span class="dc-name">{kennel.nickname || (isZh ? dog.nameZh : dog.name)}</span>
+						<span class="dc-breed">{isZh ? dog.breedZh : dog.breed}</span>
+					</div>
+					<div class="dc-divider"></div>
+					<div class="dc-bottom">
+						<div class="dc-qr-box"></div>
+						<div class="dc-codes">
+							<span class="dc-code">****-****-****</span>
+							<span class="dc-url">roast.punkgo.ai/k/{kennel.id}/web</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<button class="dc-close" onclick={() => { showDogCard = false; }}>
+				{isZh ? '关闭' : 'Close'}
+			</button>
+		</div>
+	</div>
+{/if}
 
 <style>
 	.kennel-page {
@@ -247,6 +286,76 @@ function formatTime(iso: string): string {
 	}
 	.kp-free {
 		font-size: 11px; color: #A0907E;
+	}
+
+	.kp-btn.secondary {
+		background: #fff; color: #2A1810;
+		border: 1.5px solid #D4C9B8;
+		box-shadow: none;
+	}
+	.kp-btn.secondary:hover { background: #F5F0E8; }
+
+	/* Dog card modal */
+	.dc-overlay {
+		position: fixed; inset: 0; z-index: 9000;
+		background: rgba(0,0,0,0.5);
+		display: flex; align-items: center; justify-content: center;
+		padding: 20px; backdrop-filter: blur(4px);
+	}
+	.dc-modal {
+		display: flex; flex-direction: column; align-items: center; gap: 12px;
+	}
+	.dc-card {
+		width: 380px; max-width: 90vw; height: 190px;
+		border-radius: 16px; overflow: hidden;
+		display: flex;
+		box-shadow: 0 8px 32px rgba(40,24,12,0.25);
+		background: #F5F0E8;
+	}
+	.dc-left {
+		width: 36%;
+		display: flex; align-items: flex-end; justify-content: center;
+		background: linear-gradient(170deg, #F8F2E8 0%, #EDE0C8 100%);
+		padding: 0 0 4px 4px;
+	}
+	.dc-left img { width: 90%; object-fit: contain; }
+	.dc-right {
+		width: 64%;
+		display: grid; grid-template-rows: 55fr 1px 45fr;
+		background: linear-gradient(160deg, #F5F0E8 0%, #EDE5D8 100%);
+	}
+	.dc-top {
+		padding: 0 14px;
+		display: flex; flex-direction: column;
+	}
+	.dc-header {
+		display: flex; justify-content: space-between; align-items: center;
+		padding-top: 10px; margin-bottom: auto;
+	}
+	.dc-brand { font-size: 10px; font-weight: 700; color: #2A1810; letter-spacing: 0.15em; }
+	.dc-mbti { font-size: 12px; font-weight: 800; color: #C08040; letter-spacing: 0.2em; }
+	.dc-name { font-size: 20px; font-weight: 900; color: #2A1810; line-height: 1.1; }
+	.dc-breed { font-size: 9px; color: #A0907E; margin-bottom: 10px; }
+	.dc-divider { background: #E0D8CC; }
+	.dc-bottom {
+		padding: 0 14px;
+		display: flex; align-items: center; gap: 8px;
+	}
+	.dc-qr-box {
+		width: 44px; height: 44px;
+		border-radius: 6px; background: #fff;
+		border: 1px solid #E8E0D4; flex-shrink: 0;
+		display: flex; align-items: center; justify-content: center;
+	}
+	.dc-qr-box::after { content: 'QR'; font-size: 9px; font-weight: 700; color: #D4C9B8; }
+	.dc-codes { display: flex; flex-direction: column; gap: 1px; }
+	.dc-code { font-size: 11px; font-weight: 700; color: #A0907E; letter-spacing: 0.08em; }
+	.dc-url { font-size: 7px; color: #A0907E; white-space: nowrap; }
+	.dc-close {
+		background: rgba(255,255,255,0.9); border: none;
+		padding: 8px 24px; border-radius: 10px;
+		font-size: 13px; font-weight: 600; color: #2A1810;
+		cursor: pointer; font-family: inherit;
 	}
 
 	/* Footer */

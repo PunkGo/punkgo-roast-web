@@ -204,13 +204,22 @@
 						<img src="/dogs/felt-{dog.id}-chat.png" alt={nickname} />
 					</div>
 					<div class="rc-right">
-						<div class="rc-header">
-							<span class="rc-brand">{isZh ? '胖狗' : 'PUNKGO'}</span>
-							<span class="rc-mbti">{dog.mbti}</span>
+						<div class="rc-top">
+							<div class="rc-header">
+								<span class="rc-brand">{isZh ? '胖狗' : 'PUNKGO'}</span>
+								<span class="rc-mbti">{dog.mbti}</span>
+							</div>
+							<span class="rc-name">{nickname}</span>
+							<span class="rc-breed">{isZh ? dog.breedZh : dog.breed}</span>
 						</div>
-						<span class="rc-name">{nickname}</span>
-						<span class="rc-breed">{isZh ? dog.breedZh : dog.breed}</span>
-						<div class="rc-code">{recoveryCode}</div>
+						<div class="rc-divider"></div>
+						<div class="rc-bottom">
+							<div class="rc-qr-box"></div>
+							<div class="rc-codes">
+								<span class="rc-code">{recoveryCode}</span>
+								<span class="rc-url">roast.punkgo.ai/k/{kennelId}/web</span>
+							</div>
+						</div>
 					</div>
 				</div>
 				<p class="reveal-warn">⚠️ {isZh ? '恢复码是你的狗证钥匙，请妥善保管！' : 'Recovery code is your card key — save it!'}</p>
@@ -381,7 +390,7 @@
 		font-size: 18px; font-weight: 700; color: #2A1810;
 	}
 	.reveal-card {
-		width: 100%; height: 140px;
+		width: 100%; height: 170px;
 		border-radius: 14px;
 		display: flex;
 		background: #fff;
@@ -397,19 +406,47 @@
 	}
 	.rc-left img { width: 90%; object-fit: contain; }
 	.rc-right {
-		width: 64%; padding: 12px 14px;
-		display: flex; flex-direction: column; gap: 2px;
+		width: 64%; padding: 0;
+		display: grid; grid-template-rows: 55fr 1px 45fr;
+		background: linear-gradient(160deg, #F5F0E8 0%, #EDE5D8 100%);
 	}
-	.rc-header { display: flex; justify-content: space-between; align-items: center; }
+	.rc-top {
+		padding: 10px 14px 0;
+		display: flex; flex-direction: column;
+	}
+	.rc-header {
+		display: flex; justify-content: space-between; align-items: center;
+		padding-top: 2px; margin-bottom: auto;
+	}
 	.rc-brand { font-size: 10px; font-weight: 700; color: #2A1810; letter-spacing: 0.15em; }
 	.rc-mbti { font-size: 12px; font-weight: 800; color: #C08040; letter-spacing: 0.2em; }
-	.rc-name { font-size: 18px; font-weight: 900; color: #2A1810; }
-	.rc-breed { font-size: 9px; color: #A0907E; }
+	.rc-name { font-size: 18px; font-weight: 900; color: #2A1810; margin-bottom: 2px; }
+	.rc-breed { font-size: 9px; color: #A0907E; margin-bottom: 8px; }
+	.rc-divider { background: #E0D8CC; }
+	.rc-bottom {
+		padding: 0 14px;
+		display: flex; align-items: center; gap: 8px;
+	}
+	.rc-qr-box {
+		width: 36px; height: 36px;
+		border-radius: 4px; background: #fff;
+		border: 1px solid #E8E0D4;
+		flex-shrink: 0;
+		display: flex; align-items: center; justify-content: center;
+	}
+	.rc-qr-box::after {
+		content: 'QR'; font-size: 8px; font-weight: 700; color: #D4C9B8;
+	}
+	.rc-codes {
+		display: flex; flex-direction: column; gap: 1px;
+	}
 	.rc-code {
-		font-size: 12px; font-weight: 700; color: #C08040;
-		letter-spacing: 0.08em; margin-top: auto;
-		background: #FFF8F0; padding: 4px 8px; border-radius: 6px;
-		text-align: center;
+		font-size: 11px; font-weight: 700; color: #2A1810;
+		letter-spacing: 0.08em;
+	}
+	.rc-url {
+		font-size: 7px; color: #A0907E;
+		white-space: nowrap;
 	}
 	.reveal-warn {
 		font-size: 11px; color: #C06030;
