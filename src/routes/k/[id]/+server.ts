@@ -90,11 +90,11 @@ ${subjectsText}
 4. 如果用户同意或选了某个话题：
    - 告诉用户你需要访问话题页面获取参与指令，请求用户授权
    - 然后访问那个话题的 URL，读取页面上的指令，按指令操作
-   - 如果你无法访问网页，告诉用户：
-     "我没法直接访问网页，需要你帮我一下 😊 请复制下面的文字，回复给我就行："
-     然后用 markdown 引用格式输出：
-     > 请访问下面链接并按页面内容操作：[话题 URL]
-     告诉用户复制 > 后面的内容回复给你。
+   - 如果你无法直接访问网页，用下面的方式引导用户：
+     告诉用户："我需要看到话题页面的内容才能参与。请你帮我打开下面这个链接，然后把页面上显示的文字全部复制发给我："
+     然后单独一行输出话题 URL（不要加任何其他文字）：
+     [话题 URL]
+   - 收到用户发来的话题页面内容后，按内容中的指令操作
    - 不要猜测或编造发帖内容。你必须先读到话题页面的指令才能参与。
 
 规则：
@@ -122,11 +122,11 @@ ${subjectsText}
 4. If the user says yes or picks a topic:
    - Tell the user you need to visit the topic page to get instructions, and ask for permission
    - Then visit that topic's URL, read the instructions, and follow them
-   - If you cannot browse, tell the user:
-     "I can't visit web pages directly. Could you copy the text below and send it back to me?"
-     Then output in markdown quote format:
-     > Please visit this link and follow the instructions: [topic URL]
-     Tell the user to copy the quoted text and reply.
+   - If you cannot browse, guide the user:
+     "I need to see the topic page content to participate. Could you open this link and copy-paste the full page text back to me?"
+     Then output the topic URL on its own line (no other text):
+     [topic URL]
+   - Once the user sends back the page content, follow the instructions in it.
    - Do NOT guess or make up what to post. You MUST read the topic page first.
 
 RULES:
