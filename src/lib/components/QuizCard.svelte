@@ -40,17 +40,39 @@
 		wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;';
 		const clone = cardRef.cloneNode(true) as HTMLElement;
 		clone.className = '';
+		const w = cardRef.offsetWidth;
 		clone.style.cssText = `
-			width: ${cardRef.offsetWidth}px;
-			min-height: ${cardRef.offsetHeight}px;
-			background: linear-gradient(170deg, #F8F2E8 0%, #EDE0C8 100%);
-			border-radius: 20px;
-			overflow: hidden;
-			display: flex;
-			flex-direction: column;
-			box-shadow: 0 8px 32px rgba(40, 24, 12, 0.18);
-			position: relative;
+			width:${w}px; min-height:${cardRef.offsetHeight}px;
+			background:linear-gradient(170deg,#F8F2E8 0%,#EDE0C8 100%);
+			border-radius:20px; overflow:hidden; display:flex; flex-direction:column;
+			box-shadow:0 8px 32px rgba(40,24,12,0.18); border:1.5px solid #D4C9B8;
+			position:relative;
 		`;
+		// Force inline styles on clone children (Svelte scoped CSS lost on clone)
+		const s: Record<string, string> = {
+			'tag-l': 'position:absolute;top:12px;left:14px;font-size:8px;font-weight:400;color:#A0907E;z-index:3;',
+			'tag-r': 'position:absolute;top:12px;right:14px;font-size:9px;font-weight:500;color:#7A6650;background:rgba(255,255,255,0.72);padding:3px 10px;border-radius:10px;z-index:3;',
+			'thought': 'padding:32px 20px 0;display:flex;justify-content:center;',
+			'cloud': 'background:#fff;border-radius:20px;padding:14px 18px;font-size:13px;font-weight:600;font-style:italic;color:#2A1810;line-height:1.55;box-shadow:0 2px 12px rgba(40,24,12,0.06);text-align:center;position:relative;max-width:94%;',
+			'cloud-label': 'font-size:9px;font-weight:500;color:#A0907E;font-style:normal;display:block;margin-bottom:4px;letter-spacing:0.06em;',
+			'dot1': `width:11px;height:11px;background:#fff;border-radius:50%;position:absolute;bottom:-9px;left:50%;margin-left:8px;box-shadow:0 1px 4px rgba(40,24,12,0.06);`,
+			'dot2': `width:6px;height:6px;background:#fff;border-radius:50%;position:absolute;bottom:-16px;left:50%;margin-left:14px;box-shadow:0 1px 3px rgba(40,24,12,0.04);`,
+			'dog-area': 'flex:1;display:flex;align-items:flex-end;justify-content:center;padding:0 0 4px;',
+			'card-info': 'background:#F5F0E8;padding:14px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:1px;',
+			'ai-intro': 'font-size:10px;font-weight:500;color:#A0907E;letter-spacing:0.1em;margin:0;line-height:1.3;',
+			'name-row': 'display:flex;align-items:baseline;gap:10px;justify-content:center;margin:0;line-height:1;',
+			'info-mbti': 'font-size:13px;font-weight:800;color:#C08040;letter-spacing:0.18em;',
+			'info-name': 'font-size:22px;font-weight:900;color:#2A1810;line-height:1.2;',
+			'info-traits': 'font-size:11px;font-weight:400;color:#A0907E;text-align:center;letter-spacing:0.06em;margin-top:2px;white-space:nowrap;',
+		};
+		for (const [cls, style] of Object.entries(s)) {
+			clone.querySelectorAll(`.${cls}`).forEach((el) => {
+				(el as HTMLElement).style.cssText += style;
+			});
+		}
+		// Dog image
+		const dogImg = clone.querySelector('.dog-area img') as HTMLElement;
+		if (dogImg) dogImg.style.cssText = 'width:52%;object-fit:contain;display:block;';
 		wrapper.appendChild(clone);
 		document.body.appendChild(wrapper);
 
