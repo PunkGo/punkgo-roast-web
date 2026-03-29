@@ -49,7 +49,8 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 	}
 
 	// AI prompt includes subjects info so AI knows what to participate in
-	const kennelUrl = `${url.origin}/k/${id}`;
+	const cacheBust = Math.random().toString(36).slice(2, 7);
+	const kennelUrl = `${url.origin}/k/${id}?t=${cacheBust}`;
 	const config = await getQuizConfig();
 	const defaultCopyZh = `请访问下面链接并按页面内容操作：\n\n{{url}}`;
 	const defaultCopyEn = `Please visit the link below and follow the instructions:\n\n{{url}}`;

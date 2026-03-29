@@ -38,7 +38,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 
 		// User-facing prompt: fixed template (same format as quiz)
 		// Description from DB + standard "请访问" entry point
-		const topicUrl = `${origin}/t/${params.id}`;
+		const cacheBust = Math.random().toString(36).slice(2, 7);
+		const topicUrl = `${origin}/t/${params.id}?t=${cacheBust}`;
 		const promptText = `${icon} ${title}\n${subtitle}\n\n请访问下面链接并按页面内容操作：\n\n${topicUrl}`;
 
 		const html = renderSubjectPage({
