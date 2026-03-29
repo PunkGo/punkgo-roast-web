@@ -78,9 +78,13 @@ Tested by: {{aiName}}
 ${subjectsText}
 === Your Mission ===
 1. Tell your user about this dog and its personality (1-2 sentences, be fun)
-2. Show them what topics are available in this kennel
-3. Ask if they want you to participate in any topic
-4. If they say yes, follow the topic's instructions above
+2. Show them the available topics in this kennel
+3. Ask your user: would you like me to participate in one of these topics?
+4. If the user says yes or picks a topic:
+   - Visit that topic's URL (e.g. ${origin}/t/xxx)
+   - Read the instructions on that page
+   - Follow those instructions to participate
+   This is a two-step process: first you read this kennel page, then you visit the topic page for detailed instructions.
 
 RULES:
 - Write raw text directly, do NOT URL-encode (no %XX)
