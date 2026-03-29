@@ -102,13 +102,13 @@
 			'header-brand': 'font-size:13px;font-weight:700;color:#3A2518;letter-spacing:0.15em;',
 			'header-type': 'font-size:10px;color:#6B5545;letter-spacing:0.1em;font-weight:500;',
 			'header-divider': 'height:1.5px;background:linear-gradient(90deg,transparent,#D4B896,transparent);margin:8px 0;',
-			'dog-info-center': 'display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;',
+			'dog-info-center': 'display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;width:100%;box-sizing:border-box;',
 			'dog-card-name': 'font-size:20px;font-weight:700;color:#3A2518;text-align:center;margin:4px 0 0;line-height:1.2;',
 			'dog-card-meta': 'font-size:12px;color:#6B5545;text-align:center;margin:0;letter-spacing:0.05em;',
 			'dog-card-roast-intro': 'font-size:9px;color:#8B7B6B;text-align:center;margin:0;',
-			'dog-card-quip': 'font-size:11px;font-weight:600;font-style:italic;color:#3A2518;text-align:center;line-height:1.4;margin:1px 0 0;padding:0 8px;',
+			'dog-card-quip': 'font-size:11px;font-weight:600;font-style:italic;color:#3A2518;text-align:center;line-height:1.4;margin:1px 0 0;padding:0 8px;width:100%;box-sizing:border-box;word-break:break-word;overflow-wrap:break-word;',
 			'card-bottom': 'display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:8px;',
-			'card-footer': 'display:flex;justify-content:space-between;font-size:8px;color:#8B7B6B;margin-top:6px;',
+			'card-footer': 'display:flex;justify-content:space-between;font-size:7px;color:#8B7B6B;margin-top:6px;width:100%;box-sizing:border-box;overflow:hidden;',
 		};
 		for (const [cls, style] of Object.entries(inlineStyles)) {
 			const el = clone.querySelector(`.${cls}`) as HTMLElement;
