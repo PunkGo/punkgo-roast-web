@@ -84,8 +84,10 @@
 		font-weight: 500;
 		color: var(--color-text-secondary);
 		min-height: 44px;
+		min-width: 44px;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		padding: 0 8px;
 	}
 	.nav-right a:hover { color: var(--color-text); }
