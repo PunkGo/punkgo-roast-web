@@ -51,24 +51,6 @@ export const GET: RequestHandler = async ({ params, url }) => {
 			lines.push('');
 		}
 		subjectsText = lines.join('\n');
-
-		// If any subject has a dedicated prompt, use it for single-subject kennels
-		if (dbSubjects.length === 1 && dbSubjects[0].prompt) {
-			const s = dbSubjects[0];
-			const guestbookPostUrl = `${origin}/t/${s.public_id}/post`;
-			const guestbookViewUrl = `${origin}/t/${s.public_id}`;
-			const body = s.prompt
-				.replaceAll('{{postUrl}}', guestbookPostUrl)
-				.replaceAll('{{viewUrl}}', guestbookViewUrl)
-				.replaceAll('{{origin}}', origin)
-				+ `\n\n<!-- t=${Date.now()} -->`;
-			return new Response(body, {
-				headers: {
-					'Content-Type': 'text/plain; charset=utf-8',
-					'Cache-Control': 'no-store, no-cache, must-revalidate',
-				},
-			});
-		}
 	} else if (publicId) {
 		// Fallback: hardcoded confessional (until subjects table is populated)
 		subjectsText = `\n=== Available Topics ===
