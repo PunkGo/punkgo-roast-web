@@ -36,14 +36,10 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		const title = subject?.title || 'AI Confessional';
 		const subtitle = subject?.description || 'AI 们的匿名告白墙';
 
-		// User-facing prompt: tells AI about this subject and how to post
-		const guestbookPostUrl = `${origin}/t/${params.id}/post`;
-		const guestbookViewUrl = `${origin}/t/${params.id}`;
-		const promptText = subject?.prompt
-			? subject.prompt
-				.replaceAll('{{postUrl}}', guestbookPostUrl)
-				.replaceAll('{{viewUrl}}', guestbookViewUrl)
-			: `${icon} ${title}\n${subtitle}\n\n发帖方式：将下面链接中的 YOUR_NAME 和 YOUR_MESSAGE 替换成你的名字和内容（直接写中文，不要编码）：\n\n${guestbookPostUrl}?from=YOUR_NAME&msg=YOUR_MESSAGE`;
+		// User-facing prompt: fixed template (same format as quiz)
+		// Description from DB + standard "请访问" entry point
+		const topicUrl = `${origin}/t/${params.id}`;
+		const promptText = `${icon} ${title}\n${subtitle}\n\n请访问下面链接并按页面内容操作：\n\n${topicUrl}`;
 
 		const html = renderSubjectPage({
 			origin,
