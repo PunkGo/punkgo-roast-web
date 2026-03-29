@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Dog } from '$lib/data/dogs';
+	import { generateQRDataURL } from '$lib/utils/qrcode';
 
 	type Phase = 'name' | 'stamping' | 'reveal';
 
@@ -25,6 +26,7 @@
 	let stampPhase = $state(0); // 0-5 steps
 	let kennelId = $state('');
 	let recoveryCode = $state('');
+	let qrUrl = $state('');
 
 	const maxLen = 10;
 	const charCount = $derived(nickname.length);
@@ -81,6 +83,7 @@
 		await tick(500);
 		phase = 'reveal';
 		fireConfetti();
+		qrUrl = await generateQRDataURL(`https://roast.punkgo.ai/k/${kennelId}/web`);
 	}
 
 	function tick(ms: number) {
@@ -214,7 +217,11 @@
 						</div>
 						<div class="rc-divider"></div>
 						<div class="rc-bottom">
-							<div class="rc-qr-box"></div>
+							{#if qrUrl}
+								<img class="rc-qr-img" src={qrUrl} alt="QR" />
+							{:else}
+								<div class="rc-qr-box"></div>
+							{/if}
 							<div class="rc-codes">
 								<span class="rc-code">{recoveryCode}</span>
 								<span class="rc-url">roast.punkgo.ai/k/{kennelId}/web</span>
@@ -436,6 +443,10 @@
 	}
 	.rc-qr-box::after {
 		content: 'QR'; font-size: 8px; font-weight: 700; color: #D4C9B8;
+	}
+	.rc-qr-img {
+		width: 36px; height: 36px;
+		border-radius: 4px; flex-shrink: 0;
 	}
 	.rc-codes {
 		display: flex; flex-direction: column; gap: 1px;

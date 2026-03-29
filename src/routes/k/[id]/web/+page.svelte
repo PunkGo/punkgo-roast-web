@@ -2,12 +2,33 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { copyToClipboard } from '$lib/utils/copy';
+	import { generateQRDataURL } from '$lib/utils/qrcode';
 
 	let { data } = $props();
 	const ssrLocale = data.locale;
 	let isZh = $state(ssrLocale === 'zh');
 	let copied = $state(false);
 	let showDogCard = $state(false);
+	let qrDataURL = $state('');
+	let dcCardRef: HTMLElement | null = $state(null);
+
+	async function openDogCard() {
+		showDogCard = true;
+		if (!qrDataURL) {
+			qrDataURL = await generateQRDataURL(`https://roast.punkgo.ai/k/${kennel.id}/web`);
+		}
+	}
+
+	async function saveDogCard() {
+		if (!dcCardRef) return;
+		const html2canvas = (await import('html2canvas')).default;
+		const canvas = await html2canvas(dcCardRef, { scale: 2, useCORS: true, backgroundColor: null });
+		const url = canvas.toDataURL('image/png');
+		const link = document.createElement('a');
+		link.download = `punkgo-dogcard-${kennel.nickname || kennel.id}.png`;
+		link.href = url;
+		link.click();
+	}
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
@@ -106,7 +127,7 @@ function formatTime(iso: string): string {
 		<!-- Actions -->
 		<section class="kp-actions fade-in d3">
 			{#if isOwner}
-				<button class="kp-btn secondary" onclick={() => { showDogCard = true; }}>
+				<button class="kp-btn secondary" onclick={openDogCard}>
 					🪪 {isZh ? '查看狗证' : 'Dog Card'}
 				</button>
 				<button class="kp-btn primary" onclick={() => {
@@ -139,7 +160,7 @@ function formatTime(iso: string): string {
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div class="dc-overlay" onclick={() => { showDogCard = false; }}>
 		<div class="dc-modal" onclick={(e) => e.stopPropagation()}>
-			<div class="dc-card">
+			<div class="dc-card" bind:this={dcCardRef}>
 				<div class="dc-left">
 					<img src="/dogs/felt-{dog.id}-chat.png" alt={kennel.nickname || dog.name} />
 				</div>
@@ -154,7 +175,11 @@ function formatTime(iso: string): string {
 					</div>
 					<div class="dc-divider"></div>
 					<div class="dc-bottom">
-						<div class="dc-qr-box"></div>
+						{#if qrDataURL}
+							<img class="dc-qr-img" src={qrDataURL} alt="QR" />
+						{:else}
+							<div class="dc-qr-box"></div>
+						{/if}
 						<div class="dc-codes">
 							<span class="dc-code">****-****-****</span>
 							<span class="dc-url">roast.punkgo.ai/k/{kennel.id}/web</span>
@@ -162,9 +187,14 @@ function formatTime(iso: string): string {
 					</div>
 				</div>
 			</div>
-			<button class="dc-close" onclick={() => { showDogCard = false; }}>
-				{isZh ? '关闭' : 'Close'}
-			</button>
+			<div class="dc-actions">
+				<button class="dc-save" onclick={saveDogCard}>
+					💾 {isZh ? '下载狗证' : 'Save Card'}
+				</button>
+				<button class="dc-close" onclick={() => { showDogCard = false; }}>
+					{isZh ? '关闭' : 'Close'}
+				</button>
+			</div>
 		</div>
 	</div>
 {/if}
@@ -348,12 +378,26 @@ function formatTime(iso: string): string {
 		display: flex; align-items: center; justify-content: center;
 	}
 	.dc-qr-box::after { content: 'QR'; font-size: 9px; font-weight: 700; color: #D4C9B8; }
+	.dc-qr-img {
+		width: 44px; height: 44px;
+		border-radius: 4px; flex-shrink: 0;
+	}
 	.dc-codes { display: flex; flex-direction: column; gap: 1px; }
 	.dc-code { font-size: 11px; font-weight: 700; color: #A0907E; letter-spacing: 0.08em; }
 	.dc-url { font-size: 7px; color: #A0907E; white-space: nowrap; }
+	.dc-actions {
+		display: flex; gap: 10px; align-items: center;
+	}
+	.dc-save {
+		background: #C08040; color: #fff; border: none;
+		padding: 10px 20px; border-radius: 10px;
+		font-size: 14px; font-weight: 700;
+		cursor: pointer; font-family: inherit;
+	}
+	.dc-save:hover { background: #A06830; }
 	.dc-close {
 		background: rgba(255,255,255,0.9); border: none;
-		padding: 8px 24px; border-radius: 10px;
+		padding: 8px 20px; border-radius: 10px;
 		font-size: 13px; font-weight: 600; color: #2A1810;
 		cursor: pointer; font-family: inherit;
 	}
