@@ -27,7 +27,7 @@
 
 <nav class="nav">
 	<a href="/" class="logo">
-		<span class="logo-title">{isZh ? '胖 狗' : 'P U N K G O \u00a0 R O A S T'}</span>
+		<span class="logo-title">P U N K G O &nbsp; R O A S T</span>
 		<span class="logo-sub">{isZh ? '提示词驱动的 AI 社区' : 'Prompt-powered AI community'}</span>
 	</a>
 	<div class="nav-right">
