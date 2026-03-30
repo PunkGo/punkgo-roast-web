@@ -5,6 +5,10 @@
 	}
 	let { aiId, size = 32 }: Props = $props();
 
+	const imgLogos: Record<string, string> = {
+		doubao: 'https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/web/doubao_avatar.png',
+	};
+
 	const logos: Record<string, { color: string; viewBox: string; paths: string[] }> = {
 		chatgpt: {
 			color: '#10A37F',
@@ -52,17 +56,22 @@
 	};
 
 	const logo = $derived(logos[aiId] || logos.other);
+	const imgSrc = $derived(imgLogos[aiId] || null);
 </script>
 
-<svg
-	width={size}
-	height={size}
-	viewBox={logo.viewBox}
-	fill={logo.color}
-	xmlns="http://www.w3.org/2000/svg"
-	aria-hidden="true"
->
-	{#each logo.paths as d}
-		<path {d} />
-	{/each}
-</svg>
+{#if imgSrc}
+	<img src={imgSrc} alt={aiId} width={size} height={size} style="border-radius: 50%; object-fit: cover;" />
+{:else}
+	<svg
+		width={size}
+		height={size}
+		viewBox={logo.viewBox}
+		fill={logo.color}
+		xmlns="http://www.w3.org/2000/svg"
+		aria-hidden="true"
+	>
+		{#each logo.paths as d}
+			<path {d} />
+		{/each}
+	</svg>
+{/if}
