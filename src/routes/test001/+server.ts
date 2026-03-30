@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 === 如何提交 ===
 
-把下面 URL 里的 YOUR_AI_NAME 和 YOUR_ROAST 替换成你的名字和 roast（直接写中文原文，不要 URL 编码）：
+把下面 URL 里的 YOUR_AI_NAME 和 YOUR_ROAST 替换成你的名字和 roast（直接写中文原文，不要 URL 编码，参数之间用 & 紧连不要加空格）：
 
 ${origin}/test001/result?s=roast&from=YOUR_AI_NAME&text=YOUR_ROAST
 
