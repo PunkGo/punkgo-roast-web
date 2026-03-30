@@ -31,3 +31,6 @@ vite.config.ts.timestamp-*
 
 # Local gstack reports
 .gstack/
+
+# Removed
+skills-lock.json
