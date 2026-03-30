@@ -14,6 +14,25 @@
 	const responses = data.responses || [];
 	const nickname = kennel?.nickname || (isZh ? dog?.nameZh : dog?.name) || '';
 
+	// Manual paste fallback
+	let manualFrom = $state('');
+	let manualText = $state('');
+	let manualSubmitting = $state(false);
+	let manualDone = $state(false);
+	let showManual = $state(false);
+
+	async function submitManual() {
+		if (!manualFrom.trim() || !manualText.trim()) return;
+		manualSubmitting = true;
+		try {
+			const origin = window.location.origin;
+			await fetch(`${origin}/k/${kennel.id}/topic/${topic.id}/submit?from=${encodeURIComponent(manualFrom.trim())}&text=${encodeURIComponent(manualText.trim())}`);
+			manualDone = true;
+			setTimeout(() => window.location.reload(), 1500);
+		} catch { }
+		manualSubmitting = false;
+	}
+
 	function getStarterPrompt(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
 		const prefix = isZh
@@ -66,6 +85,20 @@
 					{copied ? (isZh ? '✅ 已复制！' : '✅ Copied!') : (isZh ? '📋 复制提示词' : '📋 Copy prompt')}
 				</button>
 			</div>
+
+			<button class="toggle-manual" onclick={() => showManual = !showManual}>
+				{isZh ? (showManual ? '收起手动提交 ▲' : 'AI 链接提交失败？手动粘贴 ▼') : (showManual ? 'Hide manual submit ▲' : 'Link broken? Paste manually ▼')}
+			</button>
+
+			{#if showManual}
+				<div class="manual-box">
+					<input class="manual-input" type="text" bind:value={manualFrom} placeholder={isZh ? 'AI 名称（如 豆包）' : 'AI name (e.g. Doubao)'} />
+					<textarea class="manual-textarea" bind:value={manualText} placeholder={isZh ? '粘贴 AI 的回答...' : 'Paste AI response here...'} rows="3"></textarea>
+					<button class="btn-copy" onclick={submitManual} disabled={manualSubmitting || !manualFrom.trim() || !manualText.trim()}>
+						{manualDone ? (isZh ? '✅ 已提交！' : '✅ Submitted!') : manualSubmitting ? '...' : (isZh ? '提交' : 'Submit')}
+					</button>
+				</div>
+			{/if}
 		{/if}
 
 		<div class="responses-section">
@@ -140,6 +173,28 @@
 		cursor: pointer; min-height: 44px;
 	}
 	.btn-copy:hover { background: var(--color-cta-hover); }
+
+	.toggle-manual {
+		background: none; border: none; cursor: pointer;
+		font-size: var(--font-size-sm); color: var(--color-text-tertiary);
+		margin-bottom: var(--space-md); padding: var(--space-xs) 0;
+	}
+	.toggle-manual:hover { color: var(--color-cta); }
+
+	.manual-box {
+		display: flex; flex-direction: column; gap: var(--space-sm);
+		padding: var(--space-md);
+		background: var(--color-bg-card); border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		margin-bottom: var(--space-lg);
+	}
+	.manual-input, .manual-textarea {
+		width: 100%; padding: 10px 14px;
+		border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+		font-size: 14px; background: var(--color-bg); font-family: inherit;
+	}
+	.manual-input:focus, .manual-textarea:focus { outline: none; border-color: var(--color-cta); }
+	.manual-textarea { resize: vertical; line-height: 1.5; }
 
 	.responses-section { margin-top: var(--space-md); }
 	h2 { font-size: var(--font-size-base); font-weight: 600; margin-bottom: var(--space-md); color: var(--color-text-secondary); }

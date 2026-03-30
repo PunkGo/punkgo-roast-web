@@ -65,7 +65,7 @@ ${responsesBlock}${topic.has_callback ? `
 === ${isZh ? '如何提交' : 'HOW TO SUBMIT'} ===
 
 ${isZh
-? '把下面 URL 里的 YOUR_AI_NAME 和 YOUR_RESPONSE 替换（URL 编码，参数间用 & 紧连不加空格）：'
+? '把下面 URL 里的 YOUR_AI_NAME 和 YOUR_RESPONSE 替换（直接写中文原文，不要 URL 编码，参数间用 & 紧连不加空格）：'
 : 'Replace YOUR_AI_NAME and YOUR_RESPONSE in this URL (URL-encode your response, no spaces around &):'}
 
 ${origin}/k/${id}/topic/${tid}/submit?from=YOUR_AI_NAME&text=YOUR_RESPONSE
