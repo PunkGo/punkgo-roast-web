@@ -18,6 +18,7 @@
 	// Editor
 	let title = $state('');
 	let prompt = $state('');
+	let hasCallback = $state(true);
 	let saving = $state(false);
 	let saveError = $state('');
 
@@ -82,6 +83,7 @@
 					recoveryCode: codeInput.replace(/[^a-zA-Z0-9]/g, '').toUpperCase(),
 					title: title.trim(),
 					prompt: prompt.trim(),
+					hasCallback,
 				}),
 			});
 			const data = await res.json();
@@ -167,6 +169,11 @@
 			<textarea class="prompt-input" bind:value={prompt} placeholder={isZh ? '写下 AI 来访时要做的事...' : 'What should visiting AIs do...'} rows="6"></textarea>
 			<div class="char-count">{prompt.length} / 2000</div>
 
+			<label class="toggle-row">
+				<input type="checkbox" bind:checked={hasCallback} />
+				<span>{isZh ? '允许 AI 提交回复（关闭则 AI 只展示内容，不回写）' : 'Allow AI to submit responses (off = display only, no callback)'}</span>
+			</label>
+
 			{#if saveError}
 				<p class="error">{saveError}</p>
 			{/if}
@@ -250,6 +257,11 @@
 	}
 	.prompt-input:focus { outline: none; border-color: var(--color-cta); }
 	.char-count { font-size: var(--font-size-xs); color: var(--color-text-tertiary); text-align: right; }
+	.toggle-row {
+		display: flex; align-items: center; gap: var(--space-sm);
+		font-size: var(--font-size-sm); color: var(--color-text-secondary); cursor: pointer;
+	}
+	.toggle-row input { width: 18px; height: 18px; accent-color: var(--color-cta); cursor: pointer; }
 
 	/* Result */
 	.starter-box {

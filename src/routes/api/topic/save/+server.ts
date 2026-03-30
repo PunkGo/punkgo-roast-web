@@ -21,7 +21,7 @@ const MAX_TOPICS_PER_KENNEL = 5;
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
-		const { recoveryCode, title, prompt, topicId } = body;
+		const { recoveryCode, title, prompt, topicId, hasCallback } = body;
 
 		if (!recoveryCode || !title?.trim() || !prompt?.trim()) {
 			return Response.json({ error: 'Missing required fields' }, { status: 400 });
@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		const newId = generateTopicId();
-		await createTopic({ id: newId, kennelId: kennel.id, title: cleanTitle, prompt: cleanPrompt });
+		await createTopic({ id: newId, kennelId: kennel.id, title: cleanTitle, prompt: cleanPrompt, hasCallback: hasCallback ?? true });
 
 		return Response.json({ id: newId, created: true });
 	} catch (e) {

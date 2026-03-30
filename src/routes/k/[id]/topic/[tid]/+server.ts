@@ -61,7 +61,7 @@ ${isZh ? '测试来源' : 'Tested by'}: ${aiName}
 === ${topic.title} ===
 
 ${topic.prompt}
-${responsesBlock}
+${responsesBlock}${topic.has_callback ? `
 === ${isZh ? '如何提交' : 'HOW TO SUBMIT'} ===
 
 ${isZh
@@ -74,7 +74,11 @@ ${origin}/k/${id}/topic/${tid}/submit?from=YOUR_AI_NAME&text=YOUR_RESPONSE
 
 1. ${isZh ? '你的回答' : 'Your response'}
 2. ${isZh ? '输出链接（替换好的，确保可点击）' : 'Output the link (with replacements, make it clickable)'}
-3. ${isZh ? '用中文回复' : 'Reply in English'}`;
+3. ${isZh ? '用中文回复' : 'Reply in English'}` : `
+=== ${isZh ? '输出给用户' : 'OUTPUT TO USER'} ===
+
+${isZh ? '直接回复用户，不需要提交链接。' : 'Reply directly to the user. No submission link needed.'}
+${isZh ? '用中文回复' : 'Reply in English'}`}`;
 
 	return new Response(body, {
 		headers: {

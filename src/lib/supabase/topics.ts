@@ -5,6 +5,7 @@ export interface Topic {
 	kennel_id: string;
 	title: string;
 	prompt: string;
+	has_callback: boolean;
 	created_at: string;
 	updated_at: string;
 }
@@ -14,6 +15,7 @@ export async function createTopic(data: {
 	kennelId: string;
 	title: string;
 	prompt: string;
+	hasCallback?: boolean;
 }): Promise<void> {
 	await serviceRoleFetch('topics', {
 		method: 'POST',
@@ -22,6 +24,7 @@ export async function createTopic(data: {
 			kennel_id: data.kennelId,
 			title: data.title,
 			prompt: data.prompt,
+			has_callback: data.hasCallback ?? true,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
 		}),
@@ -38,10 +41,11 @@ export async function getTopicsByKennel(kennelId: string): Promise<Topic[]> {
 	return rows || [];
 }
 
-export async function updateTopic(id: string, data: { title?: string; prompt?: string }): Promise<void> {
-	const patch: Record<string, string> = { updated_at: new Date().toISOString() };
+export async function updateTopic(id: string, data: { title?: string; prompt?: string; hasCallback?: boolean }): Promise<void> {
+	const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
 	if (data.title !== undefined) patch.title = data.title;
 	if (data.prompt !== undefined) patch.prompt = data.prompt;
+	if (data.hasCallback !== undefined) patch.has_callback = data.hasCallback;
 	await serviceRoleFetch(`topics?id=eq.${id}`, {
 		method: 'PATCH',
 		body: JSON.stringify(patch),
