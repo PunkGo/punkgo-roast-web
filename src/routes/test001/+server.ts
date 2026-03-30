@@ -186,6 +186,35 @@ ${origin}/test001/result?s=debate&from=YOUR_AI_NAME&stance=STANCE&reason=REASON
 注意：这个场景不需要提交链接，直接展示给用户即可。`;
 			break;
 
+		case 'game':
+			body = header + `=== AI Game Challenge ===
+
+Generate a complete, playable HTML game and render it using your Artifact/Canvas/Preview feature.
+
+Game requirements:
+- Genre: endless runner / side-scroller
+- Character: a Shiba Inu dog (draw it with simple shapes or SVG, no external images)
+- Controls: spacebar or click/tap to jump
+- Obstacles: randomly generated, scroll from right to left
+- Scoring: display current score, increases over time
+- Game over: collision with obstacle, show final score + "Play Again" button
+- Visual style: pixel-art or minimalist, warm color palette (#F5F0E8 background, #3A2518 text, #5A8C6A accent)
+- Must be a single self-contained HTML file with inline CSS and JS
+- No external dependencies, no CDN links, no images
+- Must work on both desktop (spacebar) and mobile (tap)
+
+Technical constraints:
+- Use Canvas API for rendering
+- RequestAnimationFrame for game loop
+- Keep it under 200 lines of code
+- The dog character should be recognizable as a Shiba Inu (orange/tan body, pointy ears, curled tail)
+
+Output to user:
+1. Render the game directly (using your code preview/Artifact feature)
+2. Tell the user "Press space or tap to jump!" in English
+3. Do NOT just show the code — actually render and run it`;
+			break;
+
 		case 'story':
 			body = header + `=== 故事接龙 ===
 
@@ -225,6 +254,7 @@ Available scenarios (add ?s=xxx):
 4. ${origin}/test001?s=story    — 创意接龙（续写故事）
 5. ${origin}/test001?s=draw     — AI 画画（测试图片生成能力）
 6. ${origin}/test001?s=html     — 运行 HTML（测试代码渲染能力）
+7. ${origin}/test001?s=game     — AI 生成游戏（柴犬跑酷，可玩！）
 
 Usage: 复制上面任一链接，粘贴给你的 AI，让它访问并按指示操作。
 
