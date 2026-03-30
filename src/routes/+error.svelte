@@ -32,23 +32,23 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 16px;
+		gap: var(--space-md);
 		text-align: center;
-		padding: 24px;
+		padding: var(--space-lg);
 	}
 	.paw { font-size: 48px; }
 	h1 { font-size: 64px; font-weight: 700; color: var(--color-text); margin: 0; }
 	.msg { font-size: 18px; color: var(--color-text-secondary); }
 	.cta-btn {
-		margin-top: 8px;
+		margin-top: var(--space-sm);
 		padding: 14px 40px;
 		background: var(--color-cta);
 		color: white;
 		border-radius: var(--radius-md);
-		font-size: 16px;
+		font-size: var(--font-size-base);
 		font-weight: 700;
 	}
 	.cta-btn:hover { transform: translateY(-1px); }
-	.back-link { font-size: 13px; color: var(--color-text-secondary); }
+	.back-link { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
 	.back-link:hover { color: var(--color-text); }
 </style>

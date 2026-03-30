@@ -315,7 +315,7 @@
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
-		gap: 16px;
+		gap: var(--space-md);
 		padding: 48px 0;
 		width: 100%;
 		min-height: calc(100vh - 56px);
@@ -335,7 +335,7 @@
 		border-radius: var(--radius-full);
 		border: 2px solid var(--color-border-accent);
 		display: flex; align-items: center; justify-content: center;
-		font-size: 40px;
+		font-size: var(--font-size-3xl);
 		animation: gentle-pulse 2s ease-in-out infinite;
 	}
 	.sub { font-size: 14px; color: var(--color-text-secondary); }
@@ -362,17 +362,17 @@
 	.flipping .card-back-face { animation: flip-away 600ms ease-in forwards; }
 	.cb-paw { font-size: 36px; opacity: 0.5; }
 	.cb-text { font-size: 14px; font-weight: 600; color: var(--color-text-secondary); }
-	.revealing { font-size: 13px; color: var(--color-text-tertiary); animation: pulse-opacity 1.5s ease-in-out infinite; }
+	.revealing { font-size: var(--font-size-sm); color: var(--color-text-tertiary); animation: pulse-opacity 1.5s ease-in-out infinite; }
 	@keyframes flip-away { 0% { transform: rotateY(0); } 100% { transform: rotateY(90deg); opacity: 0; } }
 	@keyframes pulse-opacity { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
 
 	/* Revealed */
 	.avatar { width: 120px; height: 120px; border-radius: var(--radius-full); border: 2px solid var(--color-border-accent); object-fit: cover; }
 	h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.03em; margin: 0; }
-	h2 { font-size: 20px; font-weight: 700; margin: 0; }
-	.meta { display: flex; align-items: center; gap: 8px; }
+	h2 { font-size: var(--font-size-lg); font-weight: 700; margin: 0; }
+	.meta { display: flex; align-items: center; gap: var(--space-sm); }
 	.mbti-badge {
-		font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+		font-size: var(--font-size-xs); font-weight: 600; letter-spacing: 0.1em;
 		padding: 3px 10px; border-radius: var(--radius-sm);
 		background: var(--color-bg-muted); border: 1px solid var(--color-border-accent);
 		color: var(--color-text-secondary);
@@ -381,10 +381,10 @@
 	.quip { font-size: 18px; font-weight: 600; font-style: italic; line-height: 1.5; max-width: 440px; min-height: 54px; }
 	.cursor { animation: blink 0.8s step-end infinite; font-style: normal; color: var(--color-cta); }
 	@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-	.catch { font-size: 13px; color: var(--color-text-secondary); font-style: italic; }
+	.catch { font-size: var(--font-size-sm); color: var(--color-text-secondary); font-style: italic; }
 
 	/* Share pills */
-	.share-row { display: flex; gap: 8px; padding-top: 8px; }
+	.share-row { display: flex; gap: var(--space-sm); padding-top: var(--space-sm); }
 	.share-pill {
 		width: 44px; height: 44px;
 		border-radius: var(--radius-full);
@@ -400,16 +400,16 @@
 	/* Card section */
 	.card-section {
 		display: flex; flex-direction: column; align-items: center;
-		gap: 12px; padding-top: 24px; width: 100%;
+		gap: 12px; padding-top: var(--space-lg); width: 100%;
 	}
 	/* Two cards side by side, top-aligned */
 	.cards-row {
-		display: flex; gap: 24px; justify-content: center;
+		display: flex; gap: var(--space-lg); justify-content: center;
 		align-items: flex-start;
-		padding-top: 16px;
+		padding-top: var(--space-md);
 	}
 	.card-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-	.card-actions { display: flex; align-items: center; gap: 8px; }
+	.card-actions { display: flex; align-items: center; gap: var(--space-sm); }
 	.card-actions .btn-primary {
 		width: 44px; height: 44px; padding: 0;
 		display: flex; align-items: center; justify-content: center;
@@ -419,7 +419,7 @@
 	.btn-primary {
 		padding: 12px 28px; border-radius: var(--radius-md);
 		background: var(--color-cta); color: white;
-		font-size: 13px; font-weight: 700;
+		font-size: var(--font-size-sm); font-weight: 700;
 		min-height: 44px;
 		transition: transform 150ms ease;
 	}
@@ -438,8 +438,8 @@
 
 	@media (max-width: 768px) {
 		.cards-row { flex-direction: column; align-items: center; }
-		h1 { font-size: 24px; }
-		.quip { font-size: 16px; }
+		h1 { font-size: var(--font-size-xl); }
+		.quip { font-size: var(--font-size-base); }
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -510,14 +510,14 @@
 		display: flex; align-items: center; justify-content: center;
 	}
 	.adopting-content {
-		display: flex; flex-direction: column; align-items: center; gap: 16px;
+		display: flex; flex-direction: column; align-items: center; gap: var(--space-md);
 		color: white; text-align: center;
 	}
 	.adopting-paw {
 		font-size: 48px;
 		animation: gentle-pulse 2s ease-in-out infinite;
 	}
-	.adopting-content p { font-size: 16px; font-weight: 600; }
+	.adopting-content p { font-size: var(--font-size-base); font-weight: 600; }
 
 	/* Adopted card */
 	.adopt-btn {
@@ -526,7 +526,7 @@
 		padding: 16px 24px;
 		background: #C08040; color: #fff;
 		border: none; border-radius: 14px;
-		font-size: 16px; font-weight: 700;
+		font-size: var(--font-size-base); font-weight: 700;
 		cursor: pointer; font-family: inherit;
 		box-shadow: 0 4px 16px rgba(192, 128, 64, 0.3);
 		transition: background 200ms ease, transform 200ms ease;

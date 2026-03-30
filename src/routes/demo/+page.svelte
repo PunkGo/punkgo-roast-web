@@ -107,12 +107,12 @@
 </div>
 
 <style>
-	.demo { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
+	.demo { max-width: 1300px; margin: 0 auto; padding: var(--space-xl) var(--space-lg); }
 	h1 { font-size: 28px; font-weight: 700; }
 	h2 { font-size: 18px; font-weight: 600; }
-	.sub { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 24px; }
+	.sub { font-size: 14px; color: var(--color-text-secondary); margin-bottom: var(--space-lg); }
 
-	.selector { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 32px; }
+	.selector { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-xl); }
 	.dog-btn {
 		display: flex; flex-direction: column; align-items: center; gap: 2px;
 		padding: 6px 8px; border-radius: 8px; background: var(--color-bg-card);
@@ -122,13 +122,13 @@
 	.dog-btn:hover { background: var(--color-bg-muted); transform: translateY(-1px); }
 	.dog-btn.active { border-color: var(--color-cta); background: var(--color-bg-muted); }
 	.dog-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-	.dog-label { font-size: 9px; font-weight: 600; color: var(--color-text); }
+	.dog-label { font-size: var(--font-size-2xs); font-weight: 600; color: var(--color-text); }
 
-	.cards { display: flex; gap: 32px; align-items: flex-start; margin-top: 12px; }
-	.card-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+	.cards { display: flex; gap: var(--space-xl); align-items: flex-start; margin-top: 12px; }
+	.card-col { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
 	.card-label { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); }
 
 	@media (max-width: 768px) {
-		.cards { flex-direction: column; align-items: center; gap: 24px; }
+		.cards { flex-direction: column; align-items: center; gap: var(--space-lg); }
 	}
 </style>

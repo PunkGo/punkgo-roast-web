@@ -115,7 +115,7 @@
 	}
 	.lang-toggle {
 		display: flex;
-		gap: 4px;
+		gap: var(--space-xs);
 		margin-bottom: var(--space-lg);
 	}
 	.lang-toggle button {
@@ -123,7 +123,7 @@
 		border-radius: var(--radius-md);
 		background: var(--color-bg-muted);
 		color: var(--color-text-secondary);
-		font-size: 13px;
+		font-size: var(--font-size-sm);
 		font-weight: 500;
 		transition: background 0.2s, color 0.2s;
 	}
@@ -132,7 +132,7 @@
 		color: white;
 	}
 	h1 {
-		font-size: 24px;
+		font-size: var(--font-size-xl);
 		font-weight: 700;
 		margin-bottom: var(--space-sm);
 	}
@@ -148,7 +148,7 @@
 		color: var(--color-text);
 	}
 	h3 {
-		font-size: 15px;
+		font-size: var(--font-size-md);
 		font-weight: 600;
 		margin: var(--space-lg) 0 var(--space-xs);
 		color: var(--color-text-secondary);

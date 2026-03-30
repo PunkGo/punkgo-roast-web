@@ -72,17 +72,17 @@
 	.their-result {
 		flex: 1;
 		display: flex; flex-direction: column; align-items: center; justify-content: center;
-		gap: 16px; padding: 48px 40px; text-align: center;
+		gap: var(--space-md); padding: 48px 40px; text-align: center;
 	}
 	.their-name { font-size: 28px; font-weight: 700; margin: 0; }
 	.card-wrap { margin: 8px 0; }
 	.cta-side {
 		width: 480px;
 		display: flex; flex-direction: column; align-items: center; justify-content: center;
-		gap: 20px; padding: 48px; background: var(--color-bg-muted); text-align: center;
+		gap: 20px; padding: var(--space-2xl); background: var(--color-bg-muted); text-align: center;
 	}
 	.cta-side h2 { font-size: 36px; font-weight: 700; line-height: 1.1; white-space: pre-line; }
-	.cta-sub { font-size: 15px; color: var(--color-text-secondary); line-height: 1.5; white-space: pre-line; }
+	.cta-sub { font-size: var(--font-size-md); color: var(--color-text-secondary); line-height: 1.5; white-space: pre-line; }
 	.cta-btn {
 		display: inline-flex; align-items: center; justify-content: center;
 		padding: 12px 32px; border-radius: var(--radius-md);
@@ -90,7 +90,7 @@
 		font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
 	}
 	.cta-btn:hover { background: var(--color-cta-hover); }
-	.mini-dogs { display: flex; gap: 8px; align-items: center; }
+	.mini-dogs { display: flex; gap: var(--space-sm); align-items: center; }
 	.mini-avatar {
 		width: 36px; height: 36px; border-radius: var(--radius-full);
 		object-fit: cover; border: 1px solid var(--color-border);
@@ -106,7 +106,7 @@
 
 	.not-found {
 		display: flex; flex-direction: column; align-items: center; justify-content: center;
-		min-height: calc(100vh - 56px); gap: 16px; text-align: center;
+		min-height: calc(100vh - 56px); gap: var(--space-md); text-align: center;
 	}
 	.not-found h1 { font-size: 28px; }
 	.not-found p { color: var(--color-text-secondary); }

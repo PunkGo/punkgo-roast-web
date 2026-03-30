@@ -119,7 +119,7 @@
 		color: white;
 		border: none;
 		border-radius: var(--radius-full);
-		font-size: 15px;
+		font-size: var(--font-size-md);
 		font-weight: 600;
 		cursor: pointer;
 		min-height: 44px;

@@ -253,7 +253,7 @@ function formatTime(iso: string): string {
 		padding: 12px 16px;
 		box-shadow: 0 2px 10px rgba(40,24,12,0.06);
 		position: relative;
-		margin-bottom: 24px;
+		margin-bottom: var(--space-lg);
 		display: flex; flex-direction: column; gap: 3px;
 	}
 	.kp-quip-cloud::before {
@@ -262,10 +262,10 @@ function formatTime(iso: string): string {
 		border-right-color: #fff; border-left: 0;
 	}
 	.kp-quip-label {
-		font-size: 9px; color: #A0907E; font-weight: 500;
+		font-size: var(--font-size-2xs); color: #A0907E; font-weight: 500;
 	}
 	.kp-quip-text {
-		font-size: 13px; font-weight: 600; font-style: italic;
+		font-size: var(--font-size-sm); font-weight: 600; font-style: italic;
 		color: #2A1810; line-height: 1.5;
 	}
 
@@ -285,7 +285,7 @@ function formatTime(iso: string): string {
 		font-size: 18px; font-weight: 800; color: #2A1810;
 	}
 	.kp-meta {
-		display: flex; align-items: center; gap: 8px;
+		display: flex; align-items: center; gap: var(--space-sm);
 	}
 	.kp-breed {
 		font-size: 12px; font-weight: 500; color: #A0907E;
@@ -295,7 +295,7 @@ function formatTime(iso: string): string {
 		letter-spacing: 0.15em; opacity: 0.7;
 	}
 	.kp-traits {
-		font-size: 11px; color: #A0907E;
+		font-size: var(--font-size-xs); color: #A0907E;
 		letter-spacing: 0.06em;
 	}
 
@@ -312,17 +312,17 @@ function formatTime(iso: string): string {
 		cursor: pointer; font-family: inherit;
 		transition: background 150ms ease;
 	}
-	.kp-prompt-toggle:hover { background: #F5F0E8; }
+	.kp-prompt-toggle:hover { background: var(--color-bg); }
 
 	/* Actions */
 	.kp-actions {
-		width: 100%; padding: 16px 0;
+		width: 100%; padding: var(--space-md) 0;
 		display: flex; flex-direction: column; align-items: center; gap: 10px;
 	}
 	.kp-btn {
 		width: 100%; max-width: 300px; padding: 14px;
 		border-radius: 12px;
-		font-size: 15px; font-weight: 700;
+		font-size: var(--font-size-md); font-weight: 700;
 		cursor: pointer; border: none;
 		font-family: inherit; text-decoration: none;
 		text-align: center; display: block;
@@ -335,10 +335,10 @@ function formatTime(iso: string): string {
 	.kp-btn.outline {
 		background: none; color: #A0907E;
 		border: 1px solid #D4C9B8;
-		font-size: 13px; padding: 10px;
+		font-size: var(--font-size-sm); padding: 10px;
 	}
 	.kp-free {
-		font-size: 11px; color: #A0907E;
+		font-size: var(--font-size-xs); color: #A0907E;
 	}
 
 	.kp-btn.secondary {
@@ -346,7 +346,7 @@ function formatTime(iso: string): string {
 		border: 1.5px solid #D4C9B8;
 		box-shadow: none;
 	}
-	.kp-btn.secondary:hover { background: #F5F0E8; }
+	.kp-btn.secondary:hover { background: var(--color-bg); }
 
 	/* Dog card modal */
 	.dc-overlay {
@@ -363,7 +363,7 @@ function formatTime(iso: string): string {
 		border-radius: 16px; overflow: hidden;
 		display: flex;
 		box-shadow: 0 8px 32px rgba(40,24,12,0.25);
-		background: #F5F0E8;
+		background: var(--color-bg);
 	}
 	.dc-left {
 		width: 36%;
@@ -375,7 +375,7 @@ function formatTime(iso: string): string {
 	.dc-right {
 		width: 64%;
 		display: grid; grid-template-rows: 55fr 1px 45fr;
-		background: linear-gradient(160deg, #F5F0E8 0%, #EDE5D8 100%);
+		background: linear-gradient(160deg, var(--color-bg) 0%, var(--color-bg-muted) 100%);
 	}
 	.dc-top {
 		padding: 0 14px;
@@ -387,26 +387,26 @@ function formatTime(iso: string): string {
 	}
 	.dc-brand { font-size: 10px; font-weight: 700; color: #2A1810; letter-spacing: 0.15em; }
 	.dc-mbti { font-size: 12px; font-weight: 800; color: #C08040; letter-spacing: 0.2em; }
-	.dc-name { font-size: 20px; font-weight: 900; color: #2A1810; line-height: 1.1; }
-	.dc-breed { font-size: 9px; color: #A0907E; margin-bottom: 10px; }
+	.dc-name { font-size: var(--font-size-lg); font-weight: 900; color: #2A1810; line-height: 1.1; }
+	.dc-breed { font-size: var(--font-size-2xs); color: #A0907E; margin-bottom: 10px; }
 	.dc-divider { background: #E0D8CC; }
 	.dc-bottom {
 		padding: 0 14px;
-		display: flex; align-items: center; gap: 8px;
+		display: flex; align-items: center; gap: var(--space-sm);
 	}
 	.dc-qr-box {
 		width: 44px; height: 44px;
 		border-radius: 6px; background: #fff;
-		border: 1px solid #E8E0D4; flex-shrink: 0;
+		border: 1px solid var(--color-border); flex-shrink: 0;
 		display: flex; align-items: center; justify-content: center;
 	}
-	.dc-qr-box::after { content: 'QR'; font-size: 9px; font-weight: 700; color: #D4C9B8; }
+	.dc-qr-box::after { content: 'QR'; font-size: var(--font-size-2xs); font-weight: 700; color: #D4C9B8; }
 	.dc-qr-img {
 		width: 44px; height: 44px;
 		border-radius: 4px; flex-shrink: 0;
 	}
 	.dc-codes { display: flex; flex-direction: column; gap: 1px; }
-	.dc-code { font-size: 11px; font-weight: 700; color: #A0907E; letter-spacing: 0.08em; }
+	.dc-code { font-size: var(--font-size-xs); font-weight: 700; color: #A0907E; letter-spacing: 0.08em; }
 	.dc-url { font-size: 7px; color: #A0907E; white-space: nowrap; }
 	.dc-actions {
 		display: flex; gap: 10px; align-items: center;
@@ -421,7 +421,7 @@ function formatTime(iso: string): string {
 	.dc-close {
 		background: rgba(255,255,255,0.9); border: none;
 		padding: 8px 20px; border-radius: 10px;
-		font-size: 13px; font-weight: 600; color: #2A1810;
+		font-size: var(--font-size-sm); font-weight: 600; color: #2A1810;
 		cursor: pointer; font-family: inherit;
 	}
 
@@ -430,7 +430,7 @@ function formatTime(iso: string): string {
 		position: fixed; inset: 0; z-index: 9999;
 		background: rgba(0,0,0,0.8);
 		display: flex; flex-direction: column; align-items: center; justify-content: center;
-		gap: 16px; padding: 20px;
+		gap: var(--space-md); padding: 20px;
 	}
 	.save-hint { color: white; font-size: 14px; text-align: center; }
 	.save-preview-img { max-width: 90vw; max-height: 80vh; border-radius: 12px; }
@@ -441,7 +441,7 @@ function formatTime(iso: string): string {
 		text-align: center;
 	}
 	.kp-footer a {
-		font-size: 11px; color: #A0907E;
+		font-size: var(--font-size-xs); color: #A0907E;
 		text-decoration: none;
 	}
 

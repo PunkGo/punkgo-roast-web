@@ -71,14 +71,14 @@
 		text-align: center;
 		padding: var(--space-lg);
 	}
-	h1 { font-size: 24px; margin-bottom: var(--space-md); }
+	h1 { font-size: var(--font-size-xl); margin-bottom: var(--space-md); }
 	.btn-primary {
 		padding: var(--space-sm) var(--space-lg);
 		background: var(--color-cta);
 		color: white;
 		border: none;
 		border-radius: var(--radius-full);
-		font-size: 15px;
+		font-size: var(--font-size-md);
 		font-weight: 600;
 		text-decoration: none;
 		margin-top: var(--space-md);

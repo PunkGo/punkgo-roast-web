@@ -290,7 +290,7 @@
 	}
 
 	.loading-paw {
-		font-size: 60px;
+		font-size: var(--font-size-hero);
 		animation: gentle-pulse 2s ease-in-out infinite;
 	}
 
@@ -351,8 +351,8 @@
 		flex-wrap: wrap;
 		align-content: center;
 		justify-content: center;
-		gap: 24px;
-		padding: 32px;
+		gap: var(--space-lg);
+		padding: var(--space-xl);
 		opacity: 0.08;
 		pointer-events: none;
 	}
@@ -379,7 +379,7 @@
 	}
 
 	.back-title {
-		font-size: 20px;
+		font-size: var(--font-size-lg);
 		font-weight: 700;
 		color: var(--color-text-accent);
 		letter-spacing: 0.3em;
@@ -444,7 +444,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 8px;
+		gap: var(--space-sm);
 		flex: 1;
 	}
 
@@ -471,7 +471,7 @@
 	}
 
 	.dog-card-name {
-		font-size: 20px;
+		font-size: var(--font-size-lg);
 		font-weight: 700;
 		color: var(--color-text);
 		text-align: center;
@@ -488,20 +488,20 @@
 	}
 
 	.dog-card-ai {
-		font-size: 11px;
+		font-size: var(--font-size-xs);
 		color: var(--color-text-tertiary);
 		text-align: center;
 		margin: 0;
 		font-style: italic;
 	}
 	.dog-card-roast-intro {
-		font-size: 9px;
+		font-size: var(--font-size-2xs);
 		color: var(--color-text-tertiary);
 		text-align: center;
 		margin: 4px 0 0 0;
 	}
 	.dog-card-quip {
-		font-size: 11px;
+		font-size: var(--font-size-xs);
 		font-weight: 600;
 		font-style: italic;
 		color: var(--color-text-primary);
@@ -538,7 +538,7 @@
 	.bottom-right {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		gap: var(--space-xs);
 		flex: 1;
 		min-width: 0;
 	}
@@ -590,7 +590,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding-top: 6px;
-		font-size: 9px;
+		font-size: var(--font-size-2xs);
 		color: var(--color-text-tertiary);
 	}
 
@@ -674,13 +674,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 16px;
+		gap: var(--space-md);
 		max-width: 340px;
 		width: 100%;
 	}
 	.save-hint {
 		color: white;
-		font-size: 15px;
+		font-size: var(--font-size-md);
 		font-weight: 600;
 		text-align: center;
 		margin: 0;

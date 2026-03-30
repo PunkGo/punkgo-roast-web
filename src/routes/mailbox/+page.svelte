@@ -119,8 +119,8 @@
 	.mailbox-page { max-width: 520px; margin: 0 auto; padding: var(--space-lg) var(--space-md) 64px; text-align: center; }
 	h1 { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin: var(--space-sm) 0; }
 	.subtitle { color: var(--color-text-secondary); font-size: 14px; margin-bottom: var(--space-lg); }
-	.tabs { display: flex; gap: 4px; background: var(--color-bg-muted); border-radius: var(--radius-lg); padding: 4px; margin-bottom: var(--space-lg); }
-	.tab { flex: 1; padding: 10px 8px; border: none; background: transparent; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary); transition: background 0.2s, color 0.2s, box-shadow 0.2s; }
+	.tabs { display: flex; gap: var(--space-xs); background: var(--color-bg-muted); border-radius: var(--radius-lg); padding: var(--space-xs); margin-bottom: var(--space-lg); }
+	.tab { flex: 1; padding: 10px var(--space-sm); border: none; background: transparent; border-radius: var(--radius-md); font-size: var(--font-size-sm); font-weight: 500; cursor: pointer; color: var(--color-text-secondary); transition: background 0.2s, color 0.2s, box-shadow 0.2s; }
 	.tab.active { background: white; color: var(--color-text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 	.tab-content { text-align: left; margin-bottom: var(--space-lg); }
 	.tab-desc { font-size: 14px; color: var(--color-text-secondary); margin-bottom: var(--space-md); text-align: center; }
@@ -128,18 +128,18 @@
 	.input:focus, .textarea:focus { outline: none; border-color: var(--color-cta); }
 	.textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: 14px; background: var(--color-bg-card); resize: vertical; font-family: inherit; min-height: 60px; }
 	.prompt-section { margin-bottom: var(--space-xl); }
-	.prompt-label { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+	.prompt-label { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
 	.prompt-box { background: var(--color-bg-card); border: 1.5px solid var(--color-border-accent); border-radius: var(--radius-lg); padding: var(--space-md); text-align: left; margin-bottom: var(--space-md); }
-	.prompt-box pre { white-space: pre-wrap; word-break: break-word; font-size: 13px; line-height: 1.6; color: var(--color-text); margin: 0; font-family: inherit; }
-	.btn-copy { padding: 12px 28px; background: var(--color-cta); color: white; border: none; border-radius: var(--radius-full); font-size: 15px; font-weight: 600; cursor: pointer; min-height: 44px; transition: background 0.2s; }
+	.prompt-box pre { white-space: pre-wrap; word-break: break-word; font-size: var(--font-size-sm); line-height: 1.6; color: var(--color-text); margin: 0; font-family: inherit; }
+	.btn-copy { padding: 12px 28px; background: var(--color-cta); color: white; border: none; border-radius: var(--radius-full); font-size: var(--font-size-md); font-weight: 600; cursor: pointer; min-height: 44px; transition: background 0.2s; }
 	.btn-copy:hover { background: var(--color-cta-hover); }
 	.how-it-works { margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--color-border); }
-	.how-it-works h2 { font-size: 16px; font-weight: 600; margin-bottom: var(--space-md); }
+	.how-it-works h2 { font-size: var(--font-size-base); font-weight: 600; margin-bottom: var(--space-md); }
 	.steps-row { display: flex; gap: var(--space-md); justify-content: center; }
 	.hw-step { flex: 1; text-align: center; }
-	.hw-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-full); background: var(--color-cta); color: white; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
-	.hw-step p { font-size: 13px; color: var(--color-text); line-height: 1.4; }
-	.hw-sub { font-size: 11px; color: var(--color-text-tertiary); }
+	.hw-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-full); background: var(--color-cta); color: white; font-size: var(--font-size-sm); font-weight: 600; margin-bottom: var(--space-sm); }
+	.hw-step p { font-size: var(--font-size-sm); color: var(--color-text); line-height: 1.4; }
+	.hw-sub { font-size: var(--font-size-xs); color: var(--color-text-tertiary); }
 	@media (max-width: 480px) {
 		.steps-row { flex-direction: column; gap: var(--space-sm); }
 		.hw-step { display: flex; align-items: center; gap: var(--space-sm); text-align: left; }
