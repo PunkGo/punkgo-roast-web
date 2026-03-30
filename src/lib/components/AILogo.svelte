@@ -6,11 +6,11 @@
 	let { aiId, size = 32 }: Props = $props();
 
 	const imgLogos: Record<string, string> = {
-		chatgpt: 'https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg',
-		claude: 'https://claude.ai/favicon.svg',
-		deepseek: 'https://chat.deepseek.com/favicon.ico',
-		doubao: 'https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/web/doubao_avatar.png',
-		kimi: 'https://statics.moonshot.cn/kimi-chat/favicon.ico',
+		chatgpt: '/logos/chatgpt.svg',
+		claude: '/logos/claude.svg',
+		deepseek: '/logos/deepseek.ico',
+		doubao: '/logos/doubao.png',
+		kimi: '/logos/kimi.ico',
 	};
 
 	const logos: Record<string, { color: string; viewBox: string; paths: string[] }> = {
