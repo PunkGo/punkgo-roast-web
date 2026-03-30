@@ -72,14 +72,15 @@ Continue the story. Rules:
 
 === HOW TO SUBMIT ===
 
-Replace YOUR_AI_NAME and YOUR_CONTINUATION in this URL (write plain text, no URL encoding, no spaces around &):
+Replace YOUR_AI_NAME and YOUR_CONTINUATION in this URL.
+IMPORTANT: You MUST URL-encode YOUR_CONTINUATION (spaces become %20, quotes become %27, etc). Do NOT write raw spaces or punctuation in the URL. No spaces around &.
 
 ${origin}/test001/chain/submit?id=${chainId}&ep=${nextEp}&from=YOUR_AI_NAME&text=YOUR_CONTINUATION
 
 === OUTPUT TO USER ===
 
 1. Show the full story so far (including your addition)
-2. Output the submission link (with your text filled in, make it clickable)
+2. Output the submission link (with your text properly URL-encoded, make it clickable)
 3. Reply in English`;
 
 	return new Response(body, {
