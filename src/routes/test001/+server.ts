@@ -108,6 +108,84 @@ ${origin}/test001/result?s=debate&from=YOUR_AI_NAME&stance=STANCE&reason=REASON
 3. 用中文回复`;
 			break;
 
+		case 'draw':
+			body = header + `=== AI 画画挑战 ===
+
+请根据以下描述生成一张图片：
+
+"一只穿着西装的柴犬坐在办公桌前，桌上放着一杯咖啡和一台笔记本电脑，屏幕上显示着股票K线图。画风：毛毡手工风格，暖色调，可爱但认真。"
+
+规则：
+- 如果你有图片生成能力，请直接生成这张图
+- 如果你没有图片生成能力，请诚实告诉用户"我不能生成图片"，并用文字描述你会怎么画这张图（不超过 100 字）
+- 用中文回复
+
+=== 输出给用户 ===
+
+1. 生成的图片（如果可以）或文字描述
+2. 告诉用户你用了什么模型/方法来生成
+3. 用中文回复
+
+注意：这个场景不需要提交链接，直接展示给用户即可。`;
+			break;
+
+		case 'html':
+			body = header + `=== 运行 HTML ===
+
+请将以下 HTML 代码渲染并展示给用户（使用你的代码预览/Artifact/画布功能）：
+
+\`\`\`html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Vibe Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #F5F0E8; font-family: system-ui, sans-serif; }
+  .card { width: 320px; background: #FAFAF5; border-radius: 16px; padding: 24px; border: 1.5px solid #E8E0D4; text-align: center; }
+  .emoji { font-size: 64px; margin-bottom: 12px; }
+  .name { font-size: 24px; font-weight: 700; color: #3A2518; margin-bottom: 4px; }
+  .mbti { font-size: 12px; font-weight: 600; color: #9A7040; letter-spacing: 0.2em; margin-bottom: 16px; }
+  .bar { display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #EDE5D8; font-size: 13px; color: #6B5545; }
+  .bar span:last-child { font-weight: 600; color: #3A2518; }
+  .footer { margin-top: 16px; font-size: 11px; color: #8B7B6B; }
+  .btn { display: inline-block; margin-top: 16px; padding: 10px 24px; background: #5A8C6A; color: white; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+  .btn:hover { background: #4A7C5A; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="emoji">🐕</div>
+  <div class="name">The Logistician</div>
+  <div class="mbti">ISTJ · 柴犬</div>
+  <div class="bar"><span>严谨度</span><span>██████████ 98%</span></div>
+  <div class="bar"><span>社交力</span><span>████░░░░░░ 42%</span></div>
+  <div class="bar"><span>好奇心</span><span>███████░░░ 71%</span></div>
+  <div class="bar"><span>执行力</span><span>█████████░ 89%</span></div>
+  <div class="footer">roast.punkgo.ai</div>
+  <button class="btn" onclick="alert('你的 AI Vibe: ISTJ 物流师！\\n严谨到骨子里的柴犬 🐕')">查看我的 Vibe</button>
+</div>
+</body>
+</html>
+\`\`\`
+
+规则：
+- 如果你有代码预览/Artifact/画布功能，请直接渲染展示
+- 如果你不能渲染 HTML，请告诉用户"我不能直接运行 HTML"，并描述这个页面长什么样
+- 不要修改代码内容
+- 用中文回复
+
+=== 输出给用户 ===
+
+1. 渲染的页面（如果可以）或页面描述
+2. 告诉用户你是否成功渲染了
+3. 用中文回复
+
+注意：这个场景不需要提交链接，直接展示给用户即可。`;
+			break;
+
 		case 'story':
 			body = header + `=== 故事接龙 ===
 
@@ -145,6 +223,8 @@ Available scenarios (add ?s=xxx):
 2. ${origin}/test001?s=intro    — AI 自拍（三句话自我介绍）
 3. ${origin}/test001?s=debate   — 观点碰撞（对辩题表态）
 4. ${origin}/test001?s=story    — 创意接龙（续写故事）
+5. ${origin}/test001?s=draw     — AI 画画（测试图片生成能力）
+6. ${origin}/test001?s=html     — 运行 HTML（测试代码渲染能力）
 
 Usage: 复制上面任一链接，粘贴给你的 AI，让它访问并按指示操作。
 
