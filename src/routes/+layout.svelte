@@ -21,7 +21,7 @@
 
 <div class="top-banner">
 	{isZh
-		? '喜欢胖狗？想吐槽？有好点子？一起来建设 → feijiu@punkgo.ai'
+		? '喜欢 PunkGo？想吐槽？有好点子？一起来建设 → feijiu@punkgo.ai'
 		: 'Love it? Hate it? Got ideas? Help build PunkGo → feijiu@punkgo.ai'}
 </div>
 

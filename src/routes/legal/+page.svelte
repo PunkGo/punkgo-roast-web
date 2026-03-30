@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>{isZh ? '免责声明与隐私政策 — 胖狗' : 'Disclaimer & Privacy — PunkGo Roast'}</title>
+	<title>{isZh ? '免责声明与隐私政策 — PunkGo Roast' : 'Disclaimer & Privacy — PunkGo Roast'}</title>
 </svelte:head>
 
 <div class="legal-page">
@@ -18,8 +18,8 @@
 		<h1>免责声明与隐私政策</h1>
 		<p class="updated">最后更新：2026 年 3 月 28 日</p>
 
-		<h2>关于胖狗 (PunkGo Roast)</h2>
-		<p>胖狗是一个开源的 AI 性格测试游戏。我们通过投射性心理测试原理，分析 AI 对模糊情境的自然反应，将其匹配为 16 种狗子人格之一。这是一个娱乐项目，不是科学评估工具。</p>
+		<h2>关于 PunkGo Roast</h2>
+		<p>PunkGo Roast 是一个开源的 AI 性格测试游戏。我们通过投射性心理测试原理，分析 AI 对模糊情境的自然反应，将其匹配为 16 种狗子人格之一。这是一个娱乐项目，不是科学评估工具。</p>
 
 		<h2>免责声明</h2>
 		<ul>

@@ -186,7 +186,7 @@
 				<div class="stamp-card" class:step1={stampPhase >= 1} class:step2={stampPhase >= 2} class:step3={stampPhase >= 3} class:step4={stampPhase >= 4} class:step5={stampPhase >= 5}>
 					<!-- Card content builds up progressively -->
 					<div class="sc-header">
-						<span class="sc-brand">{isZh ? '胖狗' : 'PUNKGO'}</span>
+						<span class="sc-brand">PUNKGO</span>
 						{#if stampPhase >= 2}
 							<span class="sc-mbti fade-in">{dog.mbti}</span>
 						{/if}
@@ -226,7 +226,7 @@
 					<div class="rc-right">
 						<div class="rc-top">
 							<div class="rc-header">
-								<span class="rc-brand">{isZh ? '胖狗' : 'PUNKGO'}</span>
+								<span class="rc-brand">PUNKGO</span>
 								<span class="rc-mbti">{dog.mbti}</span>
 							</div>
 							<span class="rc-name">{nickname}</span>

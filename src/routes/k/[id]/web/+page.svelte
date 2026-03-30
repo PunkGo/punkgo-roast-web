@@ -181,7 +181,7 @@ function formatTime(iso: string): string {
 				<div class="dc-right">
 					<div class="dc-top">
 						<div class="dc-header">
-							<span class="dc-brand">{isZh ? '胖狗' : 'PUNKGO'}</span>
+							<span class="dc-brand">PUNKGO</span>
 							<span class="dc-mbti">{kennel.mbti}</span>
 						</div>
 						<span class="dc-name">{kennel.nickname || (isZh ? dog.nameZh : dog.name)}</span>

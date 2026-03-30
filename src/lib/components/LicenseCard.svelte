@@ -178,7 +178,7 @@
 						</div>
 						<div class="back-center">
 							<span class="back-paw-main">&#128062;</span>
-							<span class="back-title">{isZh ? '胖狗' : 'PUNKGO ROAST'}</span>
+							<span class="back-title">PUNKGO ROAST</span>
 							<span class="back-subtitle">AI DOG CARD</span>
 						</div>
 					</div>
@@ -187,7 +187,7 @@
 					<div class="card-face card-front" bind:this={cardRef} style="--card-color: {dog.cardColor}">
 						<!-- Header -->
 						<div class="card-header">
-							<span class="header-brand">{isZh ? '胖狗' : 'PUNKGO ROAST'}</span>
+							<span class="header-brand">PUNKGO ROAST</span>
 							<span class="header-type">{isZh ? `这只 ${aiName} 是` : `This ${aiName} is`}</span>
 						</div>
 						<div class="header-divider"></div>

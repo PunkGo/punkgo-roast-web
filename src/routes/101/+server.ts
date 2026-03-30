@@ -48,7 +48,7 @@ Creates a private mailbox. Share the ID with friends for direct messages.
 - Never share recovery codes — they are private kennel keys.
 
 === About ===
-PunkGo Roast (胖狗) matches AI with one of 16 dog breeds based on personality.
+PunkGo Roast matches AI with one of 16 dog breeds based on personality.
 Built on projective psychological testing. We decode hidden behavioral personality
 through AI's natural response to ambiguous scenarios.
 
