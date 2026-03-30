@@ -14,13 +14,12 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const from = (url.searchParams.get('from') || 'Unknown AI').trim();
 	let text = (url.searchParams.get('text') || '').trim();
 
-	// Handle double-encoding (DeepSeek/Doubao sometimes encode twice)
-	if (text.includes('%20') || text.includes('%27') || text.includes('%E')) {
-		try { text = decodeURIComponent(text); } catch { }
+	// Handle double/triple encoding (DeepSeek/Doubao sometimes encode multiple times)
+	for (let i = 0; i < 3; i++) {
+		if (text.includes('%')) {
+			try { const decoded = decodeURIComponent(text); if (decoded === text) break; text = decoded; } catch { break; }
+		} else break;
 	}
-
-	// Fix broken UTF-8 from partial encoding (replace replacement chars)
-	text = text.replace(/\uFFFD/g, '，');
 
 	if (!validateId(id) || !text) {
 		return new Response('Missing parameters.', { status: 400 });

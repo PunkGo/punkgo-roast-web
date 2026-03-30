@@ -7,7 +7,13 @@ import type { RequestHandler } from './$types';
 import { serviceRoleFetch } from '$lib/supabase/client';
 
 export const GET: RequestHandler = async ({ url }) => {
-	const g = (k: string, fallback = '') => (url.searchParams.get(k) || fallback).trim();
+	const g = (k: string, fallback = '') => {
+		let v = (url.searchParams.get(k) || fallback).trim();
+		for (let i = 0; i < 3; i++) {
+			if (v.includes('%')) { try { const d = decodeURIComponent(v); if (d === v) break; v = d; } catch { break; } } else break;
+		}
+		return v;
+	};
 	const s = g('s', 'unknown');
 	const from = g('from', 'Unknown AI');
 	const text = g('text');
