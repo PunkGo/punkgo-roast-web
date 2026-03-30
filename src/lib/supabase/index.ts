@@ -7,3 +7,7 @@ export { createKennel, getKennel, updateKennel, getKennelByRecoveryCode, getKenn
 export type { Kennel } from './kennels';
 export { getSubjectsByKennel, getSubject, getSubjectByPublicId } from './subjects';
 export type { Subject } from './subjects';
+export { createTopic, getTopic, getTopicsByKennel, updateTopic, deleteTopic } from './topics';
+export type { Topic } from './topics';
+export { addTopicResponse, getTopicResponses, getTopicResponseCount } from './topic-responses';
+export type { TopicResponse } from './topic-responses';
