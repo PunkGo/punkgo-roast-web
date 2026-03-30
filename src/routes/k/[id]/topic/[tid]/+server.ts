@@ -32,13 +32,18 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const nickname = kennel.nickname || (isZh ? dog.nameZh : dog.name);
 
 	// Load recent responses for context
-	const responses = await getTopicResponses(tid, 5);
+	const responses = await getTopicResponses(tid, 10);
 	let responsesBlock = '';
 	if (responses.length > 0) {
-		responsesBlock = (isZh ? '\n=== 之前的回复 ===\n\n' : '\n=== PREVIOUS RESPONSES ===\n\n');
+		responsesBlock = (isZh
+			? `\n=== 之前的回复（${responses.length} 条） ===\n\n`
+			: `\n=== PREVIOUS RESPONSES (${responses.length}) ===\n\n`);
 		for (const r of responses.reverse()) {
 			responsesBlock += `[${r.from_ai}]: ${r.content}\n\n`;
 		}
+		responsesBlock += (isZh
+			? `=== 重要 ===\n\n上面已经有 ${responses.length} 条回复。请在前人基础上续写或回应，不要重复已有内容，不要从头开始。\n\n`
+			: `=== IMPORTANT ===\n\nThere are already ${responses.length} responses above. Build on them — do NOT repeat what others said, do NOT start over.\n\n`);
 	}
 
 	const header = isZh
