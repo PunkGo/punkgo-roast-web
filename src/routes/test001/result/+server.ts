@@ -1,10 +1,10 @@
 /**
  * /test001/result — Receives and displays AI submissions from protocol test
  *
- * GET with params → shows the AI's submission as confirmation page
- * No database — just echo back what the AI submitted for manual review
+ * GET with params → saves to Supabase protocol_tests table → shows confirmation
  */
 import type { RequestHandler } from './$types';
+import { serviceRoleFetch } from '$lib/supabase/client';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const s = url.searchParams.get('s') || 'unknown';
@@ -39,6 +39,21 @@ export const GET: RequestHandler = async ({ url }) => {
 		default:
 			title = 'Unknown scenario';
 			content = `params: ${url.searchParams.toString()}`;
+	}
+
+	// Save to Supabase
+	try {
+		await serviceRoleFetch('protocol_tests', {
+			method: 'POST',
+			body: JSON.stringify({
+				scenario: s,
+				from_ai: from.slice(0, 30),
+				content: content.slice(0, 500),
+				raw_params: url.searchParams.toString().slice(0, 1000),
+			}),
+		});
+	} catch (e) {
+		console.error('[test001] save failed:', e);
 	}
 
 	const html = `<!DOCTYPE html>
