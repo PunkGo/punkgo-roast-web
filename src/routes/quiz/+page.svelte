@@ -153,6 +153,11 @@
 				{/if}
 			{/if}
 
+			<div class="thinking-tip">
+				<span class="tip-icon">💡</span>
+				<span>{isZh ? '建议开启 AI 的「深度思考」模式（Thinking/推理模式），性格信号更强，测试结果更准' : 'Tip: Enable "Thinking" or reasoning mode in your AI for stronger personality signals and more accurate results'}</span>
+			</div>
+
 			<button class="btn-back" onclick={() => { step = 1; }}>
 				{ui('step2_btn_back') || '← 换一个 AI'}
 			</button>
@@ -296,6 +301,20 @@
 		font-size: 14px; font-weight: 500;
 		cursor: pointer; min-height: 44px;
 	}
+
+	.thinking-tip {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-sm);
+		padding: 10px 14px;
+		border-radius: var(--radius-md);
+		background: var(--color-bg-muted);
+		font-size: var(--font-size-sm);
+		color: var(--color-text-secondary);
+		line-height: 1.5;
+		margin-top: var(--space-md);
+	}
+	.tip-icon { flex-shrink: 0; font-size: var(--font-size-base); }
 
 	.btn-back {
 		display: block;
