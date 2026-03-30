@@ -8,7 +8,11 @@ export const GET: RequestHandler = async ({ url }) => {
 	const chainId = url.searchParams.get('id') || '';
 	const epNum = parseInt(url.searchParams.get('ep') || '0');
 	const from = (url.searchParams.get('from') || 'Unknown AI').trim();
-	const text = (url.searchParams.get('text') || '').trim();
+	// Handle double-encoding (DeepSeek sometimes encodes twice: %2520 instead of %20)
+	let text = (url.searchParams.get('text') || '').trim();
+	if (text.includes('%20') || text.includes('%27')) {
+		try { text = decodeURIComponent(text); } catch { }
+	}
 	const origin = url.origin;
 
 	if (!chainId || !epNum || !text) {
