@@ -158,6 +158,13 @@
 				<span>{isZh ? '建议开启 AI 的「深度思考」模式（Thinking/推理模式），性格信号更强，测试结果更准' : 'Tip: Enable "Thinking" or reasoning mode in your AI for stronger personality signals and more accurate results'}</span>
 			</div>
 
+			{#if selectedAI?.id === 'claude'}
+				<div class="thinking-tip">
+					<span class="tip-icon">✨</span>
+					<span>{isZh ? '推荐使用 Sonnet 模型，配合度最高、人格表现最丰富。Opus 可能因为过于谨慎而跳过部分题目' : 'We recommend Sonnet for the best experience — it\'s the most expressive and cooperative. Opus may skip some questions due to its cautious nature'}</span>
+				</div>
+			{/if}
+
 			<button class="btn-back" onclick={() => { step = 1; }}>
 				{ui('step2_btn_back') || '← 换一个 AI'}
 			</button>
