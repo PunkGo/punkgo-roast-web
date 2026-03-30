@@ -13,10 +13,15 @@
 	let copied: boolean = $state(false);
 	let copyFailed: boolean = $state(false);
 	let isZh: boolean = $state(true);
+	let isMobile: boolean = $state(false);
 
-	onMount(() => { isZh = navigator.language.startsWith('zh'); });
+	onMount(() => {
+		isZh = navigator.language.startsWith('zh');
+		isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+	});
 
 	const visibleAIs = aiOptions;
+	const aiDisplayName = $derived(isZh ? (selectedAI?.nameZh || 'AI') : (selectedAI?.name || 'AI'));
 
 	function ui(key: string): string {
 		const aiName = selectedAI?.nameZh || 'AI';
@@ -79,9 +84,9 @@
 </script>
 
 <svelte:head>
-	<title>你的 AI 是什么 Vibe？ — PunkGo Roast</title>
-	<meta property="og:title" content="你的 AI 是什么 Vibe？ | PunkGo Roast" />
-	<meta property="og:description" content="十六种狗子，你的 AI 是哪一只？🐾" />
+	<title>{isZh ? '你的 AI 是什么 Vibe？' : "What's Your AI's Vibe?"} — PunkGo Roast</title>
+	<meta property="og:title" content="{isZh ? '你的 AI 是什么 Vibe？' : "What's Your AI's Vibe?"} | PunkGo Roast" />
+	<meta property="og:description" content="{isZh ? '十六种狗子，你的 AI 是哪一只？🐾' : '16 breeds. Which one is your AI? 🐾'}" />
 </svelte:head>
 
 <div class="quiz-container">
@@ -94,14 +99,14 @@
 	{#if step === 1}
 		<div class="step-content">
 			<span class="section-tag">— A I &nbsp; V I B E &nbsp; C H E C K —</span>
-			<h1>你的 AI 是什么 Vibe？</h1>
-			<p class="subtitle">选择你最常用的 AI 助手，测测它的性格</p>
+			<h1>{isZh ? '你的 AI 是什么 Vibe？' : "What's Your AI's Vibe?"}</h1>
+			<p class="subtitle">{isZh ? '选择你最常用的 AI 助手，测测它的性格' : 'Pick your AI assistant and discover its personality'}</p>
 
 			<div class="ai-grid">
 				{#each visibleAIs as ai}
 					<button class="ai-card" onclick={() => selectAI(ai)}>
 						<AILogo aiId={ai.id} size={36} />
-						<span class="ai-name">{ai.nameZh}</span>
+						<span class="ai-name">{isZh ? ai.nameZh : ai.name}</span>
 					</button>
 				{/each}
 			</div>
@@ -110,21 +115,23 @@
 	{:else if step === 2}
 		<div class="step-content">
 			{#if hasUrlRedirect}
-				<span class="section-tag">{ui('step2_tag_redirect') || '一键测试'}</span>
-				<h1>{ui('step2_title_redirect') || `让 ${selectedAI?.nameZh} 做个性格测试`}</h1>
-				<p class="subtitle">{ui('step2_subtitle_redirect') || `点击下方按钮，${selectedAI?.nameZh} 会自动回答并给你一个结果链接`}</p>
+				<span class="section-tag">{isZh ? '一键测试' : 'One-Click Test'}</span>
+				<h1>{isZh ? `让 ${aiDisplayName} 做个性格测试` : `Let ${aiDisplayName} take a personality test`}</h1>
+				<p class="subtitle">{isZh ? `点击下方按钮，${aiDisplayName} 会自动回答并给你一个结果链接` : `Click below — ${aiDisplayName} will answer automatically and give you a result link`}</p>
 
 				<button class="btn-primary btn-main" onclick={openAI}>
-					{ui('step2_btn_redirect') || `打开 ${selectedAI?.nameZh} 开始测试 ↗`}
+					{isZh ? `打开 ${aiDisplayName} 开始测试 ↗` : `Open ${aiDisplayName} to start ↗`}
 				</button>
 
 				<div class="copy-hint">
-					<p>{ui('step2_hint_redirect') || `${selectedAI?.nameZh} 回答后会给你一个链接，点击即可看结果 🐾`}</p>
+					<p>{isZh ? `${aiDisplayName} 回答后会给你一个链接，点击即可看结果 🐾` : `${aiDisplayName} will give you a link after answering — click it to see your result 🐾`}</p>
 				</div>
 			{:else}
-				<span class="section-tag">{ui('step2_tag_copy') || '测测 TA 的性格'}</span>
-				<h1>{ui('step2_title_copy') || `让你的 ${selectedAI?.nameZh} 做一个性格测试`}</h1>
-				<p class="subtitle">{ui('step2_subtitle_copy') || `复制下面的话 → 发给 ${selectedAI?.nameZh} → 点击它给你的链接看结果`}</p>
+				<span class="section-tag">{isZh ? '测测 TA 的性格' : 'Test its personality'}</span>
+				<h1>{isZh ? `让你的 ${aiDisplayName} 做一个性格测试` : `Give your ${aiDisplayName} a personality test`}</h1>
+				<p class="subtitle">{isZh
+					? `复制下面的话 → 发给 ${aiDisplayName} → 点击它给你的链接看结果`
+					: `Copy the text below → send it to ${aiDisplayName} → click the link it gives you`}</p>
 
 				<div class="prompt-box">
 					<pre>{getCopyPrompt()}</pre>
@@ -132,23 +139,31 @@
 
 				<div class="action-row">
 					<button class="btn-primary" onclick={copyText}>
-						{copied ? (ui('step2_btn_copied') || '✅ 已复制！') : (ui('step2_btn_copy') || '📋 一键复制')}
+						{copied
+							? (isZh ? '✅ 已复制！' : '✅ Copied!')
+							: (isZh ? '📋 一键复制' : '📋 Copy prompt')}
 					</button>
 
 					{#if selectedAI?.url}
-						<button class="btn-secondary" onclick={openAI}>
-							打开 {selectedAI?.nameZh} ↗
-						</button>
+						{#if isMobile}
+							<p class="mobile-hint">{isZh ? `复制后打开 ${aiDisplayName} App 粘贴` : `After copying, open the ${aiDisplayName} app and paste`}</p>
+						{:else}
+							<button class="btn-secondary" onclick={openAI}>
+								{isZh ? `打开 ${aiDisplayName} ↗` : `Open ${aiDisplayName} ↗`}
+							</button>
+						{/if}
 					{/if}
 				</div>
 
 				{#if copyFailed}
-					<p class="copy-fallback">剪贴板不可用，请手动选择上方文字复制</p>
+					<p class="copy-fallback">{isZh ? '剪贴板不可用，请手动选择上方文字复制' : 'Clipboard unavailable — please select and copy the text above manually'}</p>
 				{/if}
 
 				{#if copied}
 					<div class="copy-hint" transition:fade={{ duration: 300 }}>
-						<p>{ui('step2_hint_copied') || `✅ 已复制！粘贴给 ${selectedAI?.nameZh}，等它给你一个神秘链接 🐾`}</p>
+						<p>{isZh
+							? `✅ 已复制！粘贴给 ${aiDisplayName}，等它给你一个神秘链接 🐾`
+							: `✅ Copied! Paste it to ${aiDisplayName} and wait for a mystery link 🐾`}</p>
 					</div>
 				{/if}
 			{/if}
@@ -166,7 +181,7 @@
 			{/if}
 
 			<button class="btn-back" onclick={() => { step = 1; }}>
-				{ui('step2_btn_back') || '← 换一个 AI'}
+				{isZh ? '← 换一个 AI' : '← Pick a different AI'}
 			</button>
 		</div>
 	{/if}
@@ -298,6 +313,13 @@
 	}
 
 	.btn-primary:hover { background: var(--color-cta-hover); }
+
+	.mobile-hint {
+		font-size: var(--font-size-sm);
+		color: var(--color-text-tertiary);
+		margin: var(--space-sm) 0 0;
+		text-align: center;
+	}
 
 	.btn-secondary {
 		padding: var(--space-sm) var(--space-lg);
