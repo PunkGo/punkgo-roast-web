@@ -6,7 +6,11 @@
 	let { aiId, size = 32 }: Props = $props();
 
 	const imgLogos: Record<string, string> = {
+		chatgpt: 'https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg',
+		claude: 'https://claude.ai/favicon.svg',
+		deepseek: 'https://chat.deepseek.com/favicon.ico',
 		doubao: 'https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/web/doubao_avatar.png',
+		kimi: 'https://statics.moonshot.cn/kimi-chat/favicon.ico',
 	};
 
 	const logos: Record<string, { color: string; viewBox: string; paths: string[] }> = {
@@ -60,7 +64,7 @@
 </script>
 
 {#if imgSrc}
-	<img src={imgSrc} alt={aiId} width={size} height={size} style="border-radius: 50%; object-fit: cover;" />
+	<img src={imgSrc} alt={aiId} width={size} height={size} style="object-fit: contain;" />
 {:else}
 	<svg
 		width={size}
