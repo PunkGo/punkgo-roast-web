@@ -14,10 +14,13 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const from = (url.searchParams.get('from') || 'Unknown AI').trim();
 	let text = (url.searchParams.get('text') || '').trim();
 
-	// Handle double-encoding
-	if (text.includes('%20') || text.includes('%27')) {
+	// Handle double-encoding (DeepSeek/Doubao sometimes encode twice)
+	if (text.includes('%20') || text.includes('%27') || text.includes('%E')) {
 		try { text = decodeURIComponent(text); } catch { }
 	}
+
+	// Fix broken UTF-8 from partial encoding (replace replacement chars)
+	text = text.replace(/\uFFFD/g, '，');
 
 	if (!validateId(id) || !text) {
 		return new Response('Missing parameters.', { status: 400 });
@@ -32,15 +35,18 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		return new Response('Topic not found.', { status: 404 });
 	}
 
-	// Save response
-	try {
-		await addTopicResponse({
-			topicId: tid,
-			fromAi: from,
-			content: text,
-		});
-	} catch (e) {
-		console.error('[topic/submit] save failed:', e);
+	// Dedup: skip if same content from same AI already exists
+	const existing = await getTopicResponses(tid, 50);
+	const isDuplicate = existing.some(r => r.from_ai === from && r.content === text);
+
+	if (isDuplicate) {
+		// Skip save, just show the page
+	} else {
+		try {
+				await addTopicResponse({ topicId: tid, fromAi: from, content: text });
+			} catch (e) {
+				console.error('[topic/submit] save failed:', e);
+			}
 	}
 
 	// Load all responses for display
