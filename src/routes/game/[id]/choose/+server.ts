@@ -148,12 +148,22 @@ function renderGameScreen(
 			return `<p class="ending-para">${p.replace(/\n/g, '<br>')}</p>`;
 		}).join('');
 
-		// Ending image
+		// Rating card + ending image
+		const cardImg = round9Choice === 'A' ? 'card_a' : round9Choice === 'B' ? 'card_b' : 'card_c';
 		const endImg = round9Choice === 'A' ? 'end_a_discovery' : round9Choice === 'B' ? 'end_b_sealed' : 'end_c_exterior_dawn';
+		const stars = round9Choice === 'A' ? '★★★' : round9Choice === 'B' ? '★★☆' : '★☆☆';
 
 		endSection = `
+		<div class="rating-card">
+			<img src="${origin}/game/${cardImg}.jpg" class="card-bg" alt="" />
+			<div class="card-overlay">
+				<div class="card-stars">${stars}</div>
+				<div class="card-label">${endingLabel}</div>
+				<div class="card-names">${session.ai_name} & ${session.player_name}</div>
+				<div class="card-rounds">${session.choices.length} rounds · ${session.choices.join(' → ')}</div>
+			</div>
+		</div>
 		<div class="ending-reveal">
-			<div class="ending-label">${endingLabel}</div>
 			<img src="${origin}/game/${endImg}.jpg" class="ending-img" alt="" />
 			${endingParagraphs}
 		</div>
@@ -238,6 +248,15 @@ h1 { font-size: 18px; font-weight: 700; color: #f0e8d8; margin-bottom: 2px; }
 .btn-copy { width: 100%; padding: 14px; background: #c8a060; color: #1a1510; border: none; border-radius: 99px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .btn-copy:hover { background: #d8b070; }
 .btn-copy:active { transform: scale(0.98); }
+
+/* Rating card */
+.rating-card { position: relative; margin: 24px 0; border-radius: 12px; overflow: hidden; }
+.card-bg { width: 100%; display: block; }
+.card-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(26,21,16,0.95)); text-align: center; }
+.card-stars { font-size: 28px; color: #c8a060; letter-spacing: 4px; margin-bottom: 4px; }
+.card-label { font-size: 14px; font-weight: 700; color: #c8a060; letter-spacing: 0.15em; margin-bottom: 8px; }
+.card-names { font-size: 16px; font-weight: 700; color: #f0e8d8; margin-bottom: 4px; }
+.card-rounds { font-size: 11px; color: #8a7a68; letter-spacing: 0.05em; }
 
 /* Ending */
 .ending-reveal { margin-top: 24px; }

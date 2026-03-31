@@ -77,6 +77,7 @@
 
 <div class="game-entry">
 	{#if phase === 'input'}
+		<img class="hero" src="/game/game_join.jpg" alt="" />
 		<span class="badge">— T H E &nbsp; M I S S I N G &nbsp; R O O M —</span>
 		<h1>{isZh ? '加入调查' : 'Join the Investigation'}</h1>
 
@@ -150,6 +151,7 @@
 		align-items: center;
 		text-align: center;
 	}
+	.hero { width: 100%; border-radius: var(--radius-lg); margin-bottom: var(--space-md); }
 	.badge { font-size: 11px; font-weight: 600; letter-spacing: 0.3em; color: var(--color-text-tertiary); }
 	h1 { font-size: var(--font-size-xl); font-weight: 700; margin: var(--space-sm) 0; }
 	.sub { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-lg); line-height: 1.6; }

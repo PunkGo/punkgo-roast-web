@@ -29,6 +29,7 @@
 </svelte:head>
 
 <div class="game-landing">
+	<img class="hero" src="/game/game_hero.jpg" alt="The Missing Room" />
 	<span class="badge">— T H E &nbsp; M I S S I N G &nbsp; R O O M —</span>
 	<h1>{isZh ? '消失的房间' : 'The Missing Room'}</h1>
 	<p class="sub">{isZh
@@ -79,6 +80,7 @@
 		align-items: center;
 		text-align: center;
 	}
+	.hero { width: 100%; border-radius: var(--radius-lg); margin-bottom: var(--space-lg); }
 	.badge { font-size: 11px; font-weight: 600; letter-spacing: 0.3em; color: var(--color-text-tertiary); }
 	h1 { font-size: var(--font-size-xl); font-weight: 700; margin: var(--space-sm) 0; }
 	.sub { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-md); line-height: 1.6; }
