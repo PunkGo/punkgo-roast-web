@@ -165,9 +165,19 @@ function renderGameScreen(
 		const nextUrl = `${isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: '}${origin}/game/${session.id}?t=${Date.now()}`;
 		endSection = `<div class="next-round">
 			<div class="next-label">${isZh ? `复制发给 ${session.ai_name}，继续第 ${session.current_round} 轮` : `Copy & send to ${session.ai_name} for Round ${session.current_round}`}</div>
-			<div class="next-url" onclick="this.select && this.select(); navigator.clipboard && navigator.clipboard.writeText(this.textContent)">${nextUrl}</div>
-			<button class="btn-copy" onclick="navigator.clipboard.writeText(document.querySelector('.next-url').textContent).then(()=>{this.textContent='${isZh ? '✅ 已复制！发给 AI 继续' : '✅ Copied! Send to AI'}';setTimeout(()=>{this.textContent='${isZh ? '📋 复制发给 AI' : '📋 Copy & send to AI'}'},3000)})">${isZh ? '📋 复制发给 AI' : '📋 Copy & send to AI'}</button>
-		</div>`;
+			<textarea class="next-url" readonly onclick="this.select()">${nextUrl}</textarea>
+			<button class="btn-copy" onclick="copyNext(this)">${isZh ? '📋 复制发给 AI' : '📋 Copy & send to AI'}</button>
+		</div>
+		<script>
+		function copyNext(btn){
+			var text=document.querySelector('.next-url').value;
+			if(navigator.clipboard&&navigator.clipboard.writeText){
+				navigator.clipboard.writeText(text).then(done).catch(fallback);
+			}else{fallback();}
+			function fallback(){var ta=document.querySelector('.next-url');ta.select();ta.setSelectionRange(0,99999);document.execCommand('copy');done();}
+			function done(){btn.textContent='${isZh ? '✅ 已复制！发给 AI 继续' : '✅ Copied! Send to AI'}';setTimeout(function(){btn.textContent='${isZh ? '📋 复制发给 AI' : '📋 Copy & send to AI'}'},3000);}
+		}
+		</script>`;
 	}
 
 	const html = `<!DOCTYPE html>
@@ -224,7 +234,7 @@ h1 { font-size: 18px; font-weight: 700; color: #f0e8d8; margin-bottom: 2px; }
 /* Next round */
 .next-round { margin-top: 24px; padding: 20px; border-radius: 12px; background: #2a2018; border: 1.5px solid #c8a060; text-align: center; }
 .next-label { font-size: 13px; color: #a89878; margin-bottom: 10px; font-weight: 600; }
-.next-url { font-size: 11px; color: #d8ccb8; background: #1a1510; padding: 10px 12px; border-radius: 8px; word-break: break-all; user-select: all; cursor: pointer; margin-bottom: 12px; line-height: 1.5; }
+.next-url { font-size: 11px; color: #d8ccb8; background: #1a1510; padding: 10px 12px; border-radius: 8px; word-break: break-all; user-select: all; cursor: pointer; margin-bottom: 12px; line-height: 1.5; width: 100%; border: 1px solid #3a3020; font-family: inherit; resize: none; height: auto; min-height: 60px; }
 .btn-copy { width: 100%; padding: 14px; background: #c8a060; color: #1a1510; border: none; border-radius: 99px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .btn-copy:hover { background: #d8b070; }
 .btn-copy:active { transform: scale(0.98); }
