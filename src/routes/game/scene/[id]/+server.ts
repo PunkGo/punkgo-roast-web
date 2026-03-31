@@ -36,18 +36,21 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const scene = SCENES[id];
 	const file = ID_TO_FILE[id];
 	if (!scene || !file) {
-		return new Response('Scene not found', { status: 404 });
+		return new Response('场景不存在 / Scene not found', { status: 404 });
 	}
 
+	const isZh = url.searchParams.get('lang') === 'zh';
 	const origin = url.origin;
 	const imgUrl = `${origin}/game/${file}.jpg`;
+	const title = isZh ? scene.titleZh : scene.title;
+	const gameName = isZh ? '消失的房间' : 'The Missing Room';
 
 	const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="${isZh ? 'zh' : 'en'}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${scene.title} — The Missing Room</title>
+<title>${title} — ${gameName}</title>
 <style>
   body{margin:0;background:#1a1510;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:Georgia,serif}
   .wrap{max-width:600px;width:100%;padding:24px}
@@ -58,9 +61,9 @@ export const GET: RequestHandler = async ({ params, url }) => {
 </head>
 <body>
 <div class="wrap">
-  <img src="${imgUrl}" alt="${scene.title}" />
-  <div class="title">${scene.title}</div>
-  <div class="sub">${scene.titleZh} — The Missing Room</div>
+  <img src="${imgUrl}" alt="${title}" />
+  <div class="title">${title}</div>
+  <div class="sub">${isZh ? scene.title : scene.titleZh} — ${gameName}</div>
 </div>
 </body>
 </html>`;

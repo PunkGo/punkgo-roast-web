@@ -32,12 +32,12 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	choice = choice.replace(/[^A-C]/g, '').slice(0, 1);
 
 	if (!validateId(id) || !choice) {
-		return new Response('Invalid parameters. Use ?choice=A, B, or C', { status: 400, headers: { 'Content-Type': 'text/plain' } });
+		return new Response('参数无效 / Invalid parameters. Use ?choice=A, B, or C', { status: 400, headers: { 'Content-Type': 'text/plain' } });
 	}
 
 	const session = await getGameSession(id);
 	if (!session) {
-		return new Response('Game not found.', { status: 404, headers: { 'Content-Type': 'text/plain' } });
+		return new Response('游戏不存在 / Game not found.', { status: 404, headers: { 'Content-Type': 'text/plain' } });
 	}
 	if (session.status === 'completed') {
 		return new Response(renderComplete(session, origin), { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
@@ -46,12 +46,12 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const currentRound = session.current_round;
 	const roundData = ROUNDS[currentRound - 1];
 	if (!roundData) {
-		return new Response('Invalid game state.', { status: 400 });
+		return new Response('游戏状态无效 / Invalid game state.', { status: 400 });
 	}
 
 	const validChoices = roundData.choices.map(c => c.id);
 	if (!validChoices.includes(choice)) {
-		return new Response(`Invalid choice "${choice}". Valid: ${validChoices.join(', ')}`, { status: 400, headers: { 'Content-Type': 'text/plain' } });
+		return new Response(`无效选项 / Invalid choice "${choice}". Valid: ${validChoices.join(', ')}`, { status: 400, headers: { 'Content-Type': 'text/plain' } });
 	}
 
 	// Idempotency: if round param doesn't match current round, stale request
@@ -66,7 +66,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const updated = await advanceGameRound(id, choice);
 	if (!updated) {
 		const fresh = await getGameSession(id);
-		if (!fresh) return new Response('Game not found.', { status: 404 });
+		if (!fresh) return new Response('游戏不存在 / Game not found.', { status: 404 });
 		return renderGameScreen(fresh, currentRound, choice, roundData, origin);
 	}
 

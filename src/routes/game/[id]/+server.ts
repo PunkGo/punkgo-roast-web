@@ -13,12 +13,12 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const origin = url.origin;
 
 	if (!validateId(id)) {
-		return new Response('Not found.', { status: 404, headers: { 'Content-Type': 'text/plain' } });
+		return new Response('未找到 / Not found.', { status: 404, headers: { 'Content-Type': 'text/plain' } });
 	}
 
 	const session = await getGameSession(id);
 	if (!session) {
-		return new Response('Game session not found.', { status: 404, headers: { 'Content-Type': 'text/plain' } });
+		return new Response('游戏不存在 / Game session not found.', { status: 404, headers: { 'Content-Type': 'text/plain' } });
 	}
 
 	const isZh = session.locale === 'zh';
@@ -26,7 +26,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const roundData = ROUNDS[round - 1];
 
 	if (!roundData) {
-		return new Response('Game completed.', { status: 200, headers: { 'Content-Type': 'text/plain' } });
+		return new Response(isZh ? '游戏已结束。' : 'Game completed.', { status: 200, headers: { 'Content-Type': 'text/plain' } });
 	}
 
 	// Build "story so far" from all previous rounds

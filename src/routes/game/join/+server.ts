@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	name = name.trim();
 
 	if (!name) {
-		return new Response('Missing name parameter', { status: 400 });
+		return new Response('缺少名称参数 / Missing name parameter', { status: 400 });
 	}
 
 	const encoded = encodeURIComponent(name);

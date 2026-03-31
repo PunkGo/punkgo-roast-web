@@ -7,8 +7,9 @@ import { createGameSession } from '$lib/supabase';
 export const POST: RequestHandler = async ({ request }) => {
 	const { aiName, playerName, locale } = await request.json();
 
+	const isZh = locale === 'zh';
 	if (!aiName?.trim() || !playerName?.trim()) {
-		return new Response(JSON.stringify({ error: 'Missing names' }), {
+		return new Response(JSON.stringify({ error: isZh ? '请输入名称' : 'Missing names' }), {
 			status: 400,
 			headers: { 'Content-Type': 'application/json' },
 		});
@@ -29,7 +30,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	} catch (e) {
 		console.error('[game/create] failed:', e);
-		return new Response(JSON.stringify({ error: 'Failed to create game' }), {
+		return new Response(JSON.stringify({ error: isZh ? '创建失败，请重试' : 'Failed to create game' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' },
 		});
