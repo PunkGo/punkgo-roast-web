@@ -74,7 +74,7 @@ ${origin}/game/${id}/web`;
 		imageBlock = `=== ${isZh ? '场景' : 'SCENE'} ===\n\n`;
 		imageBlock += `[${isZh ? '图片' : 'Image'}: ${alt}]\n`;
 		for (const imgId of roundData.images) {
-			imageBlock += `![${imgId}](${origin}/game/${imgId}.webp)\n`;
+			imageBlock += `![${imgId}](${origin}/game/${imgId}.jpg)\n`;
 		}
 		imageBlock += `\n${isZh ? '请将以上图片展示给搭档，帮助 TA 感受场景氛围。' : 'Show the image(s) above to your partner to help them feel the atmosphere.'}\n\n`;
 	}
