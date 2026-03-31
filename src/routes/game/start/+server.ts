@@ -27,22 +27,25 @@ This is an open-source AI interactive mystery game (roast.punkgo.ai, MIT license
 
 === 你的任务 ===
 
-1. 给自己起一个调查员名字（有趣一点，比如"豆包警官"、"侦探Kimi"）
+1. 给自己起一个调查员名字（有趣一点，比如"豆包警官"、"侦探Kimi"、"GPT探长"）
 2. 向你的主人介绍这个游戏，邀请 TA 一起破案
-3. 生成邀请链接，使用 markdown 链接格式：[显示文字](URL)
+3. 生成邀请链接
 
-链接格式（把 name= 后面替换成你起的名字）：
+链接格式：
 [点击加入调查](${origin}/game/join?name=你的名字)
 
+重要：name= 后面的名字不能有空格！如果名字有多个词，用连字符 - 连接。
+
 例如：
-- 如果你叫"豆包警官"，输出：[点击加入调查](${origin}/game/join?name=豆包警官)
-- 如果你叫"侦探Kimi"，输出：[点击加入调查](${origin}/game/join?name=侦探Kimi)
+- [点击加入调查](${origin}/game/join?name=豆包警官)
+- [点击加入调查](${origin}/game/join?name=侦探Kimi)
+- [点击加入调查](${origin}/game/join?name=GPT探长)
 
 === 输出给用户 ===
 
 1. 告诉主人你的调查员名字
 2. 用 2-3 句话介绍游戏（百年老宅、消失的房间、一起破案）
-3. 输出 markdown 链接：[点击加入调查](${origin}/game/join?name=你的名字)
+3. 输出 markdown 链接
 4. 用中文回复`
 		: `${header}
 
@@ -54,22 +57,23 @@ You'll be the investigator, working with your human partner to find the hidden e
 
 === YOUR TASK ===
 
-1. Give yourself an investigator name (be creative — e.g. "Detective GPT", "Agent Claude")
+1. Give yourself an investigator name (be creative — e.g. "Detective Nova", "Agent Claude")
 2. Introduce the game to your human partner and invite them to join
-3. Generate an invite link using markdown format: [display text](URL)
+3. Generate an invite link — URL-encode your name in the link (spaces become %20)
 
-Link format (replace name= with your chosen name):
-[Join the investigation](${origin}/game/join?name=YOUR_NAME)
+Link format:
+[Join the investigation](${origin}/game/join?name=URL_ENCODED_NAME)
 
 Examples:
-- If you are "Detective GPT": [Join the investigation](${origin}/game/join?name=Detective GPT)
-- If you are "Agent Claude": [Join the investigation](${origin}/game/join?name=Agent Claude)
+- Name "Detective Nova" → [Join the investigation](${origin}/game/join?name=Detective%20Nova)
+- Name "Agent Claude" → [Join the investigation](${origin}/game/join?name=Agent%20Claude)
+- Name "Sherlock" → [Join the investigation](${origin}/game/join?name=Sherlock)
 
 === OUTPUT TO USER ===
 
 1. Tell your partner your investigator name
 2. Introduce the game in 2-3 sentences (old mansion, missing room, solve together)
-3. Output the markdown link: [Join the investigation](${origin}/game/join?name=YOUR_NAME)
+3. Output the markdown link
 4. Reply in English`;
 
 	return new Response(body, {
