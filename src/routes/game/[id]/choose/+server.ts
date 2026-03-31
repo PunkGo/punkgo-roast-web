@@ -147,6 +147,9 @@ function renderProgressPage(
   .dot { width: 28px; height: 28px; border-radius: 50%; background: #2a2018; border: 1px solid #3a3020; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #6a5a48; }
   .dot.done { background: #5a8c6a; color: #fff; border-color: #5a8c6a; }
   .dot.current { background: #c8a060; color: #1a1510; border-color: #c8a060; font-weight: 700; }
+  .scene-img { margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .scene-img img { width: 100%; border-radius: 10px; max-width: 100%; }
+  .scene-img img + img { width: 48%; }
   .choice-made { padding: 12px 16px; border-radius: 8px; background: #2a2518; border-left: 3px solid #c8a060; font-size: 14px; margin-bottom: 16px; }
   .choice-label { font-size: 11px; font-weight: 600; color: #c8a060; }
   .log-entry { padding: 10px 14px; margin-bottom: 8px; border-radius: 8px; background: #2a2018; border: 1px solid #3a3020; font-size: 13px; line-height: 1.5; }
@@ -172,12 +175,12 @@ function renderProgressPage(
 
   <div class="progress">${dots}</div>
 
+  ${roundData.images.length > 0 ? `<div class="scene-img">${roundData.images.map(img => `<img src="${origin}/game/${img}.jpg" alt="" />`).join('')}</div>` : ''}
+
   <div class="choice-made">
     <span class="choice-label">${isZh ? '选择' : 'CHOICE'}: ${choice}</span>
     <p style="margin:4px 0 0;color:#e8dcc8;font-size:13px;">${choiceText}</p>
   </div>
-
-  <div class="floor-plan">${floorPlan}</div>
 
   ${storyLog}
 

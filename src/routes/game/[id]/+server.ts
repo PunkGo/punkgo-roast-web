@@ -67,18 +67,8 @@ ${origin}/game/${id}/web`;
 	const narrative = isZh ? roundData.narrativeZh : roundData.narrativeEn;
 	const clue = isZh ? roundData.clueZh : roundData.clueEn;
 
-	// Build image block: markdown image (Doubao renders) + scene link (others click)
-	let imageBlock = '';
-	if (roundData.images.length > 0) {
-		const firstImg = roundData.images[0];
-		const sceneId = firstImg.replace(/_.*/, ''); // r01_manor_exterior -> r01
-		imageBlock = `=== ${isZh ? '场景' : 'SCENE'} ===\n\n`;
-		imageBlock += `![${isZh ? roundData.imageAltZh : roundData.imageAltEn}](${origin}/game/${firstImg}.jpg)\n`;
-		if (roundData.images.length > 1) {
-			imageBlock += `![](${origin}/game/${roundData.images[1]}.jpg)\n`;
-		}
-		imageBlock += `\n[${isZh ? '🏚️ 查看场景插图' : '🏚️ View scene illustration'}](${origin}/game/scene/${sceneId})\n\n`;
-	}
+	// Images are shown on the HTML choose page, not in text/plain
+	const imageBlock = '';
 
 	let choicesBlock = '';
 	for (const c of roundData.choices) {
