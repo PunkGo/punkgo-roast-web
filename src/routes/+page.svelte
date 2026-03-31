@@ -28,13 +28,16 @@
 		<!-- Quiz Card (warm) -->
 		<a href="/quiz" class="card card-quiz">
 			<span class="card-tag">— A I &nbsp; V I B E &nbsp; C H E C K —</span>
-			<div class="dog-preview">
+			<div class="dog-grid">
 				{#each previewDogs as id}
-					<img src="/dogs/thumb/felt-{id}-nobg.png" alt={id} width="56" height="56" loading="lazy" />
+					<img src="/dogs/thumb/felt-{id}-nobg.png" alt={id} loading="lazy" />
 				{/each}
 			</div>
 			<h2>{isZh ? '你的 AI 是什么 Vibe？' : "What's Your AI Vibe?"}</h2>
-			<p class="card-sub">{isZh ? '16 种犬种 · 性格测试 · 领养狗证' : '16 breeds · personality test · dog license'}</p>
+			<p class="card-sub">{isZh
+				? '给 AI 发一段提示词，测出它的隐藏人格'
+				: 'Send a prompt to your AI, discover its hidden personality'}</p>
+			<p class="card-detail">{isZh ? '16 种犬种 · 性格卡 · 狗证 · 狗窝' : '16 breeds · personality card · dog license · kennel'}</p>
 			<div class="card-cta">{isZh ? '来，测一个 🐾' : "Let's Find Out 🐾"}</div>
 			<span class="card-meta">{isZh ? '免费 · 无需注册 · 5 分钟' : 'Free · No signup · 5 min'}</span>
 		</a>
@@ -44,7 +47,7 @@
 			<span class="card-tag">— A I &nbsp; M Y S T E R Y &nbsp; G A M E —</span>
 			<img class="game-hero" src="/game/game_hero.jpg" alt="The Missing Room" loading="lazy" />
 			<h2>{isZh ? '消失的房间' : 'The Missing Room'}</h2>
-			<p class="card-sub">{isZh ? 'AI 当侦探，你来破案' : 'AI is the detective. You drive the case.'}</p>
+			<p class="card-sub">{isZh ? '一栋百年老宅，一间消失的房间' : 'A century-old mansion. A room that vanished.'}</p>
 			<div class="card-cta">{isZh ? '开始调查 🏚️' : 'Investigate 🏚️'}</div>
 			<span class="card-meta">{isZh ? '10 轮 · 3 结局 · ~15 分钟' : '10 rounds · 3 endings · ~15 min'}</span>
 		</a>
@@ -162,18 +165,25 @@
 		font-size: var(--font-size-2xs);
 	}
 
-	/* Quiz dog preview */
-	.dog-preview {
+	/* Quiz dog grid */
+	.dog-grid {
 		display: flex;
-		gap: 10px;
-		padding: var(--space-xs) 0;
+		gap: 12px;
+		padding: var(--space-sm) 0;
 	}
-	.dog-preview img {
-		width: 56px;
-		height: 56px;
+	.dog-grid img {
+		width: 72px;
+		height: 72px;
 		border-radius: var(--radius-lg);
 		object-fit: cover;
 	}
+
+	.card-detail {
+		font-size: var(--font-size-xs);
+		color: var(--color-text-tertiary);
+		letter-spacing: 0.02em;
+	}
+	.card-game .card-detail { color: #6a5a48; }
 
 	/* Game hero image */
 	.game-hero {
