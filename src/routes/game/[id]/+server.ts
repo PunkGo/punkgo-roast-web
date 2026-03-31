@@ -67,6 +67,18 @@ ${origin}/game/${id}/web`;
 	const narrative = isZh ? roundData.narrativeZh : roundData.narrativeEn;
 	const clue = isZh ? roundData.clueZh : roundData.clueEn;
 
+	// Build image block: markdown images for GPT/Doubao, alt text for others
+	let imageBlock = '';
+	if (roundData.images.length > 0) {
+		const alt = isZh ? roundData.imageAltZh : roundData.imageAltEn;
+		imageBlock = `=== ${isZh ? '场景' : 'SCENE'} ===\n\n`;
+		imageBlock += `[${isZh ? '图片' : 'Image'}: ${alt}]\n`;
+		for (const imgId of roundData.images) {
+			imageBlock += `![${imgId}](${origin}/game/${imgId}.webp)\n`;
+		}
+		imageBlock += `\n${isZh ? '请将以上图片展示给搭档，帮助 TA 感受场景氛围。' : 'Show the image(s) above to your partner to help them feel the atmosphere.'}\n\n`;
+	}
+
 	let choicesBlock = '';
 	for (const c of roundData.choices) {
 		choicesBlock += `${c.id}: ${isZh ? c.zh : c.en}\n`;
@@ -78,7 +90,7 @@ ${origin}/game/${id}/web`;
 
 ${isZh ? '你是' : 'You are'} ${session.ai_name}${isZh ? '，一名调查员。你正在与' : ', an investigator. You are working with'} ${session.player_name} ${isZh ? '合作寻找 Thornfield 庄园中隐藏的房间。' : 'to find a hidden room in Thornfield Manor.'}
 
-${storySoFar ? `=== ${isZh ? '之前的调查' : 'STORY SO FAR'} ===\n\n${storySoFar}\n` : ''}=== ${isZh ? '当前情况' : 'CURRENT SITUATION'} (Round ${round}) ===
+${storySoFar ? `=== ${isZh ? '之前的调查' : 'STORY SO FAR'} ===\n\n${storySoFar}\n` : ''}${imageBlock}=== ${isZh ? '当前情况' : 'CURRENT SITUATION'} (Round ${round}) ===
 
 ${narrative}
 
