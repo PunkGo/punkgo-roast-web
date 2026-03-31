@@ -71,7 +71,15 @@
 			{@const ending = getEnding(round9Choice, session.ai_name, session.player_name, isZh)}
 			<div class="ending">
 				<h2>{isZh ? '结局' : 'Ending'}</h2>
-				<div class="ending-text">{ending}</div>
+				{#each ending.split('\n\n') as para}
+					{#if para.includes('═══')}
+						<div class="ending-badge">{para.replace(/═/g, '').trim()}</div>
+					{:else if para.includes('🏆') || para.includes('Well done') || para.includes('干得好') || para.includes('恭喜')}
+						<div class="ending-result">{para.trim()}</div>
+					{:else}
+						<p class="ending-para">{para.trim()}</p>
+					{/if}
+				{/each}
 			</div>
 		{:else}
 			<div class="prompt-box">
@@ -119,8 +127,24 @@
 	.log-entry p { margin: 4px 0 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; }
 
 	.ending { margin-bottom: var(--space-lg); }
-	.ending h2 { font-size: var(--font-size-base); font-weight: 700; color: #c8a060; margin-bottom: var(--space-sm); }
-	.ending-text { font-size: var(--font-size-sm); line-height: 1.8; white-space: pre-line; color: var(--color-text-primary); }
+	.ending h2 { font-size: var(--font-size-base); font-weight: 700; color: #c8a060; margin-bottom: var(--space-md); }
+	.ending-para {
+		font-size: var(--font-size-sm); line-height: 1.8; color: var(--color-text-primary);
+		margin: 0 0 var(--space-md);
+		padding: 12px 16px; border-radius: var(--radius-md);
+		background: var(--color-bg-card); border: 1px solid var(--color-border);
+	}
+	.ending-badge {
+		font-size: 13px; font-weight: 700; color: #c8a060;
+		text-align: center; padding: var(--space-sm) 0;
+		letter-spacing: 0.05em; margin: var(--space-md) 0;
+	}
+	.ending-result {
+		font-size: var(--font-size-sm); font-weight: 600; color: #5a8c6a;
+		text-align: center; padding: var(--space-md);
+		background: var(--color-bg-muted); border-radius: var(--radius-lg);
+		margin: var(--space-sm) 0;
+	}
 
 	.prompt-box {
 		padding: var(--space-md); border-radius: var(--radius-lg);
