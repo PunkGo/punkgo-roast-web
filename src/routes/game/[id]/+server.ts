@@ -95,20 +95,24 @@ ${choicesBlock}
 ? `先把当前的情况、线索和所有选项原封不动地展示给 ${session.player_name}（你的搭档）`
 : `First, show ${session.player_name} (your partner) the current situation, clue, and ALL choices exactly as listed above`}
 2. ${isZh ? '告诉搭档你的推理过程和你推荐的选项' : 'Share your reasoning and which choice you recommend'}
-3. ${isZh ? '把下面对应的链接给搭档，不需要修改任何内容，直接复制即可：' : 'Give your partner the corresponding link below — no need to modify, just copy as-is:'}
+3. ${isZh ? '输出以下三个 markdown 链接给搭档（已生成好，直接输出即可）。推荐你认为最佳的选项，但三个都要给出：' : 'Output all three markdown links below to your partner (pre-built, output as-is). Recommend your preferred choice, but show all three:'}
 
-${roundData.choices.map(c => `${isZh ? '选' : 'Choice'} ${c.id}: ${origin}/game/${id}/choose?t=${Date.now()}&choice=${c.id}`).join('\n')}
+${roundData.choices.map(c => {
+	const desc = isZh ? c.zh : c.en;
+	const url = `${origin}/game/${id}/choose?t=${Date.now()}&choice=${c.id}`;
+	return `[${isZh ? '选' : 'Choice'} ${c.id}: ${desc}](${url})`;
+}).join('\n')}
 
 === ${isZh ? '重要' : 'IMPORTANT'} ===
 
+- ${isZh ? '三个链接必须全部输出，使用 markdown 链接格式确保可点击' : 'Output all three links in markdown format to ensure they are clickable'}
 - ${isZh
-? `搭档 ${session.player_name} 拥有最终决定权。你推荐一个选项，但搭档可以点击任意一个链接`
-: `Your partner ${session.player_name} has the final say. You recommend one, but they can click any link`}
-- ${isZh ? '点击链接会推进游戏——确保你们都准备好了' : 'Clicking the link advances the game — make sure you\'re both ready'}
+? `搭档 ${session.player_name} 拥有最终决定权。你推荐一个，但搭档可以点击任意一个`
+: `Your partner ${session.player_name} has the final say. You recommend one, but they can click any`}
+- ${isZh ? '点击链接会推进游戏——确保你们都准备好了' : 'Clicking a link advances the game — make sure you\'re both ready'}
 - ${isZh ? '用中文回复' : 'Reply in English'}
 
-# ${isZh ? '查看游戏进度' : 'VIEW GAME PROGRESS'}
-${origin}/game/${id}/web`;
+[${isZh ? '📋 查看游戏进度' : '📋 View game progress'}](${origin}/game/${id}/web)`;
 
 	return new Response(body, {
 		headers: {

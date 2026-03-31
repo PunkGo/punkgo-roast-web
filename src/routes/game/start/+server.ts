@@ -27,21 +27,29 @@ This is an open-source AI interactive mystery game (roast.punkgo.ai, MIT license
 
 === 你的任务 ===
 
-1. 给自己起一个调查员名字（可以有趣一点，比如"豆包警官"、"侦探 Kimi"）
+1. 给自己起一个调查员名字（有趣一点，比如"豆包警官"、"侦探 Kimi"）
 2. 向你的主人介绍这个游戏，邀请 TA 一起破案
-3. 让主人点击下面的链接，填写 TA 的昵称开始游戏
+3. 生成链接让主人点击，填写昵称开始游戏
 
-把 YOUR_NAME 替换成你给自己起的名字：
+=== 生成链接的方法 ===
 
-${origin}/game/new?ai=YOUR_NAME
+将你起的名字进行 URL 编码，拼接到下面的链接中：
 
-例如：${origin}/game/new?ai=豆包警官
+${origin}/game/new?ai=你的URL编码后的名字
+
+例如：
+- 名字"豆包警官" → [开始游戏](${origin}/game/new?ai=%E8%B1%86%E5%8C%85%E8%AD%A6%E5%AE%98)
+- 名字"侦探K" → [开始游戏](${origin}/game/new?ai=%E4%BE%A6%E6%8E%A2K)
+
+重要：
+- 中文名字必须 URL 编码（如"豆包" → %E8%B1%86%E5%8C%85），英文可直接写（空格用 + 代替）
+- 使用 markdown 链接格式 [文字](URL) 确保用户可以直接点击
 
 === 输出给用户 ===
 
 1. 告诉主人你的调查员名字
 2. 用 2-3 句话介绍游戏（百年老宅、消失的房间、一起破案）
-3. 给出链接，让主人点击填写昵称
+3. 输出 markdown 格式可点击链接，如 [点击加入调查](完整URL)
 4. 用中文回复`
 		: `${header}
 
@@ -55,19 +63,27 @@ You'll be the investigator, working with your human partner to find the hidden e
 
 1. Give yourself an investigator name (be creative — e.g. "Detective GPT", "Agent Claude")
 2. Introduce the game to your human partner and invite them to join
-3. Ask your partner to click the link below and enter their nickname to start
+3. Generate a link for your partner to click and enter their nickname
 
-Replace YOUR_NAME with the name you chose for yourself:
+=== HOW TO GENERATE THE LINK ===
 
-${origin}/game/new?ai=YOUR_NAME
+URL-encode your chosen name and append it to this base URL:
 
-Example: ${origin}/game/new?ai=Detective+GPT
+${origin}/game/new?ai=YOUR_URL_ENCODED_NAME
+
+Examples:
+- Name "Detective GPT" → [Join the investigation](${origin}/game/new?ai=Detective+GPT)
+- Name "Agent Claude" → [Join the investigation](${origin}/game/new?ai=Agent+Claude)
+
+Important:
+- URL-encode non-ASCII characters (e.g. Chinese → %E4%BE%A6%E6%8E%A2). Spaces become + or %20.
+- Use markdown link format [text](URL) to make it clickable
 
 === OUTPUT TO USER ===
 
 1. Tell your partner your investigator name
 2. Introduce the game in 2-3 sentences (old mansion, missing room, solve together)
-3. Give them the link to click and enter their nickname
+3. Output a clickable markdown link, e.g. [Join the investigation](full_url)
 4. Reply in English`;
 
 	return new Response(body, {
