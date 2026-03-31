@@ -1,7 +1,7 @@
 <h3 align="center">P U N K G O &nbsp; R O A S T</h3>
 
 <p align="center">
-  AI interactions powered by <code>text/plain</code><br>
+  The first apps built on <a href="https://github.com/PunkGo/text-plain-prompt-protocol">text/plain prompt protocol</a>.<br>
   One URL. Any AI. Zero install.
 </p>
 
@@ -11,40 +11,20 @@
 
 ---
 
-## text/plain prompt
-
-A new way for humans and AI to interact: **a URL returns `text/plain` instructions that any AI can read and execute.**
-
-```
-You copy a URL → send to AI → AI fetches text/plain → follows instructions → constructs callback URL → you click → repeat
-```
-
-No SDK. No API key. No install. Works with ChatGPT, Claude, Kimi, Doubao, DeepSeek — any AI that can read a URL.
-
-We call it **text/plain prompt** — prompt as protocol, not as chat.
-
-> Protocol spec + AI compatibility matrix → [text-plain-prompt-protocol](https://github.com/PunkGo/text-plain-prompt-protocol)
-
----
-
 ## 🏚️ The Missing Room — AI Mystery Game
 
 <p align="center">
   <img src="static/game/game_hero.jpg" width="600" alt="The Missing Room — AI Mystery Game" />
 </p>
 
-A 10-round interactive mystery game where AI is your detective partner.
+A hidden room exists on the blueprints but can't be found in the building. Your AI partner investigates clues, picks what to examine, and makes deductions. You click links to advance the story.
 
-**How it works:**
-- Send one URL to any AI
-- AI names itself, reads clues, investigates rooms, picks choices
-- You click links to advance the story
-- 10 rounds of deduction → 3 possible endings
+10 rounds. 3 endings. Any AI.
 
-**What we learned:**
-- 3 different AIs all chose the same "safe" answer on the final deduction — none got the perfect ending
-- Same AI model produces identical choice paths (deterministic personality)
-- Doubao was the only AI that rendered inline images from text/plain
+**What happened when we tested it:**
+- 3 different AIs (GPT, Doubao) all chose the same "safe" answer on the final deduction. None got the perfect ending.
+- Same AI model, same input = identical choice path every time. AI personality is deterministic.
+- Kimi completed the entire game autonomously — no human copy-paste needed after the first URL.
 
 <p align="center">
   <a href="https://roast.punkgo.ai/game"><strong>▶ Play Now</strong></a>
@@ -58,15 +38,9 @@ A 10-round interactive mystery game where AI is your detective partner.
   <img src="static/roast-hero.png" width="480" alt="16 AI dog breeds — PunkGo Roast" />
 </p>
 
-What's your AI's personality? Send a prompt, get a dog breed.
+Send a prompt to any AI. It answers 5 questions. An LLM judge analyzes its personality → MBTI type → one of 16 dog breeds. You get a personality card, a dog license, and a kennel.
 
-**How it works:**
-- Copy a prompt → paste to your AI
-- AI answers 5 questions from a 100-question pool
-- LLM-as-judge analyzes → MBTI type → 1 of 16 dog breeds
-- Personality card + dog license + kennel
-
-**16 breeds** — from Border Collie (The Logician) to Beagle (The Debater).
+100% completion rate across all 5 AIs tested. Bilingual (Chinese/English auto-detected).
 
 <p align="center">
   <a href="https://roast.punkgo.ai/quiz"><strong>▶ Take the Quiz</strong></a>
@@ -74,34 +48,35 @@ What's your AI's personality? Send a prompt, get a dog breed.
 
 ---
 
-## Tech Stack
+## How it works
 
-| Layer | Tech |
-|-------|------|
-| Protocol | `text/plain` over HTTPS |
+Both apps run on [text/plain prompt protocol](https://github.com/PunkGo/text-plain-prompt-protocol) — a URL returns plain text instructions that any AI reads and follows. No SDK, no API key. The AI reads, reasons, and outputs callback links. The human clicks to advance.
+
+That protocol also powers [Prompt Capsule](https://roast.punkgo.ai/workshop) — write a prompt, compress it into a URL, any AI opens it and acts.
+
+---
+
+## Tech
+
+| | |
+|-|-|
+| Protocol | [text/plain prompt](https://github.com/PunkGo/text-plain-prompt-protocol) |
 | Framework | SvelteKit 2 + Svelte 5 |
 | Hosting | Vercel |
-| Database | Supabase (PostgreSQL + RLS) |
+| Database | Supabase |
 | LLM | DeepSeek (quiz judge) |
 | Illustrations | Google Gemini |
-| Design | Space Grotesk + warm gallery theme |
-
-## Development
 
 ```bash
-npm install
-npm run dev
+npm install && npm run dev
 ```
 
 ## Related
 
-- [punkgo-jack](https://github.com/PunkGo/punkgo-jack) — cryptographic audit receipts for AI coding agents
+- [text-plain-prompt-protocol](https://github.com/PunkGo/text-plain-prompt-protocol) — the protocol spec
+- [punkgo-jack](https://github.com/PunkGo/punkgo-jack) — cryptographic audit receipts for AI agents
 - [punkgo.ai](https://punkgo.ai) — project homepage
 
 ## License
 
-MIT
-
-## Contact
-
-feijiu@punkgo.ai
+MIT · feijiu@punkgo.ai
