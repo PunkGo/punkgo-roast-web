@@ -22,6 +22,9 @@
 	<div class="hero-text">
 		<span class="section-tag">— P U N K G O &nbsp; R O A S T —</span>
 		<h1>{isZh ? '用一个链接，让 AI 做点好玩的' : 'One URL. Any AI. Something fun.'}</h1>
+		<p class="hero-sub">{isZh
+			? '基于 text/plain 协议——一个 URL 返回纯文本指令，任何 AI 读了就能执行。零安装，零 API key。'
+			: 'Built on text/plain protocol — a URL returns plain text instructions that any AI can read and act on. Zero install. Zero API key.'}</p>
 	</div>
 
 	<div class="cards">
@@ -74,6 +77,13 @@
 		line-height: 1.2;
 		max-width: 500px;
 		margin: var(--space-sm) auto 0;
+	}
+	.hero-sub {
+		font-size: var(--font-size-sm);
+		color: var(--color-text-tertiary);
+		max-width: 480px;
+		line-height: 1.6;
+		margin-top: var(--space-xs);
 	}
 
 	.cards {

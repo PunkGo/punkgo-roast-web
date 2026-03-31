@@ -11,8 +11,6 @@
 	let { children } = $props();
 	let isZh = $state(false);
 	let myKennels: { id: string; dogId: string }[] = $state([]);
-	let showKennelMenu = $state(false);
-
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
 		// Parse punkgo_k_{id}={dogId} cookies
@@ -51,35 +49,10 @@
 		<a href="/dogs" class="nav-link">{isZh ? '🐾 图鉴' : '🐾 Breeds'}</a>
 		<a href="/game" class="nav-link">{isZh ? '🏚️ 游戏' : '🏚️ Game'}</a>
 		<a href="/workshop" class="nav-link">{isZh ? '💊 胶囊' : '💊 Capsule'}</a>
-		<div class="kennel-nav">
-			<button class="nav-link kennel-btn" onclick={() => showKennelMenu = !showKennelMenu}>
-				{isZh ? '🏠 狗窝' : '🏠 Kennel'}
-				{#if myKennels.length > 0}<span class="kennel-badge">{myKennels.length}</span>{/if}
-			</button>
-			{#if showKennelMenu}
-				<div class="kennel-menu">
-					{#if myKennels.length > 0}
-						<div class="kennel-list">
-							{#each myKennels as k}
-								<a href="/k/{k.id}/web" class="kennel-item" onclick={() => showKennelMenu = false}>
-									{#if k.dogId}
-										<img src="/dogs/thumb/felt-{k.dogId}-nobg.png" alt={k.dogId} class="kennel-thumb" />
-									{:else}
-										<span class="kennel-paw">🐾</span>
-									{/if}
-									<span class="kennel-id">{k.id}</span>
-								</a>
-							{/each}
-						</div>
-					{:else}
-						<p class="kennel-empty">{isZh ? '还没有狗窝' : 'No kennels yet'}</p>
-					{/if}
-					<a href="/k/recover" class="kennel-recover" onclick={() => showKennelMenu = false}>
-						{isZh ? '🔑 恢复码找回' : '🔑 Recover with code'}
-					</a>
-				</div>
-			{/if}
-		</div>
+		<a href="/kennels" class="nav-link">
+			{isZh ? '🏠 狗窝' : '🏠 Kennel'}
+			{#if myKennels.length > 0}<span class="kennel-badge">{myKennels.length}</span>{/if}
+		</a>
 		<a href="https://github.com/PunkGo/punkgo-roast-web" target="_blank" rel="noopener" class="nav-link" title="GitHub">
 			<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
 		</a>
@@ -171,40 +144,13 @@
 	@media (prefers-reduced-motion: reduce) {
 		.nav-right a.ext-btn { animation: none; }
 	}
-	/* Kennel nav dropdown */
-	.kennel-nav { position: relative; }
-	.kennel-btn { background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; }
+	/* Kennel badge */
 	.kennel-badge {
 		display: inline-flex; align-items: center; justify-content: center;
 		width: 16px; height: 16px; border-radius: 50%;
 		background: var(--color-cta); color: white;
 		font-size: 9px; font-weight: 700; margin-left: 2px; vertical-align: top;
 	}
-	.kennel-menu {
-		position: absolute; top: 100%; right: 0; margin-top: 8px;
-		background: var(--color-bg-card); border: 1px solid var(--color-border);
-		border-radius: var(--radius-md); padding: 8px;
-		min-width: 180px; box-shadow: 0 8px 24px rgba(58,37,24,0.12);
-		z-index: 100;
-	}
-	.kennel-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
-	.kennel-item {
-		display: flex; align-items: center; gap: 8px;
-		padding: 6px 8px; border-radius: var(--radius-sm);
-		text-decoration: none; color: var(--color-text);
-		font-size: var(--font-size-sm); transition: background 100ms;
-	}
-	.kennel-item:hover { background: var(--color-bg-muted); }
-	.kennel-thumb { width: 28px; height: 28px; border-radius: var(--radius-sm); object-fit: contain; }
-	.kennel-paw { font-size: 20px; width: 28px; text-align: center; }
-	.kennel-id { font-weight: 500; font-size: 12px; color: var(--color-text-secondary); }
-	.kennel-empty { font-size: var(--font-size-xs); color: var(--color-text-tertiary); padding: 8px; text-align: center; }
-	.kennel-recover {
-		display: block; text-align: center; padding: 8px;
-		font-size: var(--font-size-xs); color: var(--color-cta);
-		border-top: 1px solid var(--color-border); margin-top: 4px; text-decoration: none;
-	}
-	.kennel-recover:hover { text-decoration: underline; }
 
 	@media (max-width: 768px) {
 		.nav { padding: 0 16px; }
