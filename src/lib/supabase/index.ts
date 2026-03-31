@@ -11,3 +11,5 @@ export { createTopic, getTopic, getTopicsByKennel, updateTopic, deleteTopic } fr
 export type { Topic } from './topics';
 export { addTopicResponse, getTopicResponses, getTopicResponseCount } from './topic-responses';
 export type { TopicResponse } from './topic-responses';
+export { createGameSession, getGameSession, advanceGameRound } from './game-sessions';
+export type { GameSession } from './game-sessions';
