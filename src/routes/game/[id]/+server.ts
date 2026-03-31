@@ -67,16 +67,17 @@ ${origin}/game/${id}/web`;
 	const narrative = isZh ? roundData.narrativeZh : roundData.narrativeEn;
 	const clue = isZh ? roundData.clueZh : roundData.clueEn;
 
-	// Build image block: markdown images for GPT/Doubao, alt text for others
+	// Build image block: markdown image (Doubao renders) + scene link (others click)
 	let imageBlock = '';
 	if (roundData.images.length > 0) {
-		const alt = isZh ? roundData.imageAltZh : roundData.imageAltEn;
+		const firstImg = roundData.images[0];
+		const sceneId = firstImg.replace(/_.*/, ''); // r01_manor_exterior -> r01
 		imageBlock = `=== ${isZh ? '场景' : 'SCENE'} ===\n\n`;
-		imageBlock += `[${isZh ? '图片' : 'Image'}: ${alt}]\n`;
-		for (const imgId of roundData.images) {
-			imageBlock += `![${imgId}](${origin}/game/${imgId}.jpg)\n`;
+		imageBlock += `![${isZh ? roundData.imageAltZh : roundData.imageAltEn}](${origin}/game/${firstImg}.jpg)\n`;
+		if (roundData.images.length > 1) {
+			imageBlock += `![](${origin}/game/${roundData.images[1]}.jpg)\n`;
 		}
-		imageBlock += `\n${isZh ? '请将以上图片展示给搭档，帮助 TA 感受场景氛围。' : 'Show the image(s) above to your partner to help them feel the atmosphere.'}\n\n`;
+		imageBlock += `\n[${isZh ? '🏚️ 查看场景插图' : '🏚️ View scene illustration'}](${origin}/game/scene/${sceneId})\n\n`;
 	}
 
 	let choicesBlock = '';

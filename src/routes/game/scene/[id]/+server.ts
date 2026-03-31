@@ -10,6 +10,7 @@ const SCENES: Record<string, { title: string; titleZh: string }> = {
 	r01: { title: 'Thornfield Manor — Arrival', titleZh: 'Thornfield 庄园 — 抵达' },
 	r02: { title: 'The Library', titleZh: '图书馆' },
 	r03: { title: 'The Hallway Measurement', titleZh: '走廊测量' },
+	r04: { title: 'Hidden Markers', titleZh: '隐藏标记' },
 	r04a: { title: 'The Seven-Petal Flower', titleZh: '七瓣花' },
 	r04b: { title: 'The Compass Plate', titleZh: '罗盘盘' },
 	r05: { title: 'The Wall Mechanism', titleZh: '墙壁机关' },
@@ -18,13 +19,16 @@ const SCENES: Record<string, { title: string; titleZh: string }> = {
 	r08: { title: 'The Hidden Entrance', titleZh: '密室入口' },
 	r09: { title: "The Cartographer's Study", titleZh: '制图师书房' },
 	r10: { title: 'Three More Rooms', titleZh: '三间密室' },
+	fp01: { title: 'Original Blueprint', titleZh: '原始蓝图' },
+	fp02: { title: 'Annotated Blueprint', titleZh: '标注蓝图' },
 };
 
 const ID_TO_FILE: Record<string, string> = {
 	r01: 'r01_manor_exterior', r02: 'r02_library_wall', r03: 'r03_hallway_measurement',
-	r04a: 'r04_flower_symbol', r04b: 'r04_compass_plate', r05: 'r05_wall_mechanism',
+	r04: 'r04_flower_symbol', r04a: 'r04_flower_symbol', r04b: 'r04_compass_plate', r05: 'r05_wall_mechanism',
 	r06: 'r06_conservatory', r07: 'r07_blueprint_back', r08: 'r08_room_entrance',
 	r09: 'r09_cartographer_desk', r10: 'r10_three_doors',
+	fp01: 'fp01_original_blueprint', fp02: 'fp02_annotated_blueprint',
 };
 
 export const GET: RequestHandler = async ({ params, url }) => {
