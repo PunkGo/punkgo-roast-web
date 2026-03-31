@@ -99,7 +99,7 @@ ${choicesBlock}
 
 ${roundData.choices.map(c => {
 	const desc = isZh ? c.zh : c.en;
-	const url = `${origin}/game/${id}/choose?t=${Date.now()}&choice=${c.id}`;
+	const url = `${origin}/game/${id}/choose?t=${Date.now()}&round=${round}&choice=${c.id}`;
 	return `[${isZh ? '选' : 'Choice'} ${c.id}: ${desc}](${url})`;
 }).join('\n')}
 

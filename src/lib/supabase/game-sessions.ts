@@ -48,8 +48,10 @@ export async function advanceGameRound(id: string, choice: string): Promise<Game
 	const newRound = session.current_round + 1;
 	const isComplete = newRound >= 10; // Complete after round 9 choice (round 10 is ending only)
 
-	await serviceRoleFetch(`game_sessions?id=eq.${id}`, {
+	// Optimistic concurrency: only update if current_round hasn't changed
+	const rows = await serviceRoleFetch(`game_sessions?id=eq.${id}&current_round=eq.${session.current_round}`, {
 		method: 'PATCH',
+		headers: { 'Prefer': 'return=representation' },
 		body: JSON.stringify({
 			current_round: isComplete ? 10 : newRound,
 			choices: newChoices,
@@ -57,10 +59,7 @@ export async function advanceGameRound(id: string, choice: string): Promise<Game
 		}),
 	});
 
-	return {
-		...session,
-		current_round: isComplete ? 10 : newRound,
-		choices: newChoices,
-		status: isComplete ? 'completed' : 'playing',
-	};
+	// If no rows updated, another request already advanced this round
+	if (!rows || rows.length === 0) return null;
+	return rows[0];
 }

@@ -14,7 +14,8 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const origin = url.origin;
 
 	let choice = (url.searchParams.get('choice') || '').trim().toUpperCase();
-	// Multi-layer decode
+	const roundParam = parseInt(url.searchParams.get('round') || '0');
+	// Multi-layer decode for AI compatibility (Doubao double-encodes, DeepSeek triple-encodes)
 	for (let i = 0; i < 3; i++) {
 		if (choice.includes('%')) {
 			try { const d = decodeURIComponent(choice); if (d === choice) break; choice = d; } catch { break; }
@@ -46,16 +47,22 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		return new Response(`Invalid choice "${choice}". Valid: ${validChoices.join(', ')}`, { status: 400, headers: { 'Content-Type': 'text/plain' } });
 	}
 
-	// Idempotency: if this round already has a choice, don't advance — just re-render
-	if (session.choices.length >= currentRound) {
-		const existingChoice = session.choices[currentRound - 1];
-		return renderProgressPage(session, currentRound, existingChoice, roundData, origin);
+	// Idempotency: if round param is provided and doesn't match current round, this is a stale/duplicate request
+	if (roundParam > 0 && roundParam !== currentRound) {
+		// This request is for a round that's already been played — show current state
+		const playedRound = Math.min(roundParam, session.choices.length);
+		const playedRoundData = ROUNDS[playedRound - 1] || roundData;
+		const existingChoice = session.choices[playedRound - 1] || choice;
+		return renderProgressPage(session, playedRound, existingChoice, playedRoundData, origin);
 	}
 
-	// Advance the game
+	// Advance the game (optimistic concurrency — returns null if another request already advanced)
 	const updated = await advanceGameRound(id, choice);
 	if (!updated) {
-		return new Response('Failed to advance game.', { status: 500 });
+		// Concurrent request already advanced — re-fetch and show current state
+		const fresh = await getGameSession(id);
+		if (!fresh) return new Response('Game not found.', { status: 404 });
+		return renderProgressPage(fresh, currentRound, choice, roundData, origin);
 	}
 
 	return renderProgressPage(updated, currentRound, choice, roundData, origin);
