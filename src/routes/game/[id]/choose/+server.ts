@@ -90,9 +90,9 @@ function renderGameScreen(
 	// Progress dots
 	let dots = '';
 	for (let i = 1; i <= 10; i++) {
-		if (i < session.current_round) dots += `<div class="dot done">${i}</div>`;
-		else if (i === session.current_round && !isComplete) dots += `<div class="dot current">${i}</div>`;
-		else if (isComplete && i <= 9) dots += `<div class="dot done">${i}</div>`;
+		if (isComplete) dots += `<div class="dot done">${i}</div>`;
+		else if (i < session.current_round) dots += `<div class="dot done">${i}</div>`;
+		else if (i === session.current_round) dots += `<div class="dot current">${i}</div>`;
 		else dots += `<div class="dot">${i}</div>`;
 	}
 

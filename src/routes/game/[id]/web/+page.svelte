@@ -44,7 +44,7 @@
 
 		<div class="progress">
 			{#each Array(10) as _, i}
-				<div class="dot" class:done={i < session.choices.length} class:current={i === session.choices.length && !isComplete}>
+				<div class="dot" class:done={isComplete || i < session.choices.length} class:current={!isComplete && i === session.choices.length}>
 					{i + 1}
 				</div>
 			{/each}
@@ -69,6 +69,20 @@
 		{#if isComplete}
 			{@const round9Choice = session.choices[8] || 'C'}
 			{@const ending = getEnding(round9Choice, session.ai_name, session.player_name, isZh)}
+			{@const cardImg = round9Choice === 'A' ? 'card_a' : round9Choice === 'B' ? 'card_b' : 'card_c'}
+			{@const stars = round9Choice === 'A' ? '★★★' : round9Choice === 'B' ? '★★☆' : '★☆☆'}
+			{@const endingLabel = round9Choice === 'A' ? (isZh ? '完美结局' : 'PERFECT ENDING') : round9Choice === 'B' ? (isZh ? '不错的结局' : 'GOOD ENDING') : (isZh ? '苦涩的结局' : 'BITTERSWEET ENDING')}
+
+			<div class="rating-card">
+				<img src="/game/{cardImg}.jpg" alt="" class="card-bg" />
+				<div class="card-overlay">
+					<div class="card-stars">{stars}</div>
+					<div class="card-label">{endingLabel}</div>
+					<div class="card-names">{session.ai_name} & {session.player_name}</div>
+					<div class="card-rounds">{session.choices.length} rounds · {session.choices.join(' → ')}</div>
+				</div>
+			</div>
+
 			<div class="ending">
 				<h2>{isZh ? '结局' : 'Ending'}</h2>
 				{#each ending.split('\n\n') as para}
@@ -80,6 +94,10 @@
 						<p class="ending-para">{para.trim()}</p>
 					{/if}
 				{/each}
+			</div>
+
+			<div class="end-actions">
+				<a class="btn-action" href="/game">{isZh ? '🔄 再来一局' : '🔄 Play Again'}</a>
 			</div>
 		{:else}
 			<div class="prompt-box">
@@ -126,6 +144,15 @@
 	.log-choice { font-size: 11px; font-weight: 700; color: #c8a060; }
 	.log-entry p { margin: 4px 0 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; }
 
+	.rating-card { position: relative; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-lg); }
+	.card-bg { width: 100%; display: block; }
+	.card-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(26,21,16,0.95)); text-align: center; }
+	.card-stars { font-size: 28px; color: #c8a060; letter-spacing: 4px; margin-bottom: 4px; }
+	.card-label { font-size: 14px; font-weight: 700; color: #c8a060; letter-spacing: 0.15em; margin-bottom: 8px; }
+	.card-names { font-size: 16px; font-weight: 700; color: var(--color-text); margin-bottom: 4px; }
+	.card-rounds { font-size: 11px; color: var(--color-text-tertiary); letter-spacing: 0.05em; }
+	.end-actions { margin-bottom: var(--space-lg); }
+	.btn-action { display: block; padding: 14px; border-radius: var(--radius-full); text-align: center; font-size: 14px; font-weight: 700; text-decoration: none; background: #3A2518; color: #F5F0E8; }
 	.ending { margin-bottom: var(--space-lg); }
 	.ending h2 { font-size: var(--font-size-base); font-weight: 700; color: #c8a060; margin-bottom: var(--space-md); }
 	.ending-para {
