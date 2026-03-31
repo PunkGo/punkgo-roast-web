@@ -9,9 +9,10 @@
 
 	function getStartUrl(): string {
 		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
-		const lang = isZh ? '?lang=zh' : '';
+		const t = Date.now();
+		const params = isZh ? `?t=${t}&lang=zh` : `?t=${t}`;
 		const prefix = isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: ';
-		return `${prefix}${origin}/game/start${lang}`;
+		return `${prefix}${origin}/game/start${params}`;
 	}
 
 	async function copyUrl() {
