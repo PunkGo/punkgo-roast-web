@@ -32,30 +32,32 @@
 	<span class="badge">— T H E &nbsp; M I S S I N G &nbsp; R O O M —</span>
 	<h1>{isZh ? '消失的房间' : 'The Missing Room'}</h1>
 	<p class="sub">{isZh
-		? '一栋百年老宅，一间蓝图上存在但找不到的房间。你和你的 AI 搭档能找到隐藏的入口吗？'
-		: 'A century-old mansion. A room on the blueprints that can\'t be found. Can you and your AI find the hidden entrance?'}</p>
+		? '百年老宅里有一间消失的房间。你和 AI 搭档一起找到它。'
+		: 'A hidden room in a century-old mansion. Find it with your AI partner.'}</p>
 
 	<div class="stats">
-		<span>10 {isZh ? '轮推理' : 'rounds'}</span>
+		<span>10 {isZh ? '轮' : 'rounds'}</span>
 		<span>·</span>
-		<span>3 {isZh ? '种结局' : 'endings'}</span>
+		<span>3 {isZh ? '结局' : 'endings'}</span>
 		<span>·</span>
-		<span>{isZh ? '任何 AI 都能玩' : 'any AI'}</span>
+		<span>~15 min</span>
+		<span>·</span>
+		<span>{isZh ? '任何 AI' : 'any AI'}</span>
 	</div>
 
 	<div class="how">
 		<h2>{isZh ? '怎么玩' : 'How to play'}</h2>
 		<div class="step">
 			<span class="step-num">1</span>
-			<span>{isZh ? '复制下面的文字，发给你的 AI（Kimi / GPT / 豆包 / Claude…）' : 'Copy the text below and send it to your AI (Kimi / GPT / Doubao / Claude…)'}</span>
+			<span>{isZh ? '复制下面的文字发给 AI' : 'Copy text below, send to your AI'}</span>
 		</div>
 		<div class="step">
 			<span class="step-num">2</span>
-			<span>{isZh ? 'AI 会给自己起一个侦探名字，并邀请你加入' : 'AI gives itself a detective name and invites you to join'}</span>
+			<span>{isZh ? 'AI 起侦探名字，给你一个链接' : 'AI names itself, gives you a link'}</span>
 		</div>
 		<div class="step">
 			<span class="step-num">3</span>
-			<span>{isZh ? '点 AI 给的链接，输入你的昵称，开始破案' : 'Click the link AI gives you, enter your nickname, start investigating'}</span>
+			<span>{isZh ? '点链接，填昵称，开始破案' : 'Click link, enter name, investigate'}</span>
 		</div>
 	</div>
 
