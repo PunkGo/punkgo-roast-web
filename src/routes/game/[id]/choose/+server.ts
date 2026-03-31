@@ -16,6 +16,7 @@ import { validateId, getGameSession, advanceGameRound } from '$lib/supabase';
 import type { GameSession } from '$lib/supabase';
 import { ROUNDS, getEnding } from '$lib/data/game-story';
 import type { GameRound } from '$lib/data/game-story';
+import { escapeHtml } from '$lib/utils/escape';
 
 export const GET: RequestHandler = async ({ params, url }) => {
 	const { id } = params;
@@ -81,6 +82,8 @@ function renderGameScreen(
 	origin: string,
 ): Response {
 	const isZh = session.locale === 'zh';
+	const safeAiName = escapeHtml(session.ai_name);
+	const safePlayerName = escapeHtml(session.player_name);
 	const choiceDesc = roundData.choices.find(c => c.id === choice);
 	const choiceText = choiceDesc ? (isZh ? choiceDesc.zh : choiceDesc.en) : choice;
 	const narrative = isZh ? roundData.narrativeZh : roundData.narrativeEn;
@@ -115,7 +118,7 @@ function renderGameScreen(
 
 	// AI choice badge
 	const choiceBadge = `<div class="ai-choice">
-		<span class="ai-label">${session.ai_name} ${isZh ? '的选择' : 'chose'}</span>
+		<span class="ai-label">${safeAiName} ${isZh ? '的选择' : 'chose'}</span>
 		<span class="ai-pick">${choice}</span>
 		<p>${choiceText}</p>
 	</div>`;
@@ -140,7 +143,8 @@ function renderGameScreen(
 		const endingLabel = round9Choice === 'A' ? (isZh ? '完美结局' : 'PERFECT ENDING')
 			: round9Choice === 'B' ? (isZh ? '不错的结局' : 'GOOD ENDING')
 			: (isZh ? '苦涩的结局' : 'BITTERSWEET ENDING');
-		const ending = getEnding(round9Choice, session.ai_name, session.player_name, isZh);
+		const endingRaw = getEnding(round9Choice, session.ai_name, session.player_name, isZh);
+		const ending = escapeHtml(endingRaw);
 		const endingParagraphs = ending.split('\n\n').map(p => {
 			if (p.includes('═══')) return `<div class="ending-badge">${p.replace(/═/g, '').trim()}</div>`;
 			if (p.includes('🏆') || p.includes('恭喜') || p.includes('Well done') || p.includes('干得好'))
@@ -159,7 +163,7 @@ function renderGameScreen(
 			<div class="card-overlay">
 				<div class="card-stars">${stars}</div>
 				<div class="card-label">${endingLabel}</div>
-				<div class="card-names">${session.ai_name} & ${session.player_name}</div>
+				<div class="card-names">${safeAiName} & ${safePlayerName}</div>
 				<div class="card-rounds">${session.choices.length} rounds · ${session.choices.join(' → ')}</div>
 			</div>
 		</div>
@@ -174,7 +178,7 @@ function renderGameScreen(
 	} else {
 		const nextUrl = `${isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: '}${origin}/game/${session.id}?t=${Date.now()}`;
 		endSection = `<div class="next-round">
-			<div class="next-label">${isZh ? `复制发给 ${session.ai_name}，继续第 ${session.current_round} 轮` : `Copy & send to ${session.ai_name} for Round ${session.current_round}`}</div>
+			<div class="next-label">${isZh ? `复制发给 ${safeAiName}，继续第 ${session.current_round} 轮` : `Copy & send to ${safeAiName} for Round ${session.current_round}`}</div>
 			<textarea class="next-url" readonly onclick="this.select()">${nextUrl}</textarea>
 			<button class="btn-copy" onclick="copyNext(this)">${isZh ? '📋 复制发给 AI' : '📋 Copy & send to AI'}</button>
 		</div>
@@ -285,7 +289,7 @@ h1 { font-size: 18px; font-weight: 700; color: #f0e8d8; margin-bottom: 2px; }
 <div class="wrap">
   <div class="badge">— T H E &nbsp; M I S S I N G &nbsp; R O O M —</div>
   <h1>${isComplete ? (isZh ? '调查完成' : 'Investigation Complete') : (isZh ? `第 ${roundPlayed} 轮` : `Round ${roundPlayed}`)}</h1>
-  <div class="meta">${session.ai_name} & ${session.player_name}</div>
+  <div class="meta">${safeAiName} & ${safePlayerName}</div>
 
   <div class="progress">${dots}</div>
 
