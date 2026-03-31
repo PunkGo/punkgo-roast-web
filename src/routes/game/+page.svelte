@@ -3,53 +3,20 @@
 	import { copyToClipboard } from '$lib/utils/copy';
 
 	let isZh = $state(true);
-	let phase: 'input' | 'ready' = $state('input');
-
-	let aiName = $state('');
-	let playerName = $state('');
-	let creating = $state(false);
-	let error = $state('');
-
-	let sessionId = $state('');
-	let promptUrl = $state('');
 	let copied = $state(false);
 
 	onMount(() => { isZh = navigator.language.startsWith('zh'); });
 
-	async function start() {
-		if (!aiName.trim() || !playerName.trim()) return;
-		creating = true;
-		error = '';
-
-		try {
-			const res = await fetch('/game/create', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					aiName: aiName.trim(),
-					playerName: playerName.trim(),
-					locale: isZh ? 'zh' : 'en',
-				}),
-			});
-			const data = await res.json();
-			if (!res.ok) {
-				error = data.error || 'Failed to create game';
-				return;
-			}
-			sessionId = data.id;
-			const origin = window.location.origin;
-			promptUrl = `${isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: '}${origin}/game/${sessionId}`;
-			phase = 'ready';
-		} catch {
-			error = isZh ? '网络错误，请重试' : 'Network error';
-		} finally {
-			creating = false;
-		}
+	function getStartUrl(): string {
+		const origin = typeof window !== 'undefined' ? window.location.origin : 'https://roast.punkgo.ai';
+		const lang = isZh ? '?lang=zh' : '';
+		const prefix = isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: ';
+		return `${prefix}${origin}/game/start${lang}`;
 	}
 
-	async function copyPrompt() {
+	async function copyUrl() {
 		try {
-			await copyToClipboard(promptUrl);
+			await copyToClipboard(getStartUrl());
 			copied = true;
 			setTimeout(() => { copied = false; }, 3000);
 		} catch { }
@@ -57,71 +24,50 @@
 </script>
 
 <svelte:head>
-	<title>{isZh ? '消失的房间' : 'The Missing Room'} — PunkGo</title>
+	<title>{isZh ? '消失的房间 — AI 解密游戏' : 'The Missing Room — AI Mystery Game'}</title>
 </svelte:head>
 
-<div class="game-entry">
-	{#if phase === 'input'}
-		<span class="badge">— T H E &nbsp; M I S S I N G &nbsp; R O O M —</span>
-		<h1>{isZh ? '消失的房间' : 'The Missing Room'}</h1>
-		<p class="sub">{isZh
-			? '一栋百年老宅，一间蓝图上存在但找不到的房间。你和你的 AI 搭档能找到隐藏的入口吗？'
-			: 'A century-old mansion. A room that exists on blueprints but can\'t be found. Can you and your AI partner find the hidden entrance?'}</p>
+<div class="game-landing">
+	<span class="badge">— T H E &nbsp; M I S S I N G &nbsp; R O O M —</span>
+	<h1>{isZh ? '消失的房间' : 'The Missing Room'}</h1>
+	<p class="sub">{isZh
+		? '一栋百年老宅，一间蓝图上存在但找不到的房间。你和你的 AI 搭档能找到隐藏的入口吗？'
+		: 'A century-old mansion. A room on the blueprints that can\'t be found. Can you and your AI find the hidden entrance?'}</p>
 
-		<div class="form">
-			<label class="input-label">{isZh ? 'AI 搭档名称' : 'AI Partner Name'}</label>
-			<input
-				type="text"
-				bind:value={aiName}
-				placeholder={isZh ? '例：Kimi、ChatGPT、Claude' : 'e.g. Kimi, ChatGPT, Claude'}
-				maxlength="30"
-			/>
+	<div class="stats">
+		<span>10 {isZh ? '轮推理' : 'rounds'}</span>
+		<span>·</span>
+		<span>3 {isZh ? '种结局' : 'endings'}</span>
+		<span>·</span>
+		<span>{isZh ? '任何 AI 都能玩' : 'any AI'}</span>
+	</div>
 
-			<label class="input-label">{isZh ? '你的昵称' : 'Your Name'}</label>
-			<input
-				type="text"
-				bind:value={playerName}
-				placeholder={isZh ? '例：肥舅' : 'e.g. Felix'}
-				maxlength="30"
-			/>
-
-			<button class="btn-start" onclick={start} disabled={creating || !aiName.trim() || !playerName.trim()}>
-				{creating ? '...' : (isZh ? '开始调查' : 'Begin Investigation')}
-			</button>
-
-			{#if error}
-				<p class="error">{error}</p>
-			{/if}
+	<div class="how">
+		<h2>{isZh ? '怎么玩' : 'How to play'}</h2>
+		<div class="step">
+			<span class="step-num">1</span>
+			<span>{isZh ? '复制下面的文字，发给你的 AI（Kimi / GPT / 豆包 / Claude…）' : 'Copy the text below and send it to your AI (Kimi / GPT / Doubao / Claude…)'}</span>
 		</div>
-
-		<div class="info">
-			<p>{isZh ? '10 轮互动解密 · 3 种结局 · 任何 AI 都能玩' : '10 rounds · 3 endings · works with any AI'}</p>
+		<div class="step">
+			<span class="step-num">2</span>
+			<span>{isZh ? 'AI 会给自己起一个侦探名字，并邀请你加入' : 'AI gives itself a detective name and invites you to join'}</span>
 		</div>
-
-	{:else if phase === 'ready'}
-		<span class="badge">— R E A D Y —</span>
-		<h1>{isZh ? '调查开始' : 'Investigation Begins'}</h1>
-		<p class="sub">{isZh
-			? `${playerName}，你的搭档 ${aiName} 正在等你。复制下面的文字，发给 ${aiName}。`
-			: `${playerName}, your partner ${aiName} is waiting. Copy the text below and send it to ${aiName}.`}</p>
-
-		<div class="prompt-box">
-			<pre class="prompt-text">{promptUrl}</pre>
-			<button class="btn-copy" onclick={copyPrompt}>
-				{copied ? (isZh ? '✅ 已复制！' : '✅ Copied!') : (isZh ? '📋 复制' : '📋 Copy')}
-			</button>
+		<div class="step">
+			<span class="step-num">3</span>
+			<span>{isZh ? '点 AI 给的链接，输入你的昵称，开始破案' : 'Click the link AI gives you, enter your nickname, start investigating'}</span>
 		</div>
+	</div>
 
-		<div class="actions">
-			<a class="btn-link" href="/game/{sessionId}/web">
-				{isZh ? '查看游戏进度 →' : 'View progress →'}
-			</a>
-		</div>
-	{/if}
+	<div class="prompt-box">
+		<pre class="prompt-text">{getStartUrl()}</pre>
+		<button class="btn-copy" onclick={copyUrl}>
+			{copied ? (isZh ? '✅ 已复制！' : '✅ Copied!') : (isZh ? '📋 复制发给 AI' : '📋 Copy & send to AI')}
+		</button>
+	</div>
 </div>
 
 <style>
-	.game-entry {
+	.game-landing {
 		max-width: 480px;
 		margin: 0 auto;
 		padding: var(--space-xl) var(--space-md) var(--space-3xl);
@@ -132,30 +78,18 @@
 	}
 	.badge { font-size: 11px; font-weight: 600; letter-spacing: 0.3em; color: var(--color-text-tertiary); }
 	h1 { font-size: var(--font-size-xl); font-weight: 700; margin: var(--space-sm) 0; }
-	.sub { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-lg); line-height: 1.6; }
+	.sub { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-md); line-height: 1.6; }
+	.stats { display: flex; gap: var(--space-sm); font-size: var(--font-size-sm); color: var(--color-text-tertiary); margin-bottom: var(--space-lg); }
 
-	.form { width: 100%; display: flex; flex-direction: column; gap: var(--space-sm); text-align: left; }
-	.input-label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-secondary); }
-	.form input {
-		width: 100%; padding: 12px 14px;
-		border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
-		font-size: var(--font-size-md); background: var(--color-bg-card); font-family: inherit;
-	}
-	.form input:focus { outline: none; border-color: var(--color-cta); }
-
-	.btn-start {
-		padding: var(--space-sm) var(--space-lg);
+	.how { width: 100%; text-align: left; margin-bottom: var(--space-lg); }
+	.how h2 { font-size: var(--font-size-base); font-weight: 600; margin-bottom: var(--space-sm); }
+	.step { display: flex; gap: var(--space-sm); align-items: flex-start; margin-bottom: var(--space-sm); font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; }
+	.step-num {
+		flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
 		background: #3A2518; color: #F5F0E8;
-		border: none; border-radius: var(--radius-full);
-		font-size: var(--font-size-md); font-weight: 600;
-		cursor: pointer; min-height: 48px; margin-top: var(--space-sm);
-		transition: background 0.2s;
+		display: flex; align-items: center; justify-content: center;
+		font-size: 12px; font-weight: 700;
 	}
-	.btn-start:hover { background: #2a1a10; }
-	.btn-start:disabled { opacity: 0.5; cursor: not-allowed; }
-
-	.info { margin-top: var(--space-lg); font-size: var(--font-size-sm); color: var(--color-text-tertiary); }
-	.error { font-size: var(--font-size-sm); color: #C75050; margin: 0; }
 
 	.prompt-box {
 		width: 100%; padding: var(--space-md);
@@ -172,11 +106,8 @@
 		padding: var(--space-sm) var(--space-lg);
 		background: #3A2518; color: #F5F0E8;
 		border: none; border-radius: var(--radius-full);
-		font-size: var(--font-size-sm); font-weight: 600;
-		cursor: pointer; min-height: 44px;
+		font-size: var(--font-size-md); font-weight: 600;
+		cursor: pointer; min-height: 48px;
 	}
 	.btn-copy:hover { background: #2a1a10; }
-
-	.actions { margin-top: var(--space-md); }
-	.btn-link { font-size: var(--font-size-sm); color: var(--color-cta); font-weight: 600; }
 </style>

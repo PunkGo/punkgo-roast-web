@@ -95,17 +95,15 @@ ${choicesBlock}
 ? `先把当前的情况、线索和所有选项原封不动地展示给 ${session.player_name}（你的搭档）`
 : `First, show ${session.player_name} (your partner) the current situation, clue, and ALL choices exactly as listed above`}
 2. ${isZh ? '告诉搭档你的推理过程和你推荐的选项' : 'Share your reasoning and which choice you recommend'}
-3. ${isZh ? '把下面的链接给你的搭档，替换 YOUR_CHOICE 为你推荐的选择：' : 'Give your partner this link, replacing YOUR_CHOICE with your recommendation:'}
+3. ${isZh ? '把下面对应的链接给搭档，不需要修改任何内容，直接复制即可：' : 'Give your partner the corresponding link below — no need to modify, just copy as-is:'}
 
-${origin}/game/${id}/choose?t=${Date.now()}&choice=YOUR_CHOICE
-
-${isZh ? '例如' : 'Example'}: ${origin}/game/${id}/choose?t=${Date.now()}&choice=A
+${roundData.choices.map(c => `${isZh ? '选' : 'Choice'} ${c.id}: ${origin}/game/${id}/choose?t=${Date.now()}&choice=${c.id}`).join('\n')}
 
 === ${isZh ? '重要' : 'IMPORTANT'} ===
 
 - ${isZh
-? `搭档 ${session.player_name} 拥有最终决定权。如果搭档不同意你的选择，只需把链接末尾的 choice=X 改成想要的选项即可（如把 choice=A 改成 choice=B）`
-: `Your partner ${session.player_name} has the final say. If they disagree with your choice, they can simply change the choice=X at the end of the link (e.g. change choice=A to choice=B)`}
+? `搭档 ${session.player_name} 拥有最终决定权。你推荐一个选项，但搭档可以点击任意一个链接`
+: `Your partner ${session.player_name} has the final say. You recommend one, but they can click any link`}
 - ${isZh ? '点击链接会推进游戏——确保你们都准备好了' : 'Clicking the link advances the game — make sure you\'re both ready'}
 - ${isZh ? '用中文回复' : 'Reply in English'}
 
