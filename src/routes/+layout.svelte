@@ -19,11 +19,6 @@
 	<meta name="theme-color" content="#F5F0E8" />
 </svelte:head>
 
-<div class="top-banner">
-	{isZh
-		? '喜欢 PunkGo？想吐槽？有好点子？一起来建设 → feijiu@punkgo.ai'
-		: 'Love it? Hate it? Got ideas? Help build PunkGo → feijiu@punkgo.ai'}
-</div>
 
 <nav class="nav">
 	<a href="/" class="logo">
