@@ -101,7 +101,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	} else {
 		nextSection = `<div class="next-prompt">
 			<div class="prompt-label">${isZh ? '复制下面的链接发给 AI，继续下一轮：' : 'Copy this link to your AI for the next round:'}</div>
-			<div class="prompt-url">${isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: '}${origin}/game/${id}</div>
+			<div class="prompt-url">${isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: '}${origin}/game/${id}?t=${Date.now()}</div>
 		</div>`;
 	}
 

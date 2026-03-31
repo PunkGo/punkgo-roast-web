@@ -95,9 +95,9 @@ ${choicesBlock}
 2. ${isZh ? '选择一个选项（A、B 或 C）' : 'Pick ONE choice (A, B, or C)'}
 3. ${isZh ? '把下面的链接给你的搭档，替换 YOUR_CHOICE 为你的选择：' : 'Give your partner this link, replacing YOUR_CHOICE with your pick:'}
 
-${origin}/game/${id}/choose?choice=YOUR_CHOICE
+${origin}/game/${id}/choose?t=${Date.now()}&choice=YOUR_CHOICE
 
-${isZh ? '例如' : 'Example'}: ${origin}/game/${id}/choose?choice=A
+${isZh ? '例如' : 'Example'}: ${origin}/game/${id}/choose?t=${Date.now()}&choice=A
 
 === ${isZh ? '重要' : 'IMPORTANT'} ===
 
