@@ -3,195 +3,200 @@
 	let isZh = $state(false);
 
 	const allDogs = ['philosopher','architect','intern','commander','rereader','caretaker','perfectionist','mentor','vampire','drifter','goldfish','helper','brute','ghost','speedrunner','googler'];
-	let previewDogs = $state(allDogs.slice(0, 5));
-	let myKennels: { id: string; dogId: string }[] = $state([]);
+	let previewDogs = $state(allDogs.slice(0, 3));
 
 	onMount(() => {
 		isZh = navigator.language.startsWith('zh');
 		const shuffled = [...allDogs].sort(() => Math.random() - 0.5);
-		previewDogs = shuffled.slice(0, 5);
-
-		// Parse punkgo_k_{id}={dogId} cookies
-		const cookies = document.cookie.split(';').map(c => c.trim());
-		const kennels: { id: string; dogId: string }[] = [];
-		for (const c of cookies) {
-			const m = c.match(/^punkgo_k_([a-z0-9]{8})=(.+)$/);
-			if (m && m[2] !== '') {
-				const dogId = m[2];
-				// Skip legacy cookies with value '1' (no dog info)
-				if (dogId !== '1' && allDogs.includes(dogId)) {
-					kennels.push({ id: m[1], dogId });
-				} else {
-					// Legacy cookie — show generic paw instead of broken image
-					kennels.push({ id: m[1], dogId: '' });
-				}
-			}
-		}
-		myKennels = kennels;
+		previewDogs = shuffled.slice(0, 3);
 	});
 </script>
 
 <svelte:head>
-	<title>{isZh ? 'PunkGo Roast — 你的 AI 是什么 Vibe？' : "PunkGo Roast — What's Your AI Vibe?"}</title>
-	<meta property="og:title" content="What's Your AI Vibe?" />
-	<meta property="og:description" content="Sixteen breeds. Which one is your AI? 🐾" />
+	<title>{isZh ? 'PunkGo Roast — AI 互动实验' : 'PunkGo Roast — AI Interactive Experiments'}</title>
+	<meta property="og:title" content="PunkGo Roast" />
+	<meta property="og:description" content="AI personality quiz + AI mystery game. One URL, any AI." />
 </svelte:head>
 
 <div class="landing">
-	<section class="hero">
-		<span class="section-tag">— A I &nbsp; V I B E &nbsp; C H E C K —</span>
-		<h1>{isZh ? "你的 AI\n是什么 Vibe？" : "What's Your\nAI Vibe?"}</h1>
-		<p class="subtitle">
-			{isZh
-				? '十六种狗子，你的 AI 是哪一只？'
-				: 'Sixteen breeds. Which one is your AI?'}
-		</p>
-		<div class="dog-preview">
-			{#each previewDogs as id}
-				<img class="dog-dot" src="/dogs/thumb/felt-{id}-nobg.png" alt={id} width="72" height="72" loading="lazy" />
-			{/each}
-			<div class="dog-dot more">+11</div>
-		</div>
-		<a href="/quiz" class="cta-btn">
-			{isZh ? '来，测一个 🐾' : 'Let\'s Find Out 🐾'}
-		</a>
-		<p class="trust">{isZh ? '免费 · 无需注册 · 零数据收集' : 'Complimentary · No Registration · Zero Data Collected'}</p>
-		{#if myKennels.length > 0}
-			<div class="my-kennels">
-				<p class="my-kennels-label">{isZh ? '🏠 我的狗窝' : '🏠 My Kennels'}</p>
-				<div class="kennel-links">
-					{#each myKennels as k}
-						<a href="/k/{k.id}/web" class="kennel-chip" title={k.dogId || k.id}>
-							{#if k.dogId}
-								<img src="/dogs/thumb/felt-{k.dogId}-nobg.png" alt={k.dogId} class="kennel-chip-img" />
-							{:else}
-								<span class="kennel-chip-paw">🐾</span>
-							{/if}
-						</a>
-					{/each}
-				</div>
+	<div class="hero-text">
+		<span class="section-tag">— P U N K G O &nbsp; R O A S T —</span>
+		<h1>{isZh ? '用一个链接，让 AI 做点好玩的' : 'One URL. Any AI. Something fun.'}</h1>
+	</div>
+
+	<div class="cards">
+		<!-- Quiz Card (warm) -->
+		<a href="/quiz" class="card card-quiz">
+			<span class="card-tag">— A I &nbsp; V I B E &nbsp; C H E C K —</span>
+			<div class="dog-preview">
+				{#each previewDogs as id}
+					<img src="/dogs/thumb/felt-{id}-nobg.png" alt={id} width="56" height="56" loading="lazy" />
+				{/each}
 			</div>
-		{/if}
-		<p class="methodology">
-			{isZh
-				? '基于投射性心理测试原理，通过 AI 对模糊情境的自然反应，解码其隐藏的行为人格。'
-				: 'Built on projective psychological testing. We decode hidden behavioral personality through AI\'s natural response to ambiguous scenarios.'}
-		</p>
-		<!-- ext-inline hidden for v2, /install page kept -->
-	</section>
+			<h2>{isZh ? '你的 AI 是什么 Vibe？' : "What's Your AI Vibe?"}</h2>
+			<p class="card-sub">{isZh ? '16 种犬种 · 性格测试 · 领养狗证' : '16 breeds · personality test · dog license'}</p>
+			<div class="card-cta">{isZh ? '来，测一个 🐾' : "Let's Find Out 🐾"}</div>
+			<span class="card-meta">{isZh ? '免费 · 无需注册 · 5 分钟' : 'Free · No signup · 5 min'}</span>
+		</a>
 
-
+		<!-- Game Card (dark) -->
+		<a href="/game" class="card card-game">
+			<span class="card-tag">— A I &nbsp; M Y S T E R Y &nbsp; G A M E —</span>
+			<img class="game-hero" src="/game/game_hero.jpg" alt="The Missing Room" loading="lazy" />
+			<h2>{isZh ? '消失的房间' : 'The Missing Room'}</h2>
+			<p class="card-sub">{isZh ? 'AI 当侦探，你来破案' : 'AI is the detective. You drive the case.'}</p>
+			<div class="card-cta">{isZh ? '开始调查 🏚️' : 'Investigate 🏚️'}</div>
+			<span class="card-meta">{isZh ? '10 轮 · 3 结局 · ~15 分钟' : '10 rounds · 3 endings · ~15 min'}</span>
+		</a>
+	</div>
 </div>
 
 <style>
-	.landing { display: flex; flex-direction: column; }
-	.hero {
+	.landing {
+		min-height: calc(100vh - 56px);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
-		min-height: calc(100vh - 56px);
-		gap: 24px;
-		padding: 0 48px;
+		padding: var(--space-xl) var(--space-lg) var(--space-3xl);
+	}
+
+	.hero-text {
 		text-align: center;
+		margin-bottom: var(--space-xl);
 	}
-	.badge {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 6px 18px;
-		border-radius: var(--radius-full);
-		background: var(--color-bg-muted);
-		font-size: 12px;
-		font-weight: 500;
-		color: var(--color-text-secondary);
-	}
-	.badge-dot {
-		width: 6px; height: 6px;
-		border-radius: var(--radius-full);
-		background: var(--color-cta);
-	}
+
 	h1 {
-		font-size: var(--font-size-hero);
+		font-size: var(--font-size-2xl);
 		font-weight: 700;
-		line-height: 1.05;
-		white-space: pre-line;
-		max-width: 700px;
+		line-height: 1.2;
+		max-width: 500px;
+		margin: var(--space-sm) auto 0;
 	}
-	.subtitle {
-		font-size: var(--font-size-base);
-		color: var(--color-text-secondary);
-		line-height: 1.6;
-		white-space: pre-line;
-		max-width: 560px;
+
+	.cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-lg);
+		max-width: 840px;
+		width: 100%;
 	}
-	.dog-preview { display: flex; gap: 14px; padding: var(--space-sm) 0; }
-	.dog-dot { width: 72px; height: 72px; border-radius: var(--radius-xl); object-fit: cover; }
-	.dog-dot.more {
-		background: var(--color-bg-muted);
-		display: flex; align-items: center; justify-content: center;
-		font-size: 14px; font-weight: 600; color: var(--color-text-secondary);
-	}
-	.cta-btn {
-		display: inline-flex; align-items: center; justify-content: center;
-		width: 240px; height: 52px;
-		border-radius: var(--radius-md);
-		background: var(--color-cta); color: white;
-		font-size: var(--font-size-md); font-weight: 700; letter-spacing: 0.05em;
-		transition: background 150ms ease, transform 150ms ease;
-	}
-	.cta-btn:hover { background: var(--color-cta-hover); transform: translateY(-1px); }
-	.trust {
-		font-size: 14px; font-weight: 500;
-		color: var(--color-text-secondary); letter-spacing: 0.05em;
-	}
-	.methodology {
-		font-size: var(--font-size-xs);
-		color: var(--color-text-tertiary);
-		max-width: 600px;
+
+	.card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		text-align: center;
-		line-height: 1.6;
-		font-style: italic;
-		margin-top: 8px;
-		white-space: nowrap;
+		padding: var(--space-xl) var(--space-lg);
+		border-radius: var(--radius-xl);
+		text-decoration: none;
+		transition: transform 200ms ease, box-shadow 200ms ease;
+		gap: var(--space-sm);
 	}
-	@media (max-width: 768px) {
-		.methodology { white-space: normal; max-width: 320px; }
-	}
-	.ext-inline {
-		display: flex; align-items: center; gap: 6px;
-		font-size: 13px; color: var(--color-text-tertiary);
-		padding-top: 8px;
-	}
-	.ext-inline a {
-		color: var(--color-cta); font-weight: 600;
-		text-decoration: underline; text-underline-offset: 2px;
+	.card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 12px 40px rgba(58, 37, 24, 0.12);
 	}
 
-	/* My kennels */
-	.my-kennels {
-		display: flex; flex-direction: column; align-items: center; gap: 8px;
+	/* Quiz card — warm */
+	.card-quiz {
+		background: var(--color-bg-card);
+		border: 1.5px solid var(--color-border);
+		color: var(--color-text);
 	}
-	.my-kennels-label {
-		font-size: 13px; color: var(--color-text-secondary); font-weight: 500;
+	.card-quiz .card-tag { color: var(--color-text-tertiary); }
+	.card-quiz h2 { color: var(--color-text); }
+	.card-quiz .card-sub { color: var(--color-text-secondary); }
+	.card-quiz .card-cta {
+		background: var(--color-cta);
+		color: white;
 	}
-	.kennel-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 320px; }
-	.kennel-chip {
-		width: 52px; height: 52px; border-radius: var(--radius-full);
-		background: var(--color-bg-muted); border: 2px solid var(--color-border);
-		display: flex; align-items: center; justify-content: center;
-		overflow: hidden; transition: transform 150ms ease, border-color 150ms ease;
-	}
-	.kennel-chip:hover { border-color: var(--color-cta); transform: translateY(-2px); }
-	.kennel-chip-img { width: 40px; height: 40px; object-fit: contain; }
-	.kennel-chip-paw { font-size: 24px; }
+	.card-quiz .card-cta:hover { background: var(--color-cta-hover); }
+	.card-quiz .card-meta { color: var(--color-text-tertiary); }
 
+	/* Game card — dark */
+	.card-game {
+		background: #1a1510;
+		border: 1.5px solid #3a3020;
+		color: #e8dcc8;
+	}
+	.card-game .card-tag { color: #6a5a48; }
+	.card-game h2 { color: #f0e8d8; }
+	.card-game .card-sub { color: #a89878; }
+	.card-game .card-cta {
+		background: #c8a060;
+		color: #1a1510;
+	}
+	.card-game .card-meta { color: #6a5a48; }
+
+	/* Shared card elements */
+	.card-tag {
+		font-size: 9px;
+		font-weight: 600;
+		letter-spacing: 0.3em;
+	}
+
+	.card h2 {
+		font-size: var(--font-size-lg);
+		font-weight: 700;
+		margin: 0;
+	}
+
+	.card-sub {
+		font-size: var(--font-size-sm);
+		line-height: 1.5;
+	}
+
+	.card-cta {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 12px 32px;
+		border-radius: var(--radius-full);
+		font-size: var(--font-size-md);
+		font-weight: 700;
+		margin-top: var(--space-xs);
+		transition: background 150ms ease;
+	}
+
+	.card-meta {
+		font-size: var(--font-size-2xs);
+	}
+
+	/* Quiz dog preview */
+	.dog-preview {
+		display: flex;
+		gap: 10px;
+		padding: var(--space-xs) 0;
+	}
+	.dog-preview img {
+		width: 56px;
+		height: 56px;
+		border-radius: var(--radius-lg);
+		object-fit: cover;
+	}
+
+	/* Game hero image */
+	.game-hero {
+		width: 100%;
+		border-radius: var(--radius-md);
+		margin: var(--space-xs) 0;
+	}
+
+	/* Section tag */
+	.section-tag {
+		font-size: 10px;
+		font-weight: 600;
+		letter-spacing: 0.3em;
+		color: var(--color-text-tertiary);
+	}
+
+	/* Mobile */
 	@media (max-width: 768px) {
-		h1 { font-size: 36px; }
-		.hero { padding: 0 20px; }
-		.section-tag { font-size: 8px; }
-		.trust { text-align: center; padding: 0 16px; }
-		.dog-preview { flex-wrap: wrap; justify-content: center; }
-		.dog-dot { width: 48px; height: 48px; }
+		.cards {
+			grid-template-columns: 1fr;
+			max-width: 400px;
+		}
+		h1 { font-size: var(--font-size-xl); }
+		.card { padding: var(--space-lg) var(--space-md); }
 	}
 </style>
