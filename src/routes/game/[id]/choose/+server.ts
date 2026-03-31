@@ -1,11 +1,13 @@
 /**
  * GET /game/{id}/choose?choice=A — Receive AI choice, advance game, show progress
  *
- * Returns styled HTML progress page with next round's prompt URL.
+ * Idempotent: duplicate submissions for the same round return the same page without advancing.
  */
 import type { RequestHandler } from './$types';
 import { validateId, getGameSession, advanceGameRound } from '$lib/supabase';
+import type { GameSession } from '$lib/supabase';
 import { ROUNDS, getEnding } from '$lib/data/game-story';
+import type { GameRound } from '$lib/data/game-story';
 
 export const GET: RequestHandler = async ({ params, url }) => {
 	const { id } = params;
@@ -44,35 +46,51 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		return new Response(`Invalid choice "${choice}". Valid: ${validChoices.join(', ')}`, { status: 400, headers: { 'Content-Type': 'text/plain' } });
 	}
 
+	// Idempotency: if this round already has a choice, don't advance — just re-render
+	if (session.choices.length >= currentRound) {
+		const existingChoice = session.choices[currentRound - 1];
+		return renderProgressPage(session, currentRound, existingChoice, roundData, origin);
+	}
+
 	// Advance the game
 	const updated = await advanceGameRound(id, choice);
 	if (!updated) {
 		return new Response('Failed to advance game.', { status: 500 });
 	}
 
+	return renderProgressPage(updated, currentRound, choice, roundData, origin);
+};
+
+function renderProgressPage(
+	session: GameSession,
+	roundPlayed: number,
+	choice: string,
+	roundData: GameRound,
+	origin: string,
+): Response {
 	const isZh = session.locale === 'zh';
 	const choiceDesc = roundData.choices.find(c => c.id === choice);
 	const choiceText = choiceDesc ? (isZh ? choiceDesc.zh : choiceDesc.en) : choice;
 
-	// Build progress dots
+	// Progress dots
 	let dots = '';
 	for (let i = 1; i <= 10; i++) {
-		if (i < updated.current_round) {
+		if (i < session.current_round) {
 			dots += `<div class="dot done">${i}</div>`;
-		} else if (i === updated.current_round) {
+		} else if (i === session.current_round) {
 			dots += `<div class="dot current">${i}</div>`;
 		} else {
 			dots += `<div class="dot">${i}</div>`;
 		}
 	}
 
-	// Build story log
+	// Story log
 	let storyLog = '';
-	for (let i = 0; i < updated.choices.length; i++) {
+	for (let i = 0; i < session.choices.length; i++) {
 		const r = ROUNDS[i];
-		const c = updated.choices[i];
+		const c = session.choices[i];
 		const summary = isZh ? r.summaryZh(c) : r.summaryEn(c);
-		const isCurrent = i === updated.choices.length - 1;
+		const isCurrent = i === session.choices.length - 1;
 		storyLog += `<div class="log-entry ${isCurrent ? 'current' : ''}">
 			<span class="log-round">Round ${i + 1}</span>
 			<span class="log-choice">${c}</span>
@@ -81,14 +99,14 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	}
 
 	// Floor plan
-	const floorPlan = roundData.floorPlan(updated.choices);
+	const floorPlan = roundData.floorPlan(session.choices);
 
-	// Check if game just completed
-	const isComplete = updated.status === 'completed';
+	// Next section
+	const isComplete = session.status === 'completed';
 	let nextSection = '';
 
 	if (isComplete) {
-		const round9Choice = updated.choices[8] || 'C';
+		const round9Choice = session.choices[8] || 'C';
 		const ending = getEnding(round9Choice, session.ai_name, session.player_name, isZh);
 		nextSection = `<div class="ending">
 			<h2>${isZh ? '结局' : 'ENDING'}</h2>
@@ -96,12 +114,12 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		</div>
 		<div class="next-prompt">
 			<div class="prompt-label">${isZh ? '查看完整记录' : 'View full record'}:</div>
-			<div class="prompt-url">${origin}/game/${id}/web</div>
+			<div class="prompt-url">${origin}/game/${session.id}/web</div>
 		</div>`;
 	} else {
 		nextSection = `<div class="next-prompt">
 			<div class="prompt-label">${isZh ? '复制下面的链接发给 AI，继续下一轮：' : 'Copy this link to your AI for the next round:'}</div>
-			<div class="prompt-url">${isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: '}${origin}/game/${id}?t=${Date.now()}</div>
+			<div class="prompt-url">${isZh ? '请访问这个链接并按指示操作：' : 'Visit this link and follow the instructions: '}${origin}/game/${session.id}?t=${Date.now()}</div>
 		</div>`;
 	}
 
@@ -110,7 +128,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Missing Room — Round ${currentRound} ${isComplete ? '(Complete)' : ''}</title>
+<title>The Missing Room — Round ${roundPlayed} ${isComplete ? '(Complete)' : ''}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
   body { font-family: 'Space Grotesk', system-ui, sans-serif; background: #1a1510; color: #e8dcc8; margin: 0; padding: 48px 24px; display: flex; justify-content: center; }
@@ -142,7 +160,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 <body>
 <div class="wrap">
   <div class="badge">— T H E &nbsp; M I S S I N G &nbsp; R O O M —</div>
-  <h1>${isComplete ? (isZh ? '调查完成' : 'Investigation Complete') : (isZh ? `第 ${currentRound} 轮完成` : `Round ${currentRound} Complete`)}</h1>
+  <h1>${isComplete ? (isZh ? '调查完成' : 'Investigation Complete') : (isZh ? `第 ${roundPlayed} 轮完成` : `Round ${roundPlayed} Complete`)}</h1>
   <div class="meta">${session.ai_name} & ${session.player_name}</div>
 
   <div class="progress">${dots}</div>
@@ -162,9 +180,9 @@ export const GET: RequestHandler = async ({ params, url }) => {
 </html>`;
 
 	return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
-};
+}
 
-function renderComplete(session: any, origin: string): string {
+function renderComplete(session: GameSession, origin: string): string {
 	const isZh = session.locale === 'zh';
 	return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Game Complete</title></head><body style="background:#1a1510;color:#e8dcc8;font-family:system-ui;padding:48px;text-align:center;">
 	<h1>${isZh ? '游戏已结束' : 'Game Complete'}</h1>
