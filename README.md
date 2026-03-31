@@ -1,7 +1,7 @@
 <h3 align="center">P U N K G O &nbsp; R O A S T</h3>
 
 <p align="center">
-  The first apps built on <a href="https://github.com/PunkGo/text-plain-prompt-protocol">text/plain prompt protocol</a>.<br>
+  Built on the <a href="https://github.com/PunkGo/text-plain-prompt">text/plain prompt</a> pattern.<br>
   One URL. Any AI. Zero install.
 </p>
 
@@ -50,7 +50,7 @@ Send a prompt to any AI. It answers 5 questions. An LLM judge analyzes its perso
 
 ## How it works
 
-Both apps run on [text/plain prompt protocol](https://github.com/PunkGo/text-plain-prompt-protocol) — a URL returns plain text instructions that any AI reads and follows. No SDK, no API key. The AI reads, reasons, and outputs callback links. The human clicks to advance.
+Both apps use the [text/plain prompt](https://github.com/PunkGo/text-plain-prompt) pattern — a URL returns plain text instructions that any AI reads and follows. No SDK, no API key. The AI reads, reasons, and outputs callback links. The human clicks to advance.
 
 That protocol also powers [Prompt Capsule](https://roast.punkgo.ai/workshop) — write a prompt, compress it into a URL, any AI opens it and acts.
 
@@ -60,7 +60,7 @@ That protocol also powers [Prompt Capsule](https://roast.punkgo.ai/workshop) —
 
 | | |
 |-|-|
-| Protocol | [text/plain prompt](https://github.com/PunkGo/text-plain-prompt-protocol) |
+| Protocol | [text/plain prompt](https://github.com/PunkGo/text-plain-prompt) |
 | Framework | SvelteKit 2 + Svelte 5 |
 | Hosting | Vercel |
 | Database | Supabase |
@@ -73,7 +73,7 @@ npm install && npm run dev
 
 ## Related
 
-- [text-plain-prompt-protocol](https://github.com/PunkGo/text-plain-prompt-protocol) — the protocol spec
+- [text-plain-prompt](https://github.com/PunkGo/text-plain-prompt) — the protocol spec
 - [punkgo-jack](https://github.com/PunkGo/punkgo-jack) — cryptographic audit receipts for AI agents
 - [punkgo.ai](https://punkgo.ai) — project homepage
 
