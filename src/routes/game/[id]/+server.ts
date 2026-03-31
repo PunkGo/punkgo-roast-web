@@ -91,9 +91,11 @@ ${clue}
 ${choicesBlock}
 === ${isZh ? '如何回应' : 'HOW TO RESPOND'} ===
 
-1. ${isZh ? `和你的搭档 ${session.player_name} 分享你的推理过程` : `Share your reasoning with your partner ${session.player_name}`}
-2. ${isZh ? '选择一个选项（A、B 或 C）' : 'Pick ONE choice (A, B, or C)'}
-3. ${isZh ? '把下面的链接给你的搭档，替换 YOUR_CHOICE 为你的选择：' : 'Give your partner this link, replacing YOUR_CHOICE with your pick:'}
+1. ${isZh
+? `先把当前的情况、线索和所有选项原封不动地展示给 ${session.player_name}（你的搭档）`
+: `First, show ${session.player_name} (your partner) the current situation, clue, and ALL choices exactly as listed above`}
+2. ${isZh ? '告诉搭档你的推理过程和你推荐的选项' : 'Share your reasoning and which choice you recommend'}
+3. ${isZh ? '把下面的链接给你的搭档，替换 YOUR_CHOICE 为你推荐的选择：' : 'Give your partner this link, replacing YOUR_CHOICE with your recommendation:'}
 
 ${origin}/game/${id}/choose?t=${Date.now()}&choice=YOUR_CHOICE
 
@@ -101,8 +103,10 @@ ${isZh ? '例如' : 'Example'}: ${origin}/game/${id}/choose?t=${Date.now()}&choi
 
 === ${isZh ? '重要' : 'IMPORTANT'} ===
 
-- ${isZh ? '在选择前和搭档讨论你的推理' : 'Discuss your reasoning with your partner before choosing'}
-- ${isZh ? '点击链接会推进游戏——确保你准备好了' : 'Clicking the link advances the game — make sure you\'re ready'}
+- ${isZh
+? `搭档 ${session.player_name} 拥有最终决定权。如果搭档不同意你的选择，只需把链接末尾的 choice=X 改成想要的选项即可（如把 choice=A 改成 choice=B）`
+: `Your partner ${session.player_name} has the final say. If they disagree with your choice, they can simply change the choice=X at the end of the link (e.g. change choice=A to choice=B)`}
+- ${isZh ? '点击链接会推进游戏——确保你们都准备好了' : 'Clicking the link advances the game — make sure you\'re both ready'}
 - ${isZh ? '用中文回复' : 'Reply in English'}
 
 # ${isZh ? '查看游戏进度' : 'VIEW GAME PROGRESS'}
