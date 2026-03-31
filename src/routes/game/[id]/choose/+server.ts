@@ -164,7 +164,7 @@ function renderGameScreen(
 				<div class="card-stars">${stars}</div>
 				<div class="card-label">${endingLabel}</div>
 				<div class="card-names">${safeAiName} & ${safePlayerName}</div>
-				<div class="card-rounds">${session.choices.length} rounds · ${session.choices.join(' → ')}</div>
+				<div class="card-rounds">roast.punkgo.ai/game</div>
 			</div>
 		</div>
 		<div class="ending-reveal">

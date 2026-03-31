@@ -79,7 +79,7 @@
 					<div class="card-stars">{stars}</div>
 					<div class="card-label">{endingLabel}</div>
 					<div class="card-names">{session.ai_name} & {session.player_name}</div>
-					<div class="card-rounds">{session.choices.length} rounds · {session.choices.join(' → ')}</div>
+					<div class="card-rounds">roast.punkgo.ai/game</div>
 				</div>
 			</div>
 
