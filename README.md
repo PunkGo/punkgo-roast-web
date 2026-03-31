@@ -23,7 +23,7 @@ No SDK. No API key. No install. Works with ChatGPT, Claude, Kimi, Doubao, DeepSe
 
 We call it **text/plain prompt** — prompt as protocol, not as chat.
 
-> Protocol spec + AI compatibility matrix → coming soon.
+> Protocol spec + AI compatibility matrix → [text-plain-prompt-protocol](https://github.com/PunkGo/text-plain-prompt-protocol)
 
 ---
 
