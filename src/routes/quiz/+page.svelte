@@ -355,5 +355,6 @@
 
 	@media (max-width: 480px) {
 		.ai-grid { grid-template-columns: repeat(2, 1fr); }
+		.action-row { flex-wrap: wrap; justify-content: center; }
 	}
 </style>

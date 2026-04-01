@@ -216,7 +216,8 @@
 			grid-template-columns: 1fr;
 			max-width: 400px;
 		}
-		h1 { font-size: var(--font-size-xl); }
+		h1 { font-size: var(--font-size-lg); overflow-wrap: break-word; }
+		.hero-sub { overflow-wrap: break-word; }
 		.card { padding: var(--space-lg) var(--space-md); }
 	}
 </style>

@@ -207,7 +207,7 @@
 	.sub { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-lg); line-height: 1.5; }
 
 	/* Templates */
-	.templates { display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-md); flex-wrap: wrap; justify-content: center; }
+	.templates { display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-md); flex-wrap: wrap; justify-content: center; width: 100%; }
 	.tpl-label { font-size: var(--font-size-sm); color: var(--color-text-tertiary); }
 	.tpl-btn {
 		padding: 6px 14px; border-radius: var(--radius-full);

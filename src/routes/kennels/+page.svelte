@@ -164,4 +164,8 @@
 	}
 	.recover-form button:disabled { opacity: 0.5; }
 	.error { font-size: var(--font-size-sm); color: #C75050; margin-top: var(--space-sm); }
+
+	@media (max-width: 768px) {
+		.recover-form { flex-direction: column; }
+	}
 </style>

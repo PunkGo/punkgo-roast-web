@@ -200,4 +200,8 @@
 
 	.actions { margin-top: var(--space-md); }
 	.btn-link { font-size: var(--font-size-sm); color: var(--color-cta); font-weight: 600; }
+
+	@media (max-width: 768px) {
+		.hero { max-height: 200px; object-fit: cover; }
+	}
 </style>
