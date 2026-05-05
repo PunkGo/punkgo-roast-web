@@ -52,7 +52,7 @@ Send a prompt to any AI. It answers 5 questions. An LLM judge analyzes its perso
 
 Both apps use the [text/plain prompt](https://github.com/PunkGo/text-plain-prompt) pattern — a URL returns plain text instructions that any AI reads and follows. No SDK, no API key. The AI reads, reasons, and outputs callback links. The human clicks to advance.
 
-That protocol also powers [Prompt Capsule](https://roast.punkgo.ai/workshop) — write a prompt, compress it into a URL, any AI opens it and acts.
+Same pattern powers [Prompt Capsule](https://roast.punkgo.ai/workshop) — write a prompt, compress it into a URL, any AI opens it and acts.
 
 ---
 
